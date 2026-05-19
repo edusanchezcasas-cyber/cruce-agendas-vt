@@ -513,7 +513,7 @@ function readXL(file,sheet,cb){
 function chkReady(){
   const ok=!!(olRows&&mbRows);
   document.getElementById('btnRun').disabled=!ok;
-  document.getElementById('btnAI').disabled=!ok;
+  
 }
 
 // ═══════════════════════════════════════════════════
@@ -729,7 +729,6 @@ function _run(){
   }
   fillFilters();
   sTab('inco');
-  document.getElementById('aiBox').style.display='none';
 }
 
 // ═══════════════════════════════════════════════════
@@ -1396,30 +1395,6 @@ function exportarExcel(){
 }
 
 // ═══════════════════════════════════════════════════
-// AI
-// ═══════════════════════════════════════════════════
-async function analizarIA(){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key){alert('Ingresa tu API Key de Anthropic.');return;}
-  document.getElementById('aiBox').style.display='block';
-  document.getElementById('aiTxt').innerHTML='<span class="ai-sp"></span>Analizando con Claude…';
-  document.getElementById('btnAI').disabled=true;
-  const olNo=res.filter(r=>r.tipo===T.OL),mbNo=res.filter(r=>r.tipo===T.MB),di=res.filter(r=>r.tipo===T.DIFF);
-  const l1=olNo.slice(0,12).map(r=>`  - #${r.tid} | ${nFec(r.ol?.Fecha||'')} | ${(r.ol?.Asunto||'').slice(0,60)}`).join('\n');
-  const l2=mbNo.slice(0,8).map(r=>`  - #${r.tid} | ${r.mb?.[C.cli]||''} | ${r.mb?.[C.tarea]||''}`).join('\n');
-  const l3=di.slice(0,8).map(r=>`  - #${r.tid} | ${r.mb?.[C.cli]||''} | ${r.diffs.map(d=>d.c+': OL='+d.ol+' vs MB='+d.mb).join('; ')}`).join('\n');
-  const p=`Eres asistente de gestión procesal laboral de Vinatea & Toyama (Lima, Perú). Cruce Outlook vs MyBig:
-- Solo en Outlook: ${olNo.length} | Solo en MyBig: ${mbNo.length} | Diferencias: ${di.length} | OK: ${res.filter(r=>r.tipo===T.OK).length}
-Muestra OL:\n${l1||'(ninguno)'}\nMuestra MB:\n${l2||'(ninguno)'}\nMuestra Diffs:\n${l3||'(ninguno)'}
-Genera resumen ejecutivo en español (5-6 oraciones): estado general, inconsistencia más crítica, acciones concretas, nivel de alerta. Lenguaje de gestión legal peruana.`;
-  try{
-    const d=await(await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:p}]})})).json();
-    if(d.error)throw new Error(d.error.message);
-    document.getElementById('aiTxt').textContent=d.content[0].text;
-  }catch(e){document.getElementById('aiTxt').textContent='Error: '+e.message;}
-  document.getElementById('btnAI').disabled=false;
-}
-
 // ═══════════════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════════════
