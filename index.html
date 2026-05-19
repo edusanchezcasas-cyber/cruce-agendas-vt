@@ -276,12 +276,12 @@ td{padding:7px 11px;vertical-align:middle}
 
     <!-- STATS -->
     <div class="stats">
-      <div class="sc cn"><div class="sn" id="s0">0</div><div class="sl">Total OL</div></div>
-      <div class="sc cg"><div class="sn" id="s1">0</div><div class="sl">Sin inconsistencias</div></div>
-      <div class="sc cr"><div class="sn" id="s2">0</div><div class="sl">Solo Outlook</div></div>
-      <div class="sc cb"><div class="sn" id="s3">0</div><div class="sl">Solo MyBig</div></div>
-      <div class="sc ca"><div class="sn" id="s4">0</div><div class="sl">Fecha/Hora diff.</div></div>
-      <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">Resp. no coincide</div></div>
+      <div class="sc cn"><div class="sn" id="s0">0</div><div class="sl">Total Outlook</div></div>
+      <div class="sc cg"><div class="sn" id="s1">0</div><div class="sl">✔ Todo correcto</div></div>
+      <div class="sc cb"><div class="sn" id="s3">0</div><div class="sl">⚠ Sin evento OL</div></div>
+      <div class="sc ca"><div class="sn" id="s4">0</div><div class="sl">⚠ Fecha/Hora diff.</div></div>
+      <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">⚠ Resp. no coincide</div></div>
+      <div class="sc cr"><div class="sn" id="s2">0</div><div class="sl">Solo OL (sin MB)</div></div>
       <div class="sc ck"><div class="sn" id="s6">0</div><div class="sl">✔ Verificados</div></div>
     </div>
 
@@ -297,15 +297,66 @@ td{padding:7px 11px;vertical-align:middle}
     <!-- SUB TABS -->
     <div class="tabbar">
       <button class="tab active" id="tab-inco" onclick="sTab('inco')">⚠ Inconsistencias <span class="tbadge tba" id="tb-inco">0</span></button>
-      <button class="tab" id="tab-ok" onclick="sTab('ok')">🟢 Confirmados <span class="tbadge tbg" id="tb-ok">0</span></button>
-      <button class="tab" id="tab-nc" onclick="sTab('nc')">⚫ Sin código <span class="tbadge tbx" id="tb-nc">0</span></button>
+      <button class="tab" id="tab-ok" onclick="sTab('ok')">🟢 Todo correcto <span class="tbadge tbg" id="tb-ok">0</span></button>
+      <button class="tab" id="tab-nc" onclick="sTab('nc')">⚫ Sin código OL <span class="tbadge tbx" id="tb-nc">0</span></button>
+      <button class="tab" onclick="toggleLeyenda()" id="tab-leyenda" style="margin-left:auto;color:var(--muted);font-size:11px">❓ ¿Qué significa cada indicador?</button>
+    </div>
+
+    <!-- LEYENDA (colapsable) -->
+    <div id="leyendaBox" style="display:none;background:var(--card);border:1px solid var(--border);border-top:none;padding:16px 20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:14px">
+
+        <div style="background:#FFF5F5;border-radius:8px;padding:12px 14px;border-left:4px solid var(--red)">
+          <div style="font-weight:700;font-size:12px;color:var(--red);margin-bottom:4px">🔴 Solo en Outlook</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">El evento existe en el Calendario Case Tracking con ese <code>#tareasid</code>, pero <b>no aparece registrado en MyBig</b>. Probable omisión en el sistema.</div>
+        </div>
+
+        <div style="background:#EBF4FF;border-radius:8px;padding:12px 14px;border-left:4px solid var(--blue)">
+          <div style="font-weight:700;font-size:12px;color:var(--blue);margin-bottom:4px">🔵 Solo en MyBig</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">Está registrado en MyBig con ese <code>tareasid</code>, pero <b>no tiene evento en el Calendario Outlook</b>. Puede que no se agendó o fue eliminado del calendario.</div>
+        </div>
+
+        <div style="background:#FEF3E2;border-radius:8px;padding:12px 14px;border-left:4px solid var(--amber)">
+          <div style="font-weight:700;font-size:12px;color:var(--amber);margin-bottom:4px">🟡 Fecha / Hora diferente</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">El mismo <code>tareasid</code> existe en ambos sistemas, pero <b>la fecha o la hora no coinciden</b>. Uno de los dos está desactualizado — el valor incorrecto aparece resaltado en amarillo.</div>
+        </div>
+
+        <div style="background:var(--info-bg);border-radius:8px;padding:12px 14px;border-left:4px solid var(--purple)">
+          <div style="font-weight:700;font-size:12px;color:var(--purple);margin-bottom:4px">🟣 Responsable no coincide</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">El mismo <code>tareasid</code> existe en ambos, pero las <b>iniciales del asunto de Outlook</b> (ej: <code>RZA</code>) no coinciden con el responsable registrado en MyBig.</div>
+        </div>
+
+        <div style="background:#FEF3E2;border-radius:8px;padding:12px 14px;border-left:4px solid var(--amber)">
+          <div style="font-weight:700;font-size:12px;color:var(--amber);margin-bottom:4px">🟠 Múltiples diferencias</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">Tiene a la vez <b>diferencia de fecha/hora y de responsable</b>. Requiere revisión doble.</div>
+        </div>
+
+        <div style="background:var(--ok-bg);border-radius:8px;padding:12px 14px;border-left:4px solid var(--green)">
+          <div style="font-weight:700;font-size:12px;color:var(--green);margin-bottom:4px">🟢 Confirmados</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">El <code>tareasid</code> existe en ambos sistemas y <b>fecha, hora y responsable coinciden correctamente</b>. Sin inconsistencias.</div>
+        </div>
+
+        <div style="background:var(--bg);border-radius:8px;padding:12px 14px;border-left:4px solid var(--muted)">
+          <div style="font-weight:700;font-size:12px;color:var(--muted);margin-bottom:4px">⚫ Sin código</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">Eventos en Outlook que <b>no tienen <code>#tareasid</code> en el asunto</b>. No se pueden cruzar con MyBig porque no tienen identificador.</div>
+        </div>
+
+        <div style="background:var(--bg);border-radius:8px;padding:12px 14px;border-left:4px solid var(--navy)">
+          <div style="font-weight:700;font-size:12px;color:var(--navy);margin-bottom:4px">✓ Check de revisión</div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.6">Marca cada fila cuando la hayas revisado y tomado acción. Se guarda junto al cruce en el <b>Panel de Control</b> y aparece en el reporte para jefes.</div>
+        </div>
+
+      </div>
+      <p style="font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+        💡 <b>Tip:</b> Pasa el mouse sobre las iniciales (ej: <code>RZA</code>) para ver el nombre completo del abogado. Los valores resaltados en <span style="background:#FFF3CD;color:#7A4E00;padding:1px 5px;border-radius:3px;font-weight:700;font-size:10.5px">amarillo</span> indican el dato que difiere entre sistemas.
+      </p>
     </div>
 
     <!-- FILTERS -->
     <div class="filters">
       <div class="fg"><label>Supervisor</label><select id="f-sup" onchange="render()"><option value="">Todos</option></select></div>
       <div class="fg"><label>Responsable</label><select id="f-resp" onchange="render()"><option value="">Todos</option></select></div>
-      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="ol">Solo Outlook</option><option value="mb">Solo MyBig</option><option value="diff">Fecha/Hora diff.</option><option value="resp">Resp. no coincide</option></select></div>
+      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="mb">🔵 Sin evento en Outlook</option><option value="diff">🟡 Fecha/Hora diff.</option><option value="resp">🟣 Resp. no coincide</option><option value="ol">🔴 Solo OL (sin MB)</option></select></div>
       <div class="fg"><label>Estado</label><select id="f-est" onchange="render()"><option value="">Todos</option><option value="0">Pendientes</option><option value="1">Verificados</option></select></div>
       <div class="fg"><label>Desde</label><input type="date" id="f-desde" onchange="render()"/></div>
       <div class="fg"><label>Hasta</label><input type="date" id="f-hasta" onchange="render()"/></div>
@@ -682,6 +733,16 @@ function applyF(rows){
 // ═══════════════════════════════════════════════════
 // TABS & RENDER
 // ═══════════════════════════════════════════════════
+function toggleLeyenda(){
+  const box=document.getElementById('leyendaBox');
+  const btn=document.getElementById('tab-leyenda');
+  if(!box)return;
+  const open=box.style.display==='block';
+  box.style.display=open?'none':'block';
+  btn.style.color=open?'var(--muted)':'var(--navy)';
+  btn.style.fontWeight=open?'':'600';
+}
+
 function sTab(t){
   curTab=t;
   ['inco','ok','nc'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
@@ -704,11 +765,14 @@ function renderInco(wrap){
   const fechDi=inco.filter(r=>r.diffs?.some(d=>d.c!=='Responsable'));
 
   let html=`<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--card)">
+    <div style="background:#EBF4FF;border-left:4px solid var(--blue);border-radius:0 6px 6px 0;padding:8px 14px;margin-bottom:12px;font-size:11.5px;color:var(--blue)">
+      💡 <b>Nota:</b> Usando la macro con <code>FILTRO_IDs</code> de MyBig, los casos críticos son: <b>Sin evento en Outlook</b> (diligencia en MB sin cita agendada), <b>Fecha/Hora diferente</b> y <b>Responsable no coincide</b>. "Solo OL" solo aparece si usas la macro sin filtro.
+    </div>
     <div class="icards">
-      <div class="ic icr"><div class="ic-n">${res.filter(r=>r.tipo===T.OL).length}</div><div><div class="ic-l">Solo Outlook</div><div class="ic-d">Sin registro en MyBig</div></div></div>
-      <div class="ic icb"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">Solo MyBig</div><div class="ic-d">Sin evento en Outlook</div></div></div>
-      <div class="ic ica"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">Fecha / Hora diff.</div><div class="ic-d">No coinciden entre sistemas</div></div></div>
-      <div class="ic icp"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable MB</div></div></div>
+      <div class="ic icb"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">🔵 Sin evento en Outlook</div><div class="ic-d">En MyBig pero sin cita agendada — revisar urgente</div></div></div>
+      <div class="ic ica"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">🟡 Fecha / Hora diferente</div><div class="ic-d">Dato desactualizado en uno de los sistemas</div></div></div>
+      <div class="ic icp"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">🟣 Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable en MyBig</div></div></div>
+      <div class="ic icr" style="opacity:.6" title="Solo aparece si usas la macro sin FILTRO_IDs"><div class="ic-n">${res.filter(r=>r.tipo===T.OL).length}</div><div><div class="ic-l">🔴 Solo Outlook</div><div class="ic-d">tareasid no existe en MyBig</div></div></div>
     </div>
     <p style="font-size:11px;color:var(--muted)">Vista lado a lado — marca ✓ cada fila cuando la revisas</p>
   </div>`;
@@ -760,8 +824,8 @@ function renderInco(wrap){
     const rd=r.diffs?.find(d=>d.c==='Responsable');
 
     let pillHtml;
-    if(r.tipo===T.OL)      pillHtml=`<span class="pill pr">Solo OL</span>`;
-    else if(r.tipo===T.MB) pillHtml=`<span class="pill pb">Solo MB</span>`;
+    if(r.tipo===T.OL)      pillHtml=`<span class="pill pr" style="opacity:.7">Solo OL</span>`;
+    else if(r.tipo===T.MB) pillHtml=`<span class="pill pb">Sin evento OL</span>`;
     else if(rd&&!fd&&!hd)  pillHtml=`<span class="pill pp">Resp. diff.</span>`;
     else if(rd&&(fd||hd))  pillHtml=`<span class="pill pa">Múltiple</span>`;
     else                   pillHtml=`<span class="pill pa">Fec/Hora</span>`;
