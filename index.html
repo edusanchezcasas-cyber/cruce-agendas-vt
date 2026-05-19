@@ -232,19 +232,25 @@ td{padding:7px 11px;vertical-align:middle}
 <div id="panel-cruce" class="panel active">
 
   <div class="ugrid">
-    <div class="uc" id="card-ol" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'ol')">
-      <input type="file" accept=".xlsx,.xls" onchange="hFile(this,'ol')"/>
-      <div class="ubi" id="icon-ol">📅</div>
-      <h4>Agenda Outlook</h4>
-      <p>Excel de la macro <em>ExportarAgendaOL</em><br/>(hoja <em>Agenda_OL</em>)</p>
-      <div id="badge-ol" class="ubadge" style="display:none">✔ <span id="fname-ol"></span></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="uc" id="card-ol" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'ol')">
+        <input type="file" accept=".xlsx,.xls" id="input-ol" onchange="hFile(this,'ol')"/>
+        <div class="ubi" id="icon-ol">📅</div>
+        <h4>Agenda Outlook</h4>
+        <p>Excel de la macro <em>ExportarAgendaOL</em><br/>(hoja <em>Agenda_OL</em>)</p>
+        <div id="badge-ol" class="ubadge" style="display:none">✔ <span id="fname-ol"></span></div>
+      </div>
+      <button id="refresh-ol" onclick="resetArchivo('ol')" style="display:none;width:100%;border:1px solid var(--border);background:var(--bg);border-radius:7px;padding:7px;font-size:12px;font-family:inherit;color:var(--muted);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔄 Cambiar archivo</button>
     </div>
-    <div class="uc" id="card-mb" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'mb')">
-      <input type="file" accept=".xlsx,.xls" onchange="hFile(this,'mb')"/>
-      <div class="ubi" id="icon-mb">📊</div>
-      <h4>Reporte MyBig</h4>
-      <p>Excel semanal de diligencias<br/>(hoja <em>Datos</em>)</p>
-      <div id="badge-mb" class="ubadge" style="display:none">✔ <span id="fname-mb"></span></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="uc" id="card-mb" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'mb')">
+        <input type="file" accept=".xlsx,.xls" id="input-mb" onchange="hFile(this,'mb')"/>
+        <div class="ubi" id="icon-mb">📊</div>
+        <h4>Reporte MyBig</h4>
+        <p>Excel semanal de diligencias<br/>(hoja <em>Datos</em>)</p>
+        <div id="badge-mb" class="ubadge" style="display:none">✔ <span id="fname-mb"></span></div>
+      </div>
+      <button id="refresh-mb" onclick="resetArchivo('mb')" style="display:none;width:100%;border:1px solid var(--border);background:var(--bg);border-radius:7px;padding:7px;font-size:12px;font-family:inherit;color:var(--muted);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔄 Cambiar archivo</button>
     </div>
   </div>
 
@@ -470,8 +476,30 @@ function pFile(file,t){
   document.getElementById('badge-'+t).style.display='inline-flex';
   document.getElementById('card-'+t).classList.add('loaded');
   document.getElementById('icon-'+t).textContent='✅';
+  // Mostrar botón de cambiar archivo
+  const btn=document.getElementById('refresh-'+t);
+  if(btn)btn.style.display='block';
   const sheet=t==='ol'?'Agenda_OL':(document.getElementById('sheetMB').value||'Datos');
   readXL(file,sheet,rows=>{if(t==='ol')olRows=rows;else mbRows=rows;chkReady();});
+}
+
+function resetArchivo(t){
+  // Limpiar estado visual
+  document.getElementById('badge-'+t).style.display='none';
+  document.getElementById('fname-'+t).textContent='';
+  document.getElementById('card-'+t).classList.remove('loaded');
+  document.getElementById('icon-'+t).textContent=t==='ol'?'📅':'📊';
+  const btn=document.getElementById('refresh-'+t);
+  if(btn)btn.style.display='none';
+  // Limpiar input file
+  const inp=document.getElementById('input-'+t);
+  if(inp)inp.value='';
+  // Limpiar datos
+  if(t==='ol')olRows=null; else mbRows=null;
+  chkReady();
+  // Ocultar resultados si ya estaban cargados
+  document.getElementById('results').style.display='none';
+  res=[];
 }
 function readXL(file,sheet,cb){
   const fr=new FileReader();
