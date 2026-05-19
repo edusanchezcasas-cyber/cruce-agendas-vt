@@ -275,7 +275,8 @@ td{padding:7px 11px;vertical-align:middle}
       <h2>Resultados del cruce</h2>
       <div class="ract">
         <span class="rpill" id="rangoPill">—</span>
-        <button class="btn btn-out btn-sm" onclick="exportarExcel()">⬇ Excel</button>
+        <button class="btn btn-out btn-sm" onclick="exportarExcel()">⬇ Excel completo</button>
+        <button class="btn btn-navy btn-sm" onclick="exportarVista()">⬇ Exportar vista</button>
         <button class="btn btn-green btn-sm" id="btnGuardar" onclick="guardarCruce()">💾 Guardar Cruce</button>
         <button class="btn btn-out btn-sm" onclick="exportarReporte()">📄 Reporte para Jefes</button>
       </div>
@@ -948,25 +949,80 @@ function renderInco(wrap){
 // ── SIMPLE TABLE (ok / nc) ────────────────────────────────
 function renderSimple(wrap,rows,t){
   if(!rows.length){wrap.innerHTML=`<div class="empty"><div class="ei">${t==='ok'?'✅':'🏷️'}</div><p>${t==='ok'?'Sin coincidencias con esos filtros.':'Sin eventos sin código.'}</p></div>`;return;}
-  let html=`<table><thead><tr>`;
+
   if(t==='ok'){
-    html+=`<th class="th-std">ID Tarea</th><th class="th-std">Cliente</th><th class="th-std">Tarea</th><th class="th-std">Expediente</th><th class="th-std">Fecha</th><th class="th-std">Hora</th><th class="th-std">Responsable</th><th class="th-std">Supervisor</th><th class="th-std">Estado</th>`;
-    html+=`</tr></thead><tbody>`;
-    html+=rows.map(r=>`<tr style="background:#F5FFF8">
-      <td><span class="tid">#${r.tid}</span></td><td>${r.mb[C.cli]||''}</td>
-      <td><span class="trunc">${esc(r.mb[C.tarea]||'')}</span></td>
-      <td style="font-size:10.5px">${r.mb[C.exp]||''}</td>
-      <td>${nFec(r.mb[C.fecha])}</td><td>${nHor(r.mb[C.hora])}</td>
-      <td>${r.mb[C.resp]||''}</td><td>${r.mb[C.sup]||''}</td>
-      <td><span class="pill pg">${r.mb[C.estado]||''}</span></td>
-    </tr>`).join('');
+    let html=`<table><thead>
+      <tr>
+        <th class="th-std" rowspan="2">ID Tarea</th>
+        <th class="th-group-ol" colspan="4">📅 OUTLOOK</th>
+        <th class="th-group-mb" colspan="6">📊 MYBIG</th>
+        <th class="th-std" rowspan="2">Estado</th>
+      </tr>
+      <tr>
+        <th class="th-ol">Tarea / Asunto</th>
+        <th class="th-ol">Fecha OL</th>
+        <th class="th-ol">Hora OL</th>
+        <th class="th-ol">Iniciales</th>
+        <th class="th-mb">Cliente</th>
+        <th class="th-mb">Tarea MB</th>
+        <th class="th-mb">Expediente</th>
+        <th class="th-mb">Fecha MB</th>
+        <th class="th-mb">Hora MB</th>
+        <th class="th-mb">Responsable</th>
+      </tr>
+    </thead><tbody>`;
+
+    html+=rows.map(r=>{
+      const asunto=String(r.ol?.Asunto||r.ol?.Subject||'');
+      const oFec=r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'';
+      const oHor=r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'';
+      const oInics=exIniciales(asunto).join(' & ')||'—';
+      const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,3).join(' / ').slice(0,80);
+      const asuntoFull=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'');
+      const inicsHtml=oInics==='—'?'<span class="na">—</span>':oInics.split(' & ').map(cod=>{
+        const nombre=DICT_INICS[cod]||cod;
+        return`<span class="tid" title="${nombre}" style="cursor:help;margin-right:2px">${cod}</span>`;
+      }).join('');
+      const cR2=document.getElementById('colResp2')?.value||'RESPONSABLE DE LA TAREA II';
+      const mResp2=r.mb?String(r.mb[cR2]||''):'';
+      const mRespDisplay=r.mb[C.resp]||''+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
+
+      return`<tr style="background:#F5FFF8">
+        <td><span class="tid">#${r.tid}</span></td>
+        <td class="asunto-cell">
+          <span class="trunc" onclick="toggleAsunto(this)" title="Clic para expandir">${esc(asuntoCorto)||'<span class="na">—</span>'}</span>
+          <span class="asunto-expanded">${esc(asuntoFull)}</span>
+        </td>
+        <td><span style="color:var(--green);font-weight:600">${oFec}</span></td>
+        <td><span style="color:var(--green);font-weight:600">${oHor}</span></td>
+        <td style="font-weight:700;color:var(--navy)">${inicsHtml}</td>
+        <td>${r.mb[C.cli]||''}</td>
+        <td><span class="trunc">${esc(r.mb[C.tarea]||'')}</span></td>
+        <td style="font-size:10.5px">${r.mb[C.exp]||''}</td>
+        <td><span style="color:var(--green)">${nFec(r.mb[C.fecha])}</span></td>
+        <td><span style="color:var(--green)">${nHor(r.mb[C.hora])}</span></td>
+        <td>${mRespDisplay}</td>
+        <td><span class="pill pg">${r.mb[C.estado]||''}</span></td>
+      </tr>`;
+    }).join('');
+    html+=`</tbody></table>`;
+    wrap.innerHTML=html;
+
   } else {
-    html+=`<th class="th-std">Asunto Outlook</th><th class="th-std">Fecha</th><th class="th-std">Hora</th><th class="th-std">Organizador</th><th class="th-std">Ubicación</th>`;
-    html+=`</tr></thead><tbody>`;
-    html+=rows.map(r=>`<tr><td><span class="trunc">${esc(r.ol.Asunto||r.ol.Subject||'')}</span></td><td>${nFec(r.ol.Fecha||r.ol['Start Date']||'')}</td><td>${nHor(r.ol.HoraInicio||r.ol['Start Time']||'')}</td><td>${r.ol.Organizador||r.ol.Organizer||''}</td><td>${r.ol.Ubicacion||r.ol.Location||''}</td></tr>`).join('');
+    // Sin código OL
+    let html=`<table><thead><tr>
+      <th class="th-std">Asunto Outlook</th>
+      <th class="th-std">Fecha</th>
+      <th class="th-std">Hora</th>
+    </tr></thead><tbody>`;
+    html+=rows.map(r=>`<tr>
+      <td><span class="trunc">${esc(r.ol.Asunto||r.ol.Subject||'')}</span></td>
+      <td>${nFec(r.ol.Fecha||r.ol['Start Date']||'')}</td>
+      <td>${nHor(r.ol.HoraInicio||r.ol['Start Time']||'')}</td>
+    </tr>`).join('');
+    html+=`</tbody></table>`;
+    wrap.innerHTML=html;
   }
-  html+=`</tbody></table>`;
-  wrap.innerHTML=html;
 }
 
 // ═══════════════════════════════════════════════════
@@ -1282,8 +1338,99 @@ function clearHistory(){
 }
 
 // ═══════════════════════════════════════════════════
-// EXPORTAR REPORTE PARA JEFES (HTML standalone)
+// EXPORTAR VISTA FILTRADA
 // ═══════════════════════════════════════════════════
+function exportarVista(){
+  if(!res.length){alert('Ejecuta un cruce primero.');return;}
+
+  // Obtener las filas actualmente visibles según los filtros
+  let rows;
+  if(curTab==='inco'){
+    rows=applyF(res.filter(r=>[T.OL,T.MB,T.DIFF].includes(r.tipo)));
+  } else if(curTab==='ok'){
+    rows=applyF(res.filter(r=>r.tipo===T.OK));
+  } else {
+    rows=applyF(res.filter(r=>r.tipo===T.NC));
+  }
+
+  if(!rows.length){alert('No hay filas visibles para exportar con los filtros actuales.');return;}
+
+  const wb=XLSX.utils.book_new();
+  const hoy=new Date().toLocaleDateString('es-PE');
+
+  // Construir encabezados y filas según la pestaña activa
+  let headers,data;
+  const checks=getChecks(curCruceId||'tmp');
+
+  if(curTab==='inco'){
+    headers=['Revisado','Inconsistencia','ID Tarea','Tarea / Asunto OL','Fecha OL','Hora OL','Iniciales OL',
+             'Cliente MB','Tarea MB','Fecha MB','Hora MB','Responsable MB','Responsable II MB','Diferencias'];
+    data=rows.map(r=>{
+      const asunto=String(r.ol?.Asunto||r.ol?.Subject||'');
+      const tipo=r.tipo===T.OL?'Solo OL':r.tipo===T.MB?'Sin evento OL':
+                 r.diffs?.some(d=>d.c==='Responsable')&&r.diffs?.some(d=>d.c!=='Responsable')?'Múltiple':
+                 r.diffs?.some(d=>d.c==='Responsable')?'Resp. no coincide':'Fecha/Hora diff.';
+      const dets=r.diffs?.map(d=>d.c+': OL='+d.ol+' ≠ MB='+d.mb).join(' | ')||
+                 (r.tipo===T.OL?'No existe en MyBig':r.tipo===T.MB?'Sin evento en Outlook':'');
+      const cR2=document.getElementById('colResp2')?.value||'RESPONSABLE DE LA TAREA II';
+      return[
+        checks[r.tid]?'✔':'',
+        tipo,
+        r.tid,
+        asunto,
+        r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'',
+        r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'',
+        exIniciales(asunto).map(c=>DICT_INICS[c]?c+' ('+DICT_INICS[c]+')':c).join(', '),
+        r.mb?String(r.mb[C.cli]||''):'',
+        r.mb?String(r.mb[C.tarea]||''):'',
+        r.mb?nFec(r.mb[C.fecha]):'',
+        r.mb?nHor(r.mb[C.hora]):'',
+        r.mb?String(r.mb[C.resp]||''):'',
+        r.mb?String(r.mb[cR2]||''):'',
+        dets
+      ];
+    });
+  } else if(curTab==='ok'){
+    headers=['ID Tarea','Cliente','Tarea','Expediente','Fecha','Hora','Responsable','Supervisor','Estado'];
+    data=rows.map(r=>[r.tid,r.mb[C.cli]||'',r.mb[C.tarea]||'',r.mb[C.exp]||'',
+                      nFec(r.mb[C.fecha]),nHor(r.mb[C.hora]),r.mb[C.resp]||'',r.mb[C.sup]||'',r.mb[C.estado]||'']);
+  } else {
+    headers=['Asunto Outlook','Fecha','Hora'];
+    data=rows.map(r=>[r.ol.Asunto||r.ol.Subject||'',nFec(r.ol.Fecha||r.ol['Start Date']||''),nHor(r.ol.HoraInicio||r.ol['Start Time']||'')]);
+  }
+
+  // Metadatos del filtro aplicado
+  const sup=document.getElementById('f-sup')?.value||'';
+  const resp=document.getElementById('f-resp')?.value||'';
+  const tipo=document.getElementById('f-tipo')?.value||'';
+  const desde=document.getElementById('f-desde')?.value||'';
+  const hasta=document.getElementById('f-hasta')?.value||'';
+  const q=document.getElementById('f-q')?.value||'';
+
+  const meta=[
+    ['EXPORTACIÓN DE VISTA · VINATEA & TOYAMA'],
+    ['Generado:',hoy],
+    ['Pestaña:',curTab==='inco'?'Inconsistencias':curTab==='ok'?'Todo correcto':'Sin código OL'],
+    ['Filtros aplicados:',
+      [sup?'Supervisor: '+sup:'',resp?'Responsable: '+resp:'',tipo?'Tipo: '+tipo:'',
+       desde?'Desde: '+desde:'',hasta?'Hasta: '+hasta:'',q?'Búsqueda: '+q:'']
+      .filter(Boolean).join(' · ')||'Ninguno'],
+    ['Total filas:',rows.length],
+    ['']
+  ];
+
+  const ws=XLSX.utils.aoa_to_sheet([...meta,[...headers],...data]);
+
+  // Estilo de encabezado (ancho de columnas)
+  ws['!cols']=[{wch:8},{wch:18},{wch:10},{wch:55},{wch:12},{wch:8},{wch:25},
+               {wch:30},{wch:40},{wch:12},{wch:8},{wch:22},{wch:22},{wch:40}];
+
+  const tabNombre=curTab==='inco'?'Inconsistencias':curTab==='ok'?'Correctos':'Sin_codigo';
+  XLSX.utils.book_append_sheet(wb,ws,tabNombre);
+  XLSX.writeFile(wb,`Vista_${tabNombre}_${hoy.replace(/\//g,'-')}.xlsx`);
+}
+
+
 function exportarReporte(){
   if(!res.length){alert('Ejecuta un cruce primero.');return;}
   exportarReporteCruce(curCruceId,res);
