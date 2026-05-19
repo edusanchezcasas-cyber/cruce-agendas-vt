@@ -636,6 +636,19 @@ function _run(){
 
   olRows.forEach(row=>{
     const tid=String(row['tareasid']||'').trim()||exTid(row['Asunto']||row['Subject']||'');
+    const estadoOL=String(row['EstadoOL']||'').trim().toUpperCase();
+
+    // ── Fila marcada por la macro como "SIN EVENTO EN OUTLOOK" ──
+    // El ID existe en MyBig (y en FILTRO_IDs) pero no tiene cita agendada
+    if(estadoOL==='SIN EVENTO EN OUTLOOK'){
+      if(!tid){res.push({tipo:T.NC,tid:'',ol:row,mb:null,diffs:[]});return;}
+      olIdx[tid]=row;
+      const mb=mbIdx[tid];
+      // Tratar como T.MB: en MyBig pero sin evento OL
+      res.push({tipo:T.MB,tid,ol:row,mb:mb||null,diffs:[],sinEventoOL:true});
+      return;
+    }
+
     const fec=nFec(row['Fecha']||row['Start Date']||'');
     const hor=nHor(row['HoraInicio']||row['Start Time']||'');
     if(fec){const d=new Date(toISO(fec));if(!isNaN(d))fechas.push(d);}
@@ -643,6 +656,9 @@ function _run(){
     if(!tid){res.push({tipo:T.NC,tid:'',ol:row,mb:null,diffs:[]});return;}
     olIdx[tid]=row;
     const mb=mbIdx[tid];
+
+    // Con la macro nueva (FILTRO_IDs de MyBig) esto NO debería ocurrir
+    // pero lo mantenemos como fallback por compatibilidad
     if(!mb){res.push({tipo:T.OL,tid,ol:row,mb:null,diffs:[]});return;}
 
     const diffs=[];
@@ -662,6 +678,9 @@ function _run(){
     res.push({tipo:diffs.length?T.DIFF:T.OK,tid,ol:row,mb,diffs});
   });
 
+  // Con macro nueva: olRows ya contiene todos los IDs de MyBig
+  // (encontrados + SIN EVENTO), así que este loop solo aplica
+  // si se usa un Excel de Outlook antiguo sin la columna EstadoOL
   mbRows.forEach(r=>{
     const t=String(r[cTid]||'').trim();
     if(t&&!olIdx[t])res.push({tipo:T.MB,tid:t,ol:null,mb:r,diffs:[]});
@@ -670,15 +689,16 @@ function _run(){
   // Stats
   const cnt=t=>res.filter(r=>r.tipo===t).length;
   const cntResp=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
-  document.getElementById('s0').textContent=olRows.length;
+  const sinEventoOL=res.filter(r=>r.tipo===T.MB).length;
+  document.getElementById('s0').textContent=olRows.filter(r=>String(r['EstadoOL']||'').toUpperCase()!=='SIN EVENTO EN OUTLOOK').length;
   document.getElementById('s1').textContent=cnt(T.OK);
-  document.getElementById('s2').textContent=cnt(T.OL);
-  document.getElementById('s3').textContent=cnt(T.MB);
+  document.getElementById('s2').textContent=cnt(T.OL); // debería ser 0 con macro nueva
+  document.getElementById('s3').textContent=sinEventoOL;
   document.getElementById('s4').textContent=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable')).length;
   document.getElementById('s5').textContent=cntResp;
   document.getElementById('s6').textContent=0;
 
-  const ti=cnt(T.OL)+cnt(T.MB)+cnt(T.DIFF);
+  const ti=cnt(T.OL)+sinEventoOL+cnt(T.DIFF);
   document.getElementById('tb-inco').textContent=ti;
   document.getElementById('tb-ok').textContent=cnt(T.OK);
   document.getElementById('tb-nc').textContent=cnt(T.NC);
