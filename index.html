@@ -131,7 +131,7 @@ td{padding:7px 11px;vertical-align:middle}
 .pp{background:var(--info-bg);color:var(--purple)}.px{background:var(--border);color:var(--muted)}
 .tid{font-family:monospace;font-size:10.5px;background:#EEF2FA;padding:2px 5px;border-radius:4px;color:var(--navy)}
 .dv{background:#FFF3CD;font-weight:700;color:#7A4E00;border-radius:3px;padding:1px 4px}
-.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;display:block}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;display:block}
 .na{color:var(--muted);font-style:italic;font-size:10.5px}
 .empty{text-align:center;padding:40px;color:var(--muted)}
 .empty .ei{font-size:28px;margin-bottom:8px}
@@ -724,16 +724,15 @@ function renderInco(wrap){
       <th class="th-std" rowspan="2" style="width:32px">✓</th>
       <th class="th-std" rowspan="2">Inconsistencia</th>
       <th class="th-std" rowspan="2">ID Tarea</th>
-      <th class="th-group-ol" colspan="5">📅 OUTLOOK</th>
+      <th class="th-group-ol" colspan="4">📅 OUTLOOK</th>
       <th class="th-group-mb" colspan="5">📊 MYBIG</th>
       <th class="th-std" rowspan="2" style="min-width:180px">🔍 Diferencias</th>
     </tr>
     <tr>
-      <th class="th-ol">Tarea / Asunto</th>
+      <th class="th-ol" style="min-width:280px">Tarea / Asunto</th>
       <th class="th-ol">Fecha OL</th>
       <th class="th-ol">Hora OL</th>
       <th class="th-ol">Iniciales</th>
-      <th class="th-ol">Organizador</th>
       <th class="th-mb">Cliente</th>
       <th class="th-mb">Tarea MB</th>
       <th class="th-mb">Fecha MB</th>
@@ -748,8 +747,7 @@ function renderInco(wrap){
     const oFec=r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'';
     const oHor=r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'';
     const oInics=exIniciales(asunto).join(' & ')||'—';
-    const oOrg=r.ol?(r.ol.Organizador||r.ol.Organizer||''):'';
-    const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,2).join(' / ').slice(0,70);
+    const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,3).join(' / ').slice(0,120);
 
     const mCli=r.mb?String(r.mb[C.cli]||''):'';
     const mTarea=r.mb?String(r.mb[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').slice(0,65):'';
@@ -809,11 +807,10 @@ function renderInco(wrap){
       </td>
       <td>${pillHtml}</td>
       <td><span class="tid">#${r.tid||'—'}</span></td>
-      <td><span class="trunc" title="${esc(asunto)}">${esc(asuntoCorto)||'<span class="na">sin asunto</span>'}</span></td>
+      <td><span class="trunc" title="${esc(asunto)}" style="max-width:320px">${esc(asuntoCorto)||'<span class="na">sin asunto</span>'}</span></td>
       <td>${oFec?`<span${fd?' class="dv"':''}>${oFec}</span>`:'<span class="na">—</span>'}</td>
       <td>${oHor?`<span${hd?' class="dv"':''}>${oHor}</span>`:'<span class="na">—</span>'}</td>
       <td style="font-weight:700;color:var(--navy)">${inicsHtml}</td>
-      <td style="font-size:10.5px">${oOrg}</td>
       <td>${mCli||'<span class="na">—</span>'}</td>
       <td><span class="trunc" title="${esc(mTarea)}">${esc(mTarea)||'<span class="na">—</span>'}</span></td>
       <td>${mFec?`<span${fd?' class="dv"':''}>${mFec}</span>`:'<span class="na">—</span>'}</td>
