@@ -132,6 +132,12 @@ td{padding:7px 11px;vertical-align:middle}
 .tid{font-family:monospace;font-size:10.5px;background:#EEF2FA;padding:2px 5px;border-radius:4px;color:var(--navy)}
 .dv{background:#FFF3CD;font-weight:700;color:#7A4E00;border-radius:3px;padding:1px 4px}
 .trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;display:block}
+.asunto-cell{max-width:340px}
+.asunto-cell .trunc{cursor:pointer}
+.asunto-cell .trunc:hover{color:var(--navy);text-decoration:underline}
+.asunto-expanded{white-space:normal;word-break:break-word;max-width:340px;font-size:11px;line-height:1.5;display:none}
+.asunto-cell.open .trunc{display:none}
+.asunto-cell.open .asunto-expanded{display:block}
 .na{color:var(--muted);font-style:italic;font-size:10.5px}
 .empty{text-align:center;padding:40px;color:var(--muted)}
 .empty .ei{font-size:28px;margin-bottom:8px}
@@ -143,8 +149,12 @@ td{padding:7px 11px;vertical-align:middle}
 .chk-cell{display:flex;flex-direction:column;align-items:center;min-width:50px}
 /* ─ INCO CARDS ─ */
 .icards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:9px;margin-bottom:12px}
-.ic{border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.ic{border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border:2px solid transparent;transition:all .15s;user-select:none}
+.ic:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.ic.active-filter{border-width:2px;box-shadow:0 3px 12px rgba(0,0,0,.15)}
 .ic.icr{background:var(--err-bg)}.ic.icb{background:var(--mb-bg)}.ic.ica{background:var(--warn-bg)}.ic.icp{background:var(--info-bg)}.ic.icx{background:var(--bg)}
+.ic.icr.active-filter{border-color:var(--red)}.ic.icb.active-filter{border-color:var(--blue)}
+.ic.ica.active-filter{border-color:var(--amber)}.ic.icp.active-filter{border-color:var(--purple)}
 .ic-n{font-family:'DM Serif Display',serif;font-size:26px;line-height:1}
 .ic.icr .ic-n{color:var(--red)}.ic.icb .ic-n{color:var(--blue)}.ic.ica .ic-n{color:var(--amber)}.ic.icp .ic-n{color:var(--purple)}.ic.icx .ic-n{color:var(--muted)}
 .ic-l{font-size:11.5px;font-weight:600;margin-bottom:2px}.ic-d{font-size:10.5px;color:var(--muted)}
@@ -221,16 +231,6 @@ td{padding:7px 11px;vertical-align:middle}
 <!-- ══ PANEL: CRUCE ══════════════════════════════════════════ -->
 <div id="panel-cruce" class="panel active">
 
-  <div class="guide">
-    <h3>📋 Flujo semanal</h3>
-    <div class="gsteps">
-      <div class="gstep"><div class="gsn">1</div><div class="gst"><strong>Macro Excel</strong>Alt+F11 → importar <em>ExportarAgendaOL.bas</em> → ejecutar. Genera hoja <em>Agenda_OL</em>.</div></div>
-      <div class="gstep"><div class="gsn">2</div><div class="gst"><strong>Reporte MyBig</strong>Descarga el Excel semanal de diligencias (hoja <em>Datos</em>).</div></div>
-      <div class="gstep"><div class="gsn">3</div><div class="gst"><strong>Cruzar aquí</strong>Sube ambos archivos y ejecuta. La plataforma detecta todas las inconsistencias automáticamente.</div></div>
-      <div class="gstep"><div class="gsn">4</div><div class="gst"><strong>Verificar y guardar</strong>Marca cada fila como revisada, guarda el cruce y genera el reporte para tus jefes.</div></div>
-    </div>
-  </div>
-
   <div class="ugrid">
     <div class="uc" id="card-ol" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'ol')">
       <input type="file" accept=".xlsx,.xls" onchange="hFile(this,'ol')"/>
@@ -248,13 +248,14 @@ td{padding:7px 11px;vertical-align:middle}
     </div>
   </div>
 
-  <div class="cfg">
-    <label>Hoja MB:</label><input id="sheetMB" value="Datos" style="width:80px"/>
-    <label>Col. tareasid:</label><input id="colTid" value="tareasid" style="width:80px"/>
-    <label>Col. fecha:</label><input id="colFec" value="FECHA" style="width:70px"/>
-    <label>Col. hora:</label><input id="colHor" value="HORA" style="width:65px"/>
-    <label>Responsable II:</label><input id="colResp2" value="RESPONSABLE DE LA TAREA II" style="width:180px"/>
-    <span style="font-size:10.5px;color:var(--muted);margin-left:auto">Valores por defecto correctos para tu reporte actual</span>
+  <!-- Inputs ocultos — mantienen los valores por defecto sin mostrarlos -->
+  <div style="display:none">
+    <input id="sheetMB" value="Datos"/>
+    <input id="colTid" value="tareasid"/>
+    <input id="colFec" value="FECHA"/>
+    <input id="colHor" value="HORA"/>
+    <input id="colResp2" value="RESPONSABLE DE LA TAREA II"/>
+    <input id="apiKey" type="password"/>
   </div>
 
   <div class="run-row">
@@ -283,15 +284,6 @@ td{padding:7px 11px;vertical-align:middle}
       <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">⚠ Resp. no coincide</div></div>
       <div class="sc cr"><div class="sn" id="s2">0</div><div class="sl">Solo OL (sin MB)</div></div>
       <div class="sc ck"><div class="sn" id="s6">0</div><div class="sl">✔ Verificados</div></div>
-    </div>
-
-    <!-- AI -->
-    <div class="ai-area">
-      <div class="ai-ctrl">
-        <input type="password" id="apiKey" class="api-inp" placeholder="API Key Anthropic (sk-ant-...) — opcional"/>
-        <button class="btn btn-gold btn-sm" id="btnAI" onclick="analizarIA()" disabled>✦ Análisis IA</button>
-      </div>
-      <div class="ai-box" id="aiBox"><div class="ai-lbl">✦ Análisis IA · Claude</div><div class="ai-txt" id="aiTxt"></div></div>
     </div>
 
     <!-- SUB TABS -->
@@ -753,6 +745,24 @@ function applyF(rows){
 // ═══════════════════════════════════════════════════
 // TABS & RENDER
 // ═══════════════════════════════════════════════════
+function filtrarPorTarjeta(tipo){
+  const sel=document.getElementById('f-tipo');
+  if(!sel)return;
+  // Si ya está activo ese filtro, lo limpia (toggle)
+  const actual=sel.value;
+  sel.value=(actual===tipo)?'':tipo;
+  // Resaltar tarjeta activa
+  ['mb','diff','resp','ol'].forEach(t=>{
+    const ic=document.getElementById('ic-'+t);
+    if(ic)ic.classList.toggle('active-filter',sel.value===t);
+  });
+  render();
+}
+
+function toggleAsunto(el){
+  el.closest('.asunto-cell').classList.toggle('open');
+}
+
 function toggleLeyenda(){
   const box=document.getElementById('leyendaBox');
   const btn=document.getElementById('tab-leyenda');
@@ -785,16 +795,13 @@ function renderInco(wrap){
   const fechDi=inco.filter(r=>r.diffs?.some(d=>d.c!=='Responsable'));
 
   let html=`<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--card)">
-    <div style="background:#EBF4FF;border-left:4px solid var(--blue);border-radius:0 6px 6px 0;padding:8px 14px;margin-bottom:12px;font-size:11.5px;color:var(--blue)">
-      💡 <b>Nota:</b> Usando la macro con <code>FILTRO_IDs</code> de MyBig, los casos críticos son: <b>Sin evento en Outlook</b> (diligencia en MB sin cita agendada), <b>Fecha/Hora diferente</b> y <b>Responsable no coincide</b>. "Solo OL" solo aparece si usas la macro sin filtro.
-    </div>
     <div class="icards">
-      <div class="ic icb"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">🔵 Sin evento en Outlook</div><div class="ic-d">En MyBig pero sin cita agendada — revisar urgente</div></div></div>
-      <div class="ic ica"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">🟡 Fecha / Hora diferente</div><div class="ic-d">Dato desactualizado en uno de los sistemas</div></div></div>
-      <div class="ic icp"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">🟣 Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable en MyBig</div></div></div>
-      <div class="ic icr" style="opacity:.6" title="Solo aparece si usas la macro sin FILTRO_IDs"><div class="ic-n">${res.filter(r=>r.tipo===T.OL).length}</div><div><div class="ic-l">🔴 Solo Outlook</div><div class="ic-d">tareasid no existe en MyBig</div></div></div>
+      <div class="ic icb" id="ic-mb" onclick="filtrarPorTarjeta('mb')" title="Clic para filtrar"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">🔵 Sin evento en Outlook</div><div class="ic-d">En MyBig pero sin cita agendada</div></div></div>
+      <div class="ic ica" id="ic-diff" onclick="filtrarPorTarjeta('diff')" title="Clic para filtrar"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">🟡 Fecha / Hora diferente</div><div class="ic-d">Dato desactualizado en uno de los sistemas</div></div></div>
+      <div class="ic icp" id="ic-resp" onclick="filtrarPorTarjeta('resp')" title="Clic para filtrar"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">🟣 Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable en MyBig</div></div></div>
+      <div class="ic icr" id="ic-ol" onclick="filtrarPorTarjeta('ol')" style="opacity:.6" title="Clic para filtrar"><div class="ic-n">${res.filter(r=>r.tipo===T.OL).length}</div><div><div class="ic-l">🔴 Solo Outlook</div><div class="ic-d">tareasid no existe en MyBig</div></div></div>
     </div>
-    <p style="font-size:11px;color:var(--muted)">Vista lado a lado — marca ✓ cada fila cuando la revisas</p>
+    <p style="font-size:11px;color:var(--muted)">Haz clic en una tarjeta para filtrar · marca ✓ cada fila revisada</p>
   </div>`;
 
   if(!rows.length){
@@ -831,13 +838,17 @@ function renderInco(wrap){
     const oFec=r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'';
     const oHor=r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'';
     const oInics=exIniciales(asunto).join(' & ')||'—';
-    const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,3).join(' / ').slice(0,120);
+    const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,3).join(' / ').slice(0,110);
+    const asuntoFull=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'');
 
     const mCli=r.mb?String(r.mb[C.cli]||''):'';
     const mTarea=r.mb?String(r.mb[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').slice(0,65):'';
     const mFec=r.mb?nFec(r.mb[C.fecha]):'';
     const mHor=r.mb?nHor(r.mb[C.hora]):'';
     const mResp=r.mb?String(r.mb[C.resp]||''):'';
+    const mResp2=r.mb?String(r.mb[document.getElementById('colResp2').value]||r.mb['RESPONSABLE DE LA TAREA II']||''):'';
+    // Mostrar ambos responsables si hay dos
+    const mRespDisplay=mResp+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
 
     const fd=r.diffs?.some(d=>d.c==='Fecha');
     const hd=r.diffs?.some(d=>d.c==='Hora');
@@ -856,12 +867,12 @@ function renderInco(wrap){
       return`<span class="tid" title="${nombre}" style="cursor:help;margin-right:2px">${cod}</span>`;
     }).join('');
 
-    // Diffs column — con nombres reales del diccionario
+    // Columna diferencias
     let difHtml='';
     if(r.tipo===T.OL){
-      difHtml=`<span style="color:var(--red);font-size:11px">tareasid <b>#${r.tid}</b><br>No existe en MyBig</span>`;
+      difHtml=`<span style="color:var(--red);font-size:11px">No existe en MyBig</span>`;
     } else if(r.tipo===T.MB){
-      difHtml=`<span style="color:var(--blue);font-size:11px">tareasid <b>#${r.tid}</b><br>Sin evento en Outlook</span>`;
+      difHtml=`<span style="color:var(--blue);font-size:11px">Sin evento en Outlook</span>`;
     } else {
       difHtml=r.diffs.map(d=>{
         if(d.c==='Responsable'){
@@ -869,11 +880,7 @@ function renderInco(wrap){
           const codMB1=codDeNombre(d.r1),codMB2=codDeNombre(d.r2);
           const mbPart1=codMB1?`<b>${codMB1}</b> (${d.r1})`:d.r1;
           const mbPart2=codMB2&&d.r2&&d.r2!=='-'?` / <b>${codMB2}</b> (${d.r2})`:'';
-          return`<div style="font-size:10.5px;margin:2px 0;line-height:1.5">
-            <b>Resp.:</b><br>
-            OL: <span style="color:var(--navy);font-weight:700">${nombresOL}</span><br>
-            MB: <span class="dv">${mbPart1}${mbPart2}</span>
-          </div>`;
+          return`<div style="font-size:10.5px;margin:2px 0;line-height:1.5"><b>Resp.:</b><br>OL: <span style="color:var(--navy);font-weight:700">${nombresOL}</span><br>MB: <span class="dv">${mbPart1}${mbPart2}</span></div>`;
         }
         return`<div style="font-size:10.5px;margin:2px 0"><b>${d.c}:</b> <span style="color:var(--navy)">${d.ol}</span> ≠ <span class="dv">${d.mb}</span></div>`;
       }).join('');
@@ -891,15 +898,18 @@ function renderInco(wrap){
       </td>
       <td>${pillHtml}</td>
       <td><span class="tid">#${r.tid||'—'}</span></td>
-      <td><span class="trunc" title="${esc(asunto)}" style="max-width:320px">${esc(asuntoCorto)||'<span class="na">sin asunto</span>'}</span></td>
+      <td class="asunto-cell">
+        <span class="trunc" onclick="toggleAsunto(this)" title="Clic para expandir">${esc(asuntoCorto)||'<span class="na">sin asunto</span>'}</span>
+        <span class="asunto-expanded">${esc(asuntoFull)}</span>
+      </td>
       <td>${oFec?`<span${fd?' class="dv"':''}>${oFec}</span>`:'<span class="na">—</span>'}</td>
       <td>${oHor?`<span${hd?' class="dv"':''}>${oHor}</span>`:'<span class="na">—</span>'}</td>
       <td style="font-weight:700;color:var(--navy)">${inicsHtml}</td>
       <td>${mCli||'<span class="na">—</span>'}</td>
-      <td><span class="trunc" title="${esc(mTarea)}">${esc(mTarea)||'<span class="na">—</span>'}</span></td>
+      <td><span class="trunc" title="${esc(String(r.mb?r.mb[C.tarea]||'':''))}">${esc(mTarea)||'<span class="na">—</span>'}</span></td>
       <td>${mFec?`<span${fd?' class="dv"':''}>${mFec}</span>`:'<span class="na">—</span>'}</td>
       <td>${mHor?`<span${hd?' class="dv"':''}>${mHor}</span>`:'<span class="na">—</span>'}</td>
-      <td>${mResp?`<span${rd?' class="dv"':''}>${mResp}</span>`:'<span class="na">—</span>'}</td>
+      <td>${mResp?`<span${rd?' class="dv"':''}>${mRespDisplay}</span>`:'<span class="na">—</span>'}</td>
       <td>${difHtml}</td>
     </tr>`;
   });
