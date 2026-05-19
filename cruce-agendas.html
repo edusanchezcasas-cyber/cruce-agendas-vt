@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Cruce de Agendas · Vinatea & Toyama</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#1F3864;--navy2:#162b52;--navy3:#0d1c38;
+  --gold:#C9A84C;--red:#C0392B;--green:#1A7A4A;
+  --amber:#D4730A;--purple:#6B3FA0;--blue:#1549A0;
+  --bg:#F4F6FA;--card:#fff;--border:#D8DEE9;
+  --text:#1a2540;--muted:#6B7A99;
+  --ok-bg:#E8F5EE;--err-bg:#FDECEA;--warn-bg:#FEF3E2;--info-bg:#F0EBF8;--mb-bg:#EBF4FF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* ─ HEADER ─ */
+header{background:var(--navy);color:#fff;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:62px;box-shadow:0 2px 14px rgba(0,0,0,.28)}
+.logo{display:flex;align-items:center;gap:12px}
+.lb{width:34px;height:34px;background:var(--gold);border-radius:6px;display:grid;place-items:center;font-family:'DM Serif Display',serif;font-size:14px;font-weight:700;color:var(--navy)}
+.lt{display:flex;flex-direction:column;line-height:1.15}
+.lf{font-family:'DM Serif Display',serif;font-size:14px}
+.ls{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase}
+.ht{font-family:'DM Serif Display',serif;font-size:17px;opacity:.9}
+.hp{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 11px;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.6px;text-transform:uppercase}
+/* ─ NAV TABS (top level) ─ */
+.main-nav{background:var(--navy2);display:flex;gap:0}
+.mnav{padding:10px 22px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border:none;background:transparent;font-family:inherit;border-bottom:3px solid transparent;transition:all .15s}
+.mnav:hover{color:rgba(255,255,255,.85)}
+.mnav.active{color:#fff;border-bottom-color:var(--gold)}
+/* ─ MAIN ─ */
+main{max-width:1280px;margin:0 auto;padding:24px 20px}
+/* ─ PANELS ─ */
+.panel{display:none}.panel.active{display:block}
+/* ─ GUIDE ─ */
+.guide{background:var(--navy);color:#fff;border-radius:10px;padding:18px 24px;margin-bottom:20px;position:relative;overflow:hidden}
+.guide::after{content:'';position:absolute;right:-20px;top:-20px;width:110px;height:110px;background:rgba(201,168,76,.1);border-radius:50%}
+.guide h3{font-family:'DM Serif Display',serif;font-size:14px;margin-bottom:11px}
+.gsteps{display:flex;gap:16px;flex-wrap:wrap}
+.gstep{display:flex;gap:8px;flex:1;min-width:160px}
+.gsn{background:rgba(201,168,76,.25);color:var(--gold);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+.gst{font-size:11.5px;color:rgba(255,255,255,.75);line-height:1.5}
+.gst strong{color:#fff;display:block;margin-bottom:1px}
+/* ─ UPLOAD ─ */
+.ugrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+@media(max-width:600px){.ugrid{grid-template-columns:1fr}}
+.uc{background:var(--card);border:2px dashed var(--border);border-radius:10px;padding:22px 18px;text-align:center;cursor:pointer;transition:all .16s;position:relative}
+.uc:hover,.uc.drag{border-color:var(--navy);background:#EEF2FA}
+.uc.loaded{border-style:solid;border-color:var(--green);background:#F0FAF5}
+.uc h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.uc p{font-size:11px;color:var(--muted)}
+.uc input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ubi{font-size:26px;margin-bottom:8px}
+.ubadge{display:inline-flex;align-items:center;gap:4px;background:var(--ok-bg);color:var(--green);border-radius:20px;padding:2px 10px;font-size:10.5px;font-weight:600;margin-top:6px}
+/* ─ CFG ─ */
+.cfg{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:18px;font-size:11.5px}
+.cfg label{color:var(--muted);font-weight:500}
+.cfg input{border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:inherit;color:var(--text);background:var(--bg)}
+/* ─ BUTTONS ─ */
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:7px;padding:10px 24px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .16s}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover:not(:disabled){background:var(--navy2);box-shadow:0 3px 12px rgba(31,56,100,.3);transform:translateY(-1px)}
+.btn-gold{background:var(--gold);color:var(--navy)}.btn-gold:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px)}
+.btn-out{background:transparent;color:var(--navy);border:1.5px solid var(--navy);padding:7px 15px;font-size:11.5px}.btn-out:hover{background:var(--navy);color:#fff}
+.btn-green{background:var(--green);color:#fff;padding:7px 15px;font-size:11.5px}.btn-green:hover{filter:brightness(1.1)}
+.btn-sm{padding:6px 14px;font-size:11.5px}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.run-row{text-align:center;margin-bottom:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+/* ─ LOADING ─ */
+#loading{display:none;text-align:center;padding:48px}
+.spin{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 14px}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* ─ RESULTS ─ */
+#results{display:none}
+.rhead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.rhead h2{font-family:'DM Serif Display',serif;font-size:19px;color:var(--navy)}
+.ract{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rpill{font-size:11px;color:var(--muted);background:var(--card);padding:3px 10px;border-radius:5px;border:1px solid var(--border)}
+/* ─ STATS ─ */
+.stats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:500px){.stats{grid-template-columns:1fr 1fr}}
+.sc{background:var(--card);border-radius:9px;padding:14px 16px;border:1px solid var(--border)}
+.sc::before{content:'';display:block;width:100%;height:3px;border-radius:2px;margin-bottom:8px}
+.sc.cn::before{background:var(--navy)}.sc.cg::before{background:var(--green)}.sc.cr::before{background:var(--red)}
+.sc.cb::before{background:var(--blue)}.sc.ca::before{background:var(--amber)}.sc.cp::before{background:var(--purple)}.sc.ck::before{background:var(--green)}
+.sn{font-family:'DM Serif Display',serif;font-size:26px;line-height:1}
+.sc.cn .sn{color:var(--navy)}.sc.cg .sn{color:var(--green)}.sc.cr .sn{color:var(--red)}
+.sc.cb .sn{color:var(--blue)}.sc.ca .sn{color:var(--amber)}.sc.cp .sn{color:var(--purple)}.sc.ck .sn{color:var(--green)}
+.sl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+/* ─ AI ─ */
+.ai-area{margin-bottom:18px}
+.ai-ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.api-inp{border:1px solid var(--border);border-radius:6px;padding:6px 11px;font-size:12px;font-family:inherit;flex:1;min-width:220px}
+.ai-box{background:var(--navy3);color:#fff;border-radius:9px;padding:18px 22px;display:none}
+.ai-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold);margin-bottom:6px;font-weight:600}
+.ai-txt{font-size:12.5px;line-height:1.8;color:rgba(255,255,255,.83);white-space:pre-wrap}
+.ai-sp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:5px}
+/* ─ SUB TABS ─ */
+.tabbar{display:flex;gap:2px;flex-wrap:wrap;background:var(--card);border-radius:9px 9px 0 0;border:1px solid var(--border);border-bottom:none;padding:7px 10px 0}
+.tab{padding:7px 14px;border-radius:5px 5px 0 0;font-size:11.5px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;display:flex;align-items:center;gap:4px;border-bottom:3px solid transparent;transition:all .12s;white-space:nowrap}
+.tab:hover{color:var(--text)}.tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.tbadge{border-radius:8px;padding:1px 6px;font-size:9.5px;font-weight:700;background:var(--bg);color:var(--muted)}
+.tab.active .tbr{background:var(--err-bg);color:var(--red)}.tab.active .tbg{background:var(--ok-bg);color:var(--green)}
+.tab.active .tba{background:var(--warn-bg);color:var(--amber)}.tab.active .tbb{background:var(--mb-bg);color:var(--blue)}
+.tab.active .tbp{background:var(--info-bg);color:var(--purple)}.tab.active .tbx{background:var(--border);color:var(--muted)}
+/* ─ FILTERS ─ */
+.filters{background:var(--card);border:1px solid var(--border);border-top:none;padding:9px 13px;display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:2px}
+.fg label{font-size:10px;color:var(--muted);font-weight:500}
+.fg select,.fg input{border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:inherit;color:var(--text);background:var(--bg)}
+.fclear{margin-left:auto;font-size:10.5px;color:var(--muted);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit;align-self:flex-end}
+.fclear:hover{color:var(--red)}
+/* ─ TABLE ─ */
+.twrap{background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 9px 9px;overflow:auto;max-height:520px}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+thead{position:sticky;top:0;z-index:3}
+.th-group-ol{background:#162b52;color:#fff;text-align:center;padding:5px;font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;border-bottom:2px solid var(--gold)}
+.th-group-mb{background:#0d3060;color:#fff;text-align:center;padding:5px;font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;border-bottom:2px solid #5B9BD5}
+.th-std{background:var(--navy);color:#fff;padding:7px 11px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;vertical-align:middle}
+.th-ol{background:#162b52;color:#fff;padding:6px 11px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.th-mb{background:#0d3060;color:#fff;padding:6px 11px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .08s}
+tbody tr:hover{filter:brightness(.97)}
+td{padding:7px 11px;vertical-align:middle}
+.pill{display:inline-flex;align-items:center;gap:3px;border-radius:9px;padding:2px 8px;font-size:10px;font-weight:600;white-space:nowrap}
+.pr{background:var(--err-bg);color:var(--red)}.pg{background:var(--ok-bg);color:var(--green)}
+.pa{background:var(--warn-bg);color:var(--amber)}.pb{background:var(--mb-bg);color:var(--blue)}
+.pp{background:var(--info-bg);color:var(--purple)}.px{background:var(--border);color:var(--muted)}
+.tid{font-family:monospace;font-size:10.5px;background:#EEF2FA;padding:2px 5px;border-radius:4px;color:var(--navy)}
+.dv{background:#FFF3CD;font-weight:700;color:#7A4E00;border-radius:3px;padding:1px 4px}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;display:block}
+.na{color:var(--muted);font-style:italic;font-size:10.5px}
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.empty .ei{font-size:28px;margin-bottom:8px}
+/* ─ CHECK CELL ─ */
+.chk-btn{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0}
+.chk-btn:hover{border-color:var(--green);background:var(--ok-bg)}
+.chk-btn.checked{border-color:var(--green);background:var(--green);color:#fff}
+.chk-info{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.3}
+.chk-cell{display:flex;flex-direction:column;align-items:center;min-width:50px}
+/* ─ INCO CARDS ─ */
+.icards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:9px;margin-bottom:12px}
+.ic{border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.ic.icr{background:var(--err-bg)}.ic.icb{background:var(--mb-bg)}.ic.ica{background:var(--warn-bg)}.ic.icp{background:var(--info-bg)}.ic.icx{background:var(--bg)}
+.ic-n{font-family:'DM Serif Display',serif;font-size:26px;line-height:1}
+.ic.icr .ic-n{color:var(--red)}.ic.icb .ic-n{color:var(--blue)}.ic.ica .ic-n{color:var(--amber)}.ic.icp .ic-n{color:var(--purple)}.ic.icx .ic-n{color:var(--muted)}
+.ic-l{font-size:11.5px;font-weight:600;margin-bottom:2px}.ic-d{font-size:10.5px;color:var(--muted)}
+/* ─ CONTROL PANEL ─ */
+.ctrl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.ctrl-head h3{font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy)}
+.ctrl-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrl-list{display:flex;flex-direction:column;gap:10px}
+.ctrl-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px;transition:all .15s}
+.ctrl-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.ctrl-card.selected{border-color:var(--navy);border-width:2px}
+.ctrl-card-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;cursor:pointer}
+.ctrl-meta{display:flex;flex-direction:column;gap:3px}
+.ctrl-date{font-weight:700;font-size:13px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.ctrl-sub{font-size:11px;color:var(--muted)}
+.ctrl-pills{display:flex;gap:5px;flex-wrap:wrap}
+.ctrl-actions{display:flex;gap:6px;align-items:center}
+.ctrl-body{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;display:none}
+.ctrl-body.open{display:block}
+/* Status badge */
+.status-badge{display:inline-flex;align-items:center;gap:4px;border-radius:12px;padding:3px 10px;font-size:10.5px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.status-pendiente{background:#FEF3E2;color:#D4730A}
+.status-revision{background:#EBF4FF;color:#1549A0}
+.status-cerrado{background:#E8F5EE;color:#1A7A4A}
+/* Notes */
+.ctrl-notes{width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;min-height:60px;background:var(--bg);color:var(--text);margin-top:8px}
+.ctrl-notes:focus{outline:2px solid var(--navy);border-color:transparent}
+.ctrl-section{margin-bottom:10px}
+.ctrl-section-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600;margin-bottom:5px}
+/* Tabs del detalle */
+.dtab-bar{display:flex;gap:2px;margin-bottom:0;border-bottom:2px solid var(--border)}
+.dtab{padding:6px 14px;font-size:11.5px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .12s}
+.dtab:hover{color:var(--text)}
+.dtab.active{color:var(--navy);border-bottom-color:var(--navy)}
+/* Progress */
+.prog-bar-wrap{background:var(--bg);border-radius:20px;height:7px;margin:5px 0 3px;overflow:hidden;min-width:140px}
+.prog-bar{background:var(--green);height:100%;border-radius:20px;transition:width .3s}
+.prog-label{font-size:10.5px;color:var(--muted)}
+.empty-ctrl{text-align:center;padding:48px;color:var(--muted)}
+.empty-ctrl .ei{font-size:40px;margin-bottom:12px}
+/* GitHub modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:12px;padding:28px 32px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;position:relative}
+.modal h3{font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:16px}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.modal-close:hover{color:var(--text)}
+.step-block{display:flex;gap:12px;margin-bottom:14px}
+.step-num{background:var(--navy);color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.step-txt{font-size:12.5px;line-height:1.6;color:var(--text)}
+.step-txt strong{display:block;margin-bottom:2px;color:var(--navy)}
+.code-block{background:var(--navy3);color:#7FDBCA;border-radius:6px;padding:8px 12px;font-family:monospace;font-size:12px;margin:6px 0;line-height:1.6}
+.tip-box{background:var(--ok-bg);border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:10px 14px;font-size:11.5px;color:var(--green);margin-top:12px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="lb">V&T</div>
+    <div class="lt"><span class="lf">Vinatea &amp; Toyama</span><span class="ls">Centro de Información · CID</span></div>
+  </div>
+  <div class="ht">Cruce de Agendas</div>
+  <div class="hp">Outlook ↔ MyBig</div>
+</header>
+
+<div class="main-nav">
+  <button class="mnav active" onclick="showPanel('cruce')">⚡ Nuevo Cruce</button>
+  <button class="mnav" onclick="showPanel('control')">📋 Panel de Control</button>
+</div>
+
+<main>
+
+<!-- ══ PANEL: CRUCE ══════════════════════════════════════════ -->
+<div id="panel-cruce" class="panel active">
+
+  <div class="guide">
+    <h3>📋 Flujo semanal</h3>
+    <div class="gsteps">
+      <div class="gstep"><div class="gsn">1</div><div class="gst"><strong>Macro Excel</strong>Alt+F11 → importar <em>ExportarAgendaOL.bas</em> → ejecutar. Genera hoja <em>Agenda_OL</em>.</div></div>
+      <div class="gstep"><div class="gsn">2</div><div class="gst"><strong>Reporte MyBig</strong>Descarga el Excel semanal de diligencias (hoja <em>Datos</em>).</div></div>
+      <div class="gstep"><div class="gsn">3</div><div class="gst"><strong>Cruzar aquí</strong>Sube ambos archivos y ejecuta. La plataforma detecta todas las inconsistencias automáticamente.</div></div>
+      <div class="gstep"><div class="gsn">4</div><div class="gst"><strong>Verificar y guardar</strong>Marca cada fila como revisada, guarda el cruce y genera el reporte para tus jefes.</div></div>
+    </div>
+  </div>
+
+  <div class="ugrid">
+    <div class="uc" id="card-ol" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'ol')">
+      <input type="file" accept=".xlsx,.xls" onchange="hFile(this,'ol')"/>
+      <div class="ubi" id="icon-ol">📅</div>
+      <h4>Agenda Outlook</h4>
+      <p>Excel de la macro <em>ExportarAgendaOL</em><br/>(hoja <em>Agenda_OL</em>)</p>
+      <div id="badge-ol" class="ubadge" style="display:none">✔ <span id="fname-ol"></span></div>
+    </div>
+    <div class="uc" id="card-mb" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event,'mb')">
+      <input type="file" accept=".xlsx,.xls" onchange="hFile(this,'mb')"/>
+      <div class="ubi" id="icon-mb">📊</div>
+      <h4>Reporte MyBig</h4>
+      <p>Excel semanal de diligencias<br/>(hoja <em>Datos</em>)</p>
+      <div id="badge-mb" class="ubadge" style="display:none">✔ <span id="fname-mb"></span></div>
+    </div>
+  </div>
+
+  <div class="cfg">
+    <label>Hoja MB:</label><input id="sheetMB" value="Datos" style="width:80px"/>
+    <label>Col. tareasid:</label><input id="colTid" value="tareasid" style="width:80px"/>
+    <label>Col. fecha:</label><input id="colFec" value="FECHA" style="width:70px"/>
+    <label>Col. hora:</label><input id="colHor" value="HORA" style="width:65px"/>
+    <label>Responsable II:</label><input id="colResp2" value="RESPONSABLE DE LA TAREA II" style="width:180px"/>
+    <span style="font-size:10.5px;color:var(--muted);margin-left:auto">Valores por defecto correctos para tu reporte actual</span>
+  </div>
+
+  <div class="run-row">
+    <button class="btn btn-navy" id="btnRun" onclick="ejecutar()" disabled>⚡ Ejecutar Cruce</button>
+  </div>
+
+  <div id="loading"><div class="spin"></div><p style="color:var(--muted)">Procesando y cruzando datos…</p></div>
+
+  <div id="results">
+    <div class="rhead">
+      <h2>Resultados del cruce</h2>
+      <div class="ract">
+        <span class="rpill" id="rangoPill">—</span>
+        <button class="btn btn-out btn-sm" onclick="exportarExcel()">⬇ Excel</button>
+        <button class="btn btn-green btn-sm" id="btnGuardar" onclick="guardarCruce()">💾 Guardar Cruce</button>
+        <button class="btn btn-out btn-sm" onclick="exportarReporte()">📄 Reporte para Jefes</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="sc cn"><div class="sn" id="s0">0</div><div class="sl">Total OL</div></div>
+      <div class="sc cg"><div class="sn" id="s1">0</div><div class="sl">Sin inconsistencias</div></div>
+      <div class="sc cr"><div class="sn" id="s2">0</div><div class="sl">Solo Outlook</div></div>
+      <div class="sc cb"><div class="sn" id="s3">0</div><div class="sl">Solo MyBig</div></div>
+      <div class="sc ca"><div class="sn" id="s4">0</div><div class="sl">Fecha/Hora diff.</div></div>
+      <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">Resp. no coincide</div></div>
+      <div class="sc ck"><div class="sn" id="s6">0</div><div class="sl">✔ Verificados</div></div>
+    </div>
+
+    <!-- AI -->
+    <div class="ai-area">
+      <div class="ai-ctrl">
+        <input type="password" id="apiKey" class="api-inp" placeholder="API Key Anthropic (sk-ant-...) — opcional"/>
+        <button class="btn btn-gold btn-sm" id="btnAI" onclick="analizarIA()" disabled>✦ Análisis IA</button>
+      </div>
+      <div class="ai-box" id="aiBox"><div class="ai-lbl">✦ Análisis IA · Claude</div><div class="ai-txt" id="aiTxt"></div></div>
+    </div>
+
+    <!-- SUB TABS -->
+    <div class="tabbar">
+      <button class="tab active" id="tab-inco" onclick="sTab('inco')">⚠ Inconsistencias <span class="tbadge tba" id="tb-inco">0</span></button>
+      <button class="tab" id="tab-ok" onclick="sTab('ok')">🟢 Confirmados <span class="tbadge tbg" id="tb-ok">0</span></button>
+      <button class="tab" id="tab-nc" onclick="sTab('nc')">⚫ Sin código <span class="tbadge tbx" id="tb-nc">0</span></button>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="fg"><label>Supervisor</label><select id="f-sup" onchange="render()"><option value="">Todos</option></select></div>
+      <div class="fg"><label>Responsable</label><select id="f-resp" onchange="render()"><option value="">Todos</option></select></div>
+      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="ol">Solo Outlook</option><option value="mb">Solo MyBig</option><option value="diff">Fecha/Hora diff.</option><option value="resp">Resp. no coincide</option></select></div>
+      <div class="fg"><label>Estado</label><select id="f-est" onchange="render()"><option value="">Todos</option><option value="0">Pendientes</option><option value="1">Verificados</option></select></div>
+      <div class="fg"><label>Desde</label><input type="date" id="f-desde" onchange="render()"/></div>
+      <div class="fg"><label>Hasta</label><input type="date" id="f-hasta" onchange="render()"/></div>
+      <div class="fg"><label>Buscar</label><input type="text" id="f-q" placeholder="cliente, expediente…" oninput="render()" style="width:160px"/></div>
+      <button class="fclear" onclick="clearF()">Limpiar</button>
+    </div>
+
+    <!-- TABLE WRAP -->
+    <div class="twrap" id="tableWrap"></div>
+  </div>
+</div>
+
+<!-- ══ PANEL: CONTROL ════════════════════════════════════════ -->
+<div id="panel-control" class="panel">
+  <div class="ctrl-head">
+    <h3>📋 Historial de cruces guardados</h3>
+    <div class="ctrl-toolbar">
+      <button class="btn btn-navy btn-sm" onclick="showPanel('cruce')">➕ Nuevo cruce</button>
+      <button class="btn btn-out btn-sm" onclick="showGithubModal()">🐙 Subir a GitHub</button>
+      <button class="btn btn-out btn-sm" onclick="exportarTodoExcel()">⬇ Exportar todo</button>
+      <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:1px solid var(--red)" onclick="clearHistory()">🗑 Limpiar</button>
+    </div>
+  </div>
+  <div id="ctrlList"></div>
+</div>
+
+<!-- ══ MODAL: GITHUB ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="ghModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeGithubModal()">✕</button>
+    <h3>🐙 Subir a GitHub Pages</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Una vez en GitHub Pages, toda tu equipo accede desde el navegador — sin instalar nada.</p>
+
+    <div class="step-block">
+      <div class="step-num">1</div>
+      <div class="step-txt"><strong>Descargar el archivo</strong>
+        Descarga <code style="background:var(--bg);padding:1px 5px;border-radius:3px">cruce-agendas.html</code> desde esta plataforma.
+        <button class="btn btn-gold btn-sm" style="margin-top:6px" onclick="closeGithubModal()">⬇ Descargar HTML</button>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">2</div>
+      <div class="step-txt"><strong>Crear repositorio en GitHub</strong>
+        Ve a <a href="https://github.com/new" target="_blank" style="color:var(--navy);font-weight:600">github.com/new</a> y crea un repositorio público con el nombre que prefieras, por ejemplo:
+        <div class="code-block">cruce-agendas-vt</div>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">3</div>
+      <div class="step-txt"><strong>Subir el archivo</strong>
+        Dentro del repositorio creado, haz clic en <em>"Add file → Upload files"</em>, sube el HTML y <strong>renómbralo a <code>index.html</code></strong> antes de subir (o renómbralo en GitHub después).
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">4</div>
+      <div class="step-txt"><strong>Activar GitHub Pages</strong>
+        Ve a <em>Settings → Pages</em> en tu repositorio:<br/>
+        · Source: <code>Deploy from a branch</code><br/>
+        · Branch: <code>main</code> → carpeta <code>/ (root)</code><br/>
+        · Clic en <strong>Save</strong>.
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">5</div>
+      <div class="step-txt"><strong>Tu URL pública quedará así:</strong>
+        <div class="code-block">https://[tu-usuario].github.io/cruce-agendas-vt/</div>
+        Comparte esa URL con tu equipo. Cualquiera puede usarla sin instalar nada.
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">6</div>
+      <div class="step-txt"><strong>Actualizar cuando haya cambios</strong>
+        Solo sube el nuevo <code>index.html</code> al mismo repositorio (drag & drop en GitHub). GitHub Pages se actualiza automáticamente en ~1 minuto.
+      </div>
+    </div>
+
+    <div class="tip-box">
+      ✔ <strong>Nota sobre el historial:</strong> Los cruces guardados viven en el navegador de cada usuario (localStorage). No se sincronizan entre computadoras — cada persona tiene su propio historial local. Para compartir resultados usa el botón <em>📄 Reporte para Jefes</em> que genera un HTML descargable.
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONSTANTS & STATE
+// ═══════════════════════════════════════════════════
+const T={OL:'ol',MB:'mb',DIFF:'diff',OK:'ok',NC:'nc'};
+const C={tid:'tareasid',fecha:'FECHA',hora:'HORA',cli:'CLIENTE',tarea:'TAREA',
+         sup:'SUPERVISOR',resp:'RESPONSABLE DE LA TAREA',
+         exp:'EXP.',estado:'tareaestado'};
+
+let olRows=null,mbRows=null,res=[],curTab='inco',curCruceId=null;
+
+// ═══════════════════════════════════════════════════
+// PANEL NAVIGATION
+// ═══════════════════════════════════════════════════
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.mnav[onclick="showPanel('${id}')"]`).classList.add('active');
+  if(id==='control')renderControlPanel();
+}
+
+// ═══════════════════════════════════════════════════
+// FILE IO
+// ═══════════════════════════════════════════════════
+function hDrop(e,t){e.preventDefault();document.getElementById('card-'+t).classList.remove('drag');if(e.dataTransfer.files[0])pFile(e.dataTransfer.files[0],t)}
+function hFile(inp,t){if(inp.files[0])pFile(inp.files[0],t)}
+function pFile(file,t){
+  document.getElementById('fname-'+t).textContent=file.name;
+  document.getElementById('badge-'+t).style.display='inline-flex';
+  document.getElementById('card-'+t).classList.add('loaded');
+  document.getElementById('icon-'+t).textContent='✅';
+  const sheet=t==='ol'?'Agenda_OL':(document.getElementById('sheetMB').value||'Datos');
+  readXL(file,sheet,rows=>{if(t==='ol')olRows=rows;else mbRows=rows;chkReady();});
+}
+function readXL(file,sheet,cb){
+  const fr=new FileReader();
+  fr.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+    const sn=wb.SheetNames.includes(sheet)?sheet:wb.SheetNames[0];
+    cb(XLSX.utils.sheet_to_json(wb.Sheets[sn],{raw:true,cellDates:true,defval:''}));
+  };
+  fr.readAsArrayBuffer(file);
+}
+function chkReady(){
+  const ok=!!(olRows&&mbRows);
+  document.getElementById('btnRun').disabled=!ok;
+  document.getElementById('btnAI').disabled=!ok;
+}
+
+// ═══════════════════════════════════════════════════
+// DATE / TIME HELPERS
+// ═══════════════════════════════════════════════════
+const _p=n=>String(n).padStart(2,'0');
+function nFec(v){
+  if(!v&&v!==0)return'';
+  if(v instanceof Date){if(isNaN(v))return'';return _p(v.getDate())+'/'+_p(v.getMonth()+1)+'/'+v.getFullYear();}
+  if(typeof v==='number'){
+    try{const d=new Date(Math.round((v-25569)*86400*1000));if(!isNaN(d))return _p(d.getUTCDate())+'/'+_p(d.getUTCMonth()+1)+'/'+d.getUTCFullYear();}catch(e){}return'';
+  }
+  const s=String(v).trim();if(!s)return'';
+  if(/^\d{2}\/\d{2}\/\d{4}$/.test(s))return s;
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4);
+  const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if(m){let p1=parseInt(m[1]),p2=parseInt(m[2]);const yr=m[3].length===2?2000+parseInt(m[3]):parseInt(m[3]);return p2>12?_p(p2)+'/'+_p(p1)+'/'+yr:_p(p1)+'/'+_p(p2)+'/'+yr;}
+  return s.slice(0,10);
+}
+function nHor(v){
+  if(!v&&v!==0)return'';
+  if(typeof v==='number'){const t=Math.round(v*24*60);return _p(Math.floor(t/60)%24)+':'+_p(t%60);}
+  const s=String(v).trim();if(!s)return'';
+  const m=s.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/i);
+  if(m){let h=parseInt(m[1]),mn=parseInt(m[2]);const sf=(m[3]||'').toUpperCase();if(sf==='PM'&&h<12)h+=12;if(sf==='AM'&&h===12)h=0;return _p(h)+':'+_p(mn);}
+  return s.slice(0,5);
+}
+function toISO(s){if(!s||s.length<10)return'';const p=s.split('/');return p.length===3?p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0'):''}
+
+// ═══════════════════════════════════════════════════
+// DICCIONARIO DE INICIALES ↔ NOMBRES (fijo V&T)
+// ═══════════════════════════════════════════════════
+const DICT_INICS={
+  AZL:'Alessandra Zegarra', AHG:'Alfonso Higa',     AHR:'Andres Herles',
+  ATG:'Arturo Trelles',     CCB:'Carlos Ciriaco',   CMP:'Carlos Morales',
+  CLG:'Cynthia Lagos',      DTT:'Daniela Torres',   EMV:'Eduardo Mercado',
+  EAB:'Elyana Arias',       HLJ:'Henrry Lopez',     IGV:'Ivan Gonzalez',
+  JAS:'Jimena Alcorta',     JBA:'Jose Bacalla',     KJM:'Katia Jacinto',
+  LVR:'Luis Vinatea',       MAS:'Magaly Alarcon',   MGE:'Maria Grazzia Espinoza',
+  MAV:'Mariel Abad',        MFM:'Melissa Flores',   MSN:'Milagritos Sueyoshi',
+  NVF:'Nuria Vega',         RMR:'Roberto Matallana',RZA:'Rodrigo Zavala',
+  SPE:'Samuel Paz',         SCC:'Sandra Carrión',   STV:'Sergio Tejada',
+  SMO:'Silvia Maldonado',   KYS:'Sofia Yomond',     SAS:'Sol Aragon',
+  SER:'Solanch Estrella'
+};
+// Inverso: nombre completo → código (normalizado a minúsculas sin tilde para match flexible)
+const DICT_NOMBRE={};
+Object.entries(DICT_INICS).forEach(([cod,nom])=>{
+  DICT_NOMBRE[nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')]=cod;
+});
+
+// Devuelve el código de un nombre (ej: "Samuel Paz" → "SPE")
+// Busca primero match exacto, luego por primer apellido+nombre
+function codDeNombre(nombre){
+  if(!nombre)return'';
+  const norm=nombre.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(DICT_NOMBRE[norm])return DICT_NOMBRE[norm];
+  // Busca si el nombre contiene algún nombre del diccionario
+  for(const [n,cod] of Object.entries(DICT_NOMBRE)){
+    if(norm.includes(n)||n.includes(norm.split(' ')[0]))return cod;
+  }
+  return'';
+}
+
+// Extrae códigos del asunto Outlook: "RZA: DILIG..." → ["RZA"]
+//                                    "SPE & EMV: DILIG..." → ["SPE","EMV"]
+function exIniciales(asunto){
+  if(!asunto)return[];
+  const m=String(asunto).match(/^([A-ZÁÉÍÓÚÑ]{2,}(?:\s*[&\/]\s*[A-ZÁÉÍÓÚÑ]{2,})*)\s*[:|-]/i);
+  if(!m)return[];
+  return m[1].split(/\s*[&\/]\s*/).map(s=>s.trim().toUpperCase()).filter(s=>s.length>=2&&DICT_INICS[s]);
+}
+
+// Nombre completo a partir del código
+function nombreDeInic(cod){return DICT_INICS[cod]||cod;}
+
+// Verifica si las iniciales del asunto coinciden con algún responsable de MyBig
+function matchResp(olInics,r1,r2){
+  if(!olInics||!olInics.length)return true;
+  const codsMyBig=[codDeNombre(r1),codDeNombre(r2)].filter(Boolean);
+  return olInics.some(ini=>codsMyBig.includes(ini));
+}
+
+// Genera tooltip con nombre completo para un código
+function tooltipInic(cod){
+  const n=DICT_INICS[cod];
+  return n?`title="${n}"`:'';
+}
+
+// ═══════════════════════════════════════════════════
+// CHECKS (localStorage)
+// ═══════════════════════════════════════════════════
+function getChecks(cruceId){try{return JSON.parse(localStorage.getItem('vt_chk_'+cruceId)||'{}')}catch(e){return{}}}
+function setCheck(cruceId,tid,val){const c=getChecks(cruceId);if(val===null){delete c[tid];}else{c[tid]=val;}localStorage.setItem('vt_chk_'+cruceId,JSON.stringify(c));}
+function toggleCheck(tid){
+  if(!curCruceId)curCruceId='tmp_'+Date.now();
+  const c=getChecks(curCruceId);
+  if(c[tid]){delete c[tid];}
+  else{c[tid]={ts:new Date().toLocaleString('es-PE'),by:'CID'};}
+  localStorage.setItem('vt_chk_'+curCruceId,JSON.stringify(c));
+  updateCheckUI(tid,c[tid]);
+  updateVerifCounter();
+}
+function updateCheckUI(tid,val){
+  const btn=document.querySelector(`.chk-btn[data-tid="${tid}"]`);
+  const info=document.querySelector(`.chk-info[data-tid="${tid}"]`);
+  if(!btn)return;
+  if(val){btn.classList.add('checked');btn.textContent='✓';if(info)info.textContent=val.ts.split(',')[0];}
+  else{btn.classList.remove('checked');btn.textContent='';if(info)info.textContent='';}
+}
+function updateVerifCounter(){
+  const checks=getChecks(curCruceId||'tmp');
+  document.getElementById('s6').textContent=Object.keys(checks).length;
+}
+function exTid(s){if(!s)return'';const m=[...String(s).matchAll(/#(\d{4,10})/g)];return m.length?m[m.length-1][1]:'';}
+
+// ═══════════════════════════════════════════════════
+// CRUCE
+// ═══════════════════════════════════════════════════
+function ejecutar(){
+  document.getElementById('loading').style.display='block';
+  document.getElementById('results').style.display='none';
+  curCruceId='tmp_'+Date.now();
+  setTimeout(()=>{try{_run()}catch(e){alert('Error: '+e.message)}
+    document.getElementById('loading').style.display='none';
+    document.getElementById('results').style.display='block';
+  },150);
+}
+function _run(){
+  const cTid=document.getElementById('colTid').value||'tareasid';
+  const cFec=document.getElementById('colFec').value||'FECHA';
+  const cHor=document.getElementById('colHor').value||'HORA';
+  const cR2 =document.getElementById('colResp2').value||'RESPONSABLE DE LA TAREA II';
+
+  const mbIdx={};
+  mbRows.forEach(r=>{const t=String(r[cTid]||'').trim();if(t)mbIdx[t]=r;});
+  const olIdx={};
+  res=[];
+  const fechas=[];
+
+  olRows.forEach(row=>{
+    const tid=String(row['tareasid']||'').trim()||exTid(row['Asunto']||row['Subject']||'');
+    const fec=nFec(row['Fecha']||row['Start Date']||'');
+    const hor=nHor(row['HoraInicio']||row['Start Time']||'');
+    if(fec){const d=new Date(toISO(fec));if(!isNaN(d))fechas.push(d);}
+
+    if(!tid){res.push({tipo:T.NC,tid:'',ol:row,mb:null,diffs:[]});return;}
+    olIdx[tid]=row;
+    const mb=mbIdx[tid];
+    if(!mb){res.push({tipo:T.OL,tid,ol:row,mb:null,diffs:[]});return;}
+
+    const diffs=[];
+    const mF=nFec(mb[cFec]),mH=nHor(mb[cHor]);
+    if(mF&&fec&&mF!==fec)diffs.push({c:'Fecha',ol:fec,mb:mF});
+    if(mH&&hor&&mH!==hor)diffs.push({c:'Hora',ol:hor,mb:mH});
+
+    // Responsable
+    const asunto=String(row['Asunto']||row['Subject']||'');
+    const olInics=exIniciales(asunto);
+    if(olInics.length>0){
+      const r1=String(mb[C.resp]||''),r2=String(mb[cR2]||'');
+      if(!matchResp(olInics,r1,r2)){
+        diffs.push({c:'Responsable',ol:olInics.join(' & '),mb:r1+(r2&&r2!=='-'?' / '+r2:''),olInics,r1,r2});
+      }
+    }
+    res.push({tipo:diffs.length?T.DIFF:T.OK,tid,ol:row,mb,diffs});
+  });
+
+  mbRows.forEach(r=>{
+    const t=String(r[cTid]||'').trim();
+    if(t&&!olIdx[t])res.push({tipo:T.MB,tid:t,ol:null,mb:r,diffs:[]});
+  });
+
+  // Stats
+  const cnt=t=>res.filter(r=>r.tipo===t).length;
+  const cntResp=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
+  document.getElementById('s0').textContent=olRows.length;
+  document.getElementById('s1').textContent=cnt(T.OK);
+  document.getElementById('s2').textContent=cnt(T.OL);
+  document.getElementById('s3').textContent=cnt(T.MB);
+  document.getElementById('s4').textContent=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable')).length;
+  document.getElementById('s5').textContent=cntResp;
+  document.getElementById('s6').textContent=0;
+
+  const ti=cnt(T.OL)+cnt(T.MB)+cnt(T.DIFF);
+  document.getElementById('tb-inco').textContent=ti;
+  document.getElementById('tb-ok').textContent=cnt(T.OK);
+  document.getElementById('tb-nc').textContent=cnt(T.NC);
+
+  if(fechas.length){
+    const mn=new Date(Math.min(...fechas.map(f=>f.getTime()))),mx=new Date(Math.max(...fechas.map(f=>f.getTime())));
+    document.getElementById('rangoPill').textContent=nFec(mn)+' → '+nFec(mx);
+  }
+  fillFilters();
+  sTab('inco');
+  document.getElementById('aiBox').style.display='none';
+}
+
+// ═══════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════
+function fillFilters(){
+  const sups=new Set(),resps=new Set();
+  res.forEach(r=>{if(r.mb){if(r.mb[C.sup])sups.add(r.mb[C.sup]);if(r.mb[C.resp])resps.add(r.mb[C.resp]);}});
+  const ss=document.getElementById('f-sup'),sr=document.getElementById('f-resp');
+  ss.innerHTML='<option value="">Todos</option>';sr.innerHTML='<option value="">Todos</option>';
+  [...sups].sort().forEach(s=>{ss.innerHTML+=`<option>${s}</option>`;});
+  [...resps].sort().forEach(s=>{sr.innerHTML+=`<option>${s}</option>`;});
+}
+function clearF(){['f-sup','f-resp','f-tipo','f-est','f-desde','f-hasta'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-q').value='';render();}
+function applyF(rows){
+  const sup=document.getElementById('f-sup').value,resp=document.getElementById('f-resp').value;
+  const tipo=document.getElementById('f-tipo').value,est=document.getElementById('f-est').value;
+  const desde=document.getElementById('f-desde').value,hasta=document.getElementById('f-hasta').value;
+  const q=document.getElementById('f-q').value.toLowerCase();
+  const checks=getChecks(curCruceId||'tmp');
+  return rows.filter(r=>{
+    if(sup&&(!r.mb||r.mb[C.sup]!==sup))return false;
+    if(resp&&(!r.mb||r.mb[C.resp]!==resp))return false;
+    if(tipo){
+      if(tipo==='resp'&&!(r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')))return false;
+      if(tipo!=='resp'&&r.tipo!==tipo)return false;
+    }
+    if(est==='0'&&checks[r.tid])return false;
+    if(est==='1'&&!checks[r.tid])return false;
+    if(desde||hasta){
+      const src=r.ol?(r.ol['Fecha']||r.ol['Start Date']||''):(r.mb?r.mb[C.fecha]:'');
+      const iso=toISO(nFec(src));
+      if(desde&&iso<desde)return false;
+      if(hasta&&iso>hasta)return false;
+    }
+    if(q&&!JSON.stringify(r).toLowerCase().includes(q))return false;
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// TABS & RENDER
+// ═══════════════════════════════════════════════════
+function sTab(t){
+  curTab=t;
+  ['inco','ok','nc'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
+  render();
+}
+function render(){
+  const wrap=document.getElementById('tableWrap');
+  if(curTab==='inco'){renderInco(wrap);return;}
+  if(curTab==='ok'){renderSimple(wrap,applyF(res.filter(r=>r.tipo===T.OK)),'ok');return;}
+  renderSimple(wrap,applyF(res.filter(r=>r.tipo===T.NC)),'nc');
+}
+
+// ── INCO TABLE (lado a lado) ──────────────────────────────
+function renderInco(wrap){
+  const inco=res.filter(r=>[T.OL,T.MB,T.DIFF].includes(r.tipo));
+  const rows=applyF(inco);
+  const checks=getChecks(curCruceId||'tmp');
+
+  const respDi=inco.filter(r=>r.diffs?.some(d=>d.c==='Responsable'));
+  const fechDi=inco.filter(r=>r.diffs?.some(d=>d.c!=='Responsable'));
+
+  let html=`<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--card)">
+    <div class="icards">
+      <div class="ic icr"><div class="ic-n">${res.filter(r=>r.tipo===T.OL).length}</div><div><div class="ic-l">Solo Outlook</div><div class="ic-d">Sin registro en MyBig</div></div></div>
+      <div class="ic icb"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">Solo MyBig</div><div class="ic-d">Sin evento en Outlook</div></div></div>
+      <div class="ic ica"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">Fecha / Hora diff.</div><div class="ic-d">No coinciden entre sistemas</div></div></div>
+      <div class="ic icp"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable MB</div></div></div>
+    </div>
+    <p style="font-size:11px;color:var(--muted)">Vista lado a lado — marca ✓ cada fila cuando la revisas</p>
+  </div>`;
+
+  if(!rows.length){
+    html+=`<div class="empty"><div class="ei">🎉</div><p>Sin inconsistencias con los filtros actuales.</p></div>`;
+    wrap.innerHTML=html;return;
+  }
+
+  html+=`<div style="overflow:auto;max-height:460px"><table>
+  <thead>
+    <tr>
+      <th class="th-std" rowspan="2" style="width:32px">✓</th>
+      <th class="th-std" rowspan="2">Inconsistencia</th>
+      <th class="th-std" rowspan="2">ID Tarea</th>
+      <th class="th-group-ol" colspan="5">📅 OUTLOOK</th>
+      <th class="th-group-mb" colspan="5">📊 MYBIG</th>
+      <th class="th-std" rowspan="2" style="min-width:180px">🔍 Diferencias</th>
+    </tr>
+    <tr>
+      <th class="th-ol">Tarea / Asunto</th>
+      <th class="th-ol">Fecha OL</th>
+      <th class="th-ol">Hora OL</th>
+      <th class="th-ol">Iniciales</th>
+      <th class="th-ol">Organizador</th>
+      <th class="th-mb">Cliente</th>
+      <th class="th-mb">Tarea MB</th>
+      <th class="th-mb">Fecha MB</th>
+      <th class="th-mb">Hora MB</th>
+      <th class="th-mb">Responsable MB</th>
+    </tr>
+  </thead><tbody>`;
+
+  rows.forEach(r=>{
+    const checked=checks[r.tid];
+    const asunto=String(r.ol?.Asunto||r.ol?.Subject||'');
+    const oFec=r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'';
+    const oHor=r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'';
+    const oInics=exIniciales(asunto).join(' & ')||'—';
+    const oOrg=r.ol?(r.ol.Organizador||r.ol.Organizer||''):'';
+    const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,2).join(' / ').slice(0,70);
+
+    const mCli=r.mb?String(r.mb[C.cli]||''):'';
+    const mTarea=r.mb?String(r.mb[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').slice(0,65):'';
+    const mFec=r.mb?nFec(r.mb[C.fecha]):'';
+    const mHor=r.mb?nHor(r.mb[C.hora]):'';
+    const mResp=r.mb?String(r.mb[C.resp]||''):'';
+
+    const fd=r.diffs?.some(d=>d.c==='Fecha');
+    const hd=r.diffs?.some(d=>d.c==='Hora');
+    const rd=r.diffs?.find(d=>d.c==='Responsable');
+
+    let pillHtml;
+    if(r.tipo===T.OL)      pillHtml=`<span class="pill pr">Solo OL</span>`;
+    else if(r.tipo===T.MB) pillHtml=`<span class="pill pb">Solo MB</span>`;
+    else if(rd&&!fd&&!hd)  pillHtml=`<span class="pill pp">Resp. diff.</span>`;
+    else if(rd&&(fd||hd))  pillHtml=`<span class="pill pa">Múltiple</span>`;
+    else                   pillHtml=`<span class="pill pa">Fec/Hora</span>`;
+
+    // Iniciales con tooltip de nombre completo
+    const inicsHtml=oInics==='—'?'<span class="na">—</span>':oInics.split(' & ').map(cod=>{
+      const nombre=DICT_INICS[cod]||cod;
+      return`<span class="tid" title="${nombre}" style="cursor:help;margin-right:2px">${cod}</span>`;
+    }).join('');
+
+    // Diffs column — con nombres reales del diccionario
+    let difHtml='';
+    if(r.tipo===T.OL){
+      difHtml=`<span style="color:var(--red);font-size:11px">tareasid <b>#${r.tid}</b><br>No existe en MyBig</span>`;
+    } else if(r.tipo===T.MB){
+      difHtml=`<span style="color:var(--blue);font-size:11px">tareasid <b>#${r.tid}</b><br>Sin evento en Outlook</span>`;
+    } else {
+      difHtml=r.diffs.map(d=>{
+        if(d.c==='Responsable'){
+          const nombresOL=(d.olInics||[]).map(c=>DICT_INICS[c]?`${c} (${DICT_INICS[c]})`:c).join(', ')||d.ol;
+          const codMB1=codDeNombre(d.r1),codMB2=codDeNombre(d.r2);
+          const mbPart1=codMB1?`<b>${codMB1}</b> (${d.r1})`:d.r1;
+          const mbPart2=codMB2&&d.r2&&d.r2!=='-'?` / <b>${codMB2}</b> (${d.r2})`:'';
+          return`<div style="font-size:10.5px;margin:2px 0;line-height:1.5">
+            <b>Resp.:</b><br>
+            OL: <span style="color:var(--navy);font-weight:700">${nombresOL}</span><br>
+            MB: <span class="dv">${mbPart1}${mbPart2}</span>
+          </div>`;
+        }
+        return`<div style="font-size:10.5px;margin:2px 0"><b>${d.c}:</b> <span style="color:var(--navy)">${d.ol}</span> ≠ <span class="dv">${d.mb}</span></div>`;
+      }).join('');
+    }
+
+    const rowBg=r.tipo===T.OL?'#FFF5F5':r.tipo===T.MB?'#EBF4FF':fd||hd?'#FFFBF0':'#F0EBF8';
+    const chkStyle=checked?'checked':'';
+
+    html+=`<tr style="background:${rowBg}${checked?';opacity:.7':''}">
+      <td style="text-align:center">
+        <div class="chk-cell">
+          <button class="chk-btn ${chkStyle}" data-tid="${r.tid}" onclick="toggleCheck('${r.tid}')">${checked?'✓':''}</button>
+          <div class="chk-info" data-tid="${r.tid}">${checked?checked.ts.split(',')[0]:''}</div>
+        </div>
+      </td>
+      <td>${pillHtml}</td>
+      <td><span class="tid">#${r.tid||'—'}</span></td>
+      <td><span class="trunc" title="${esc(asunto)}">${esc(asuntoCorto)||'<span class="na">sin asunto</span>'}</span></td>
+      <td>${oFec?`<span${fd?' class="dv"':''}>${oFec}</span>`:'<span class="na">—</span>'}</td>
+      <td>${oHor?`<span${hd?' class="dv"':''}>${oHor}</span>`:'<span class="na">—</span>'}</td>
+      <td style="font-weight:700;color:var(--navy)">${inicsHtml}</td>
+      <td style="font-size:10.5px">${oOrg}</td>
+      <td>${mCli||'<span class="na">—</span>'}</td>
+      <td><span class="trunc" title="${esc(mTarea)}">${esc(mTarea)||'<span class="na">—</span>'}</span></td>
+      <td>${mFec?`<span${fd?' class="dv"':''}>${mFec}</span>`:'<span class="na">—</span>'}</td>
+      <td>${mHor?`<span${hd?' class="dv"':''}>${mHor}</span>`:'<span class="na">—</span>'}</td>
+      <td>${mResp?`<span${rd?' class="dv"':''}>${mResp}</span>`:'<span class="na">—</span>'}</td>
+      <td>${difHtml}</td>
+    </tr>`;
+  });
+
+  html+=`</tbody></table></div>`;
+  wrap.innerHTML=html;
+}
+
+// ── SIMPLE TABLE (ok / nc) ────────────────────────────────
+function renderSimple(wrap,rows,t){
+  if(!rows.length){wrap.innerHTML=`<div class="empty"><div class="ei">${t==='ok'?'✅':'🏷️'}</div><p>${t==='ok'?'Sin coincidencias con esos filtros.':'Sin eventos sin código.'}</p></div>`;return;}
+  let html=`<table><thead><tr>`;
+  if(t==='ok'){
+    html+=`<th class="th-std">ID Tarea</th><th class="th-std">Cliente</th><th class="th-std">Tarea</th><th class="th-std">Expediente</th><th class="th-std">Fecha</th><th class="th-std">Hora</th><th class="th-std">Responsable</th><th class="th-std">Supervisor</th><th class="th-std">Estado</th>`;
+    html+=`</tr></thead><tbody>`;
+    html+=rows.map(r=>`<tr style="background:#F5FFF8">
+      <td><span class="tid">#${r.tid}</span></td><td>${r.mb[C.cli]||''}</td>
+      <td><span class="trunc">${esc(r.mb[C.tarea]||'')}</span></td>
+      <td style="font-size:10.5px">${r.mb[C.exp]||''}</td>
+      <td>${nFec(r.mb[C.fecha])}</td><td>${nHor(r.mb[C.hora])}</td>
+      <td>${r.mb[C.resp]||''}</td><td>${r.mb[C.sup]||''}</td>
+      <td><span class="pill pg">${r.mb[C.estado]||''}</span></td>
+    </tr>`).join('');
+  } else {
+    html+=`<th class="th-std">Asunto Outlook</th><th class="th-std">Fecha</th><th class="th-std">Hora</th><th class="th-std">Organizador</th><th class="th-std">Ubicación</th>`;
+    html+=`</tr></thead><tbody>`;
+    html+=rows.map(r=>`<tr><td><span class="trunc">${esc(r.ol.Asunto||r.ol.Subject||'')}</span></td><td>${nFec(r.ol.Fecha||r.ol['Start Date']||'')}</td><td>${nHor(r.ol.HoraInicio||r.ol['Start Time']||'')}</td><td>${r.ol.Organizador||r.ol.Organizer||''}</td><td>${r.ol.Ubicacion||r.ol.Location||''}</td></tr>`).join('');
+  }
+  html+=`</tbody></table>`;
+  wrap.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+// GUARDAR CRUCE
+// ═══════════════════════════════════════════════════
+function guardarCruce(){
+  if(!res.length){alert('Ejecuta un cruce primero.');return;}
+  const id=curCruceId||('cruce_'+Date.now());
+  curCruceId=id;
+  const meta={
+    id,fecha:new Date().toLocaleString('es-PE'),
+    rango:document.getElementById('rangoPill').textContent,
+    totalOL:olRows?.length||0,
+    ok:res.filter(r=>r.tipo===T.OK).length,
+    soloOL:res.filter(r=>r.tipo===T.OL).length,
+    soloMB:res.filter(r=>r.tipo===T.MB).length,
+    diff:res.filter(r=>r.tipo===T.DIFF).length,
+    nc:res.filter(r=>r.tipo===T.NC).length,
+  };
+  // Guardar metadata en lista
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  list=list.filter(x=>x.id!==id);
+  list.unshift(meta);
+  if(list.length>20)list=list.slice(0,20);
+  localStorage.setItem('vt_cruce_list',JSON.stringify(list));
+  // Guardar datos del cruce (resumidos para no agotar localStorage)
+  const inco=res.filter(r=>[T.OL,T.MB,T.DIFF].includes(r.tipo)).map(r=>({
+    tipo:r.tipo,tid:r.tid,
+    oFec:r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'',
+    oHor:r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'',
+    oInics:exIniciales(r.ol?.Asunto||r.ol?.Subject||'').join(' & '),
+    mCli:r.mb?String(r.mb[C.cli]||''):'',
+    mTarea:r.mb?String(r.mb[C.tarea]||'').slice(0,80):'',
+    mFec:r.mb?nFec(r.mb[C.fecha]):'',mHor:r.mb?nHor(r.mb[C.hora]):'',
+    mResp:r.mb?String(r.mb[C.resp]||''):'',mSup:r.mb?String(r.mb[C.sup]||''):'',
+    diffs:r.diffs
+  }));
+  try{localStorage.setItem('vt_data_'+id,JSON.stringify(inco));}catch(e){console.warn('localStorage lleno, guardando solo meta');}
+  alert(`✔ Cruce guardado.\n\nID: ${id}\nFecha: ${meta.fecha}\n\nVe al Panel de Control para ver el historial.`);
+}
+
+// ═══════════════════════════════════════════════════
+// PANEL DE CONTROL
+// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// GITHUB MODAL
+// ═══════════════════════════════════════════════════
+function showGithubModal(){document.getElementById('ghModal').classList.add('open');}
+function closeGithubModal(){document.getElementById('ghModal').classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.id==='ghModal')closeGithubModal();});
+
+// ═══════════════════════════════════════════════════
+// ESTADO Y NOTAS DE CRUCE
+// ═══════════════════════════════════════════════════
+const ESTADOS=['pendiente','revision','cerrado'];
+const ESTADO_CFG={
+  pendiente:{lbl:'🟡 Pendiente',cls:'status-pendiente'},
+  revision: {lbl:'🔵 En revisión',cls:'status-revision'},
+  cerrado:  {lbl:'🟢 Cerrado',cls:'status-cerrado'}
+};
+function getMeta(id){
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  return list.find(x=>x.id===id)||null;
+}
+function updateMeta(id,changes){
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  const idx=list.findIndex(x=>x.id===id);
+  if(idx>=0){Object.assign(list[idx],changes);localStorage.setItem('vt_cruce_list',JSON.stringify(list));}
+}
+function cycleEstado(id){
+  const m=getMeta(id);if(!m)return;
+  const cur=m.estado||'pendiente';
+  const next=ESTADOS[(ESTADOS.indexOf(cur)+1)%ESTADOS.length];
+  updateMeta(id,{estado:next});
+  const btn=document.querySelector(`[data-estado="${id}"]`);
+  if(btn){const cfg=ESTADO_CFG[next];btn.className=`status-badge ${cfg.cls}`;btn.textContent=cfg.lbl;}
+}
+function saveNota(id){
+  const ta=document.getElementById('nota-'+id);
+  if(!ta)return;
+  updateMeta(id,{nota:ta.value});
+  const btn=ta.nextElementSibling;
+  if(btn){btn.textContent='✔ Guardado';setTimeout(()=>{btn.textContent='Guardar nota';},1500);}
+}
+
+// ═══════════════════════════════════════════════════
+// PANEL DE CONTROL — RENDER
+// ═══════════════════════════════════════════════════
+function renderControlPanel(){
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  const el=document.getElementById('ctrlList');
+  if(!list.length){
+    el.innerHTML=`<div class="empty-ctrl"><div class="ei">📋</div>
+      <p>No hay cruces guardados aún.<br/>
+      Ejecuta un cruce y presiona <strong>💾 Guardar Cruce</strong>.</p>
+      <button class="btn btn-navy" style="margin-top:16px" onclick="showPanel('cruce')">➕ Hacer primer cruce</button>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML=list.map(m=>{
+    let inco=[];try{inco=JSON.parse(localStorage.getItem('vt_data_'+m.id)||'[]');}catch(e){}
+    const checks=getChecks(m.id);
+    const totalInco=m.soloOL+m.soloMB+m.diff;
+    const verif=Object.keys(checks).length;
+    const pct=totalInco>0?Math.round(verif/totalInco*100):100;
+    const estado=m.estado||'pendiente';
+    const eCfg=ESTADO_CFG[estado];
+    const nota=m.nota||'';
+    const label=m.label||`Cruce ${m.fecha}`;
+
+    return`
+    <div class="ctrl-card" id="card-${m.id}">
+
+      <!-- ── TOP ROW ── -->
+      <div class="ctrl-card-top" onclick="toggleDetalle('${m.id}')">
+        <div class="ctrl-meta">
+          <div class="ctrl-date">
+            <span id="label-${m.id}">${label}</span>
+            <button class="status-badge ${eCfg.cls}" data-estado="${m.id}"
+              onclick="event.stopPropagation();cycleEstado('${m.id}')">${eCfg.lbl}</button>
+          </div>
+          <div class="ctrl-sub">Guardado: ${m.fecha} · Período: ${m.rango} · ${m.totalOL} eventos OL</div>
+        </div>
+        <div class="ctrl-pills">
+          <span class="pill pr" title="Solo en Outlook">${m.soloOL} Solo OL</span>
+          <span class="pill pb" title="Solo en MyBig">${m.soloMB} Solo MB</span>
+          <span class="pill pa" title="Diferencias">${m.diff} Diffs</span>
+          <span class="pill pg" title="Confirmados">${m.ok} OK</span>
+        </div>
+        <div>
+          <div class="prog-label" id="prog-lbl-${m.id}">Revisadas: ${verif}/${totalInco} (${pct}%)</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar-${m.id}" style="width:${pct}%"></div></div>
+        </div>
+        <div class="ctrl-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-out btn-sm" onclick="exportarReporteCruce('${m.id}')">📄 Reporte</button>
+          <button class="btn btn-out btn-sm" onclick="duplicarComoCruce('${m.id}')">🔄 Actualizar</button>
+          <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;padding:6px 10px" onclick="deleteCruce('${m.id}')">✕</button>
+        </div>
+      </div>
+
+      <!-- ── BODY (expandible) ── -->
+      <div class="ctrl-body" id="body-${m.id}">
+
+        <!-- Etiqueta editable -->
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+          <input id="lbl-inp-${m.id}" value="${label}" style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;font-family:inherit;flex:1;background:var(--bg)"
+            onkeydown="if(event.key==='Enter')guardarLabel('${m.id}')"/>
+          <button class="btn btn-out btn-sm" onclick="guardarLabel('${m.id}')">Renombrar</button>
+        </div>
+
+        <!-- Notas -->
+        <div class="ctrl-section">
+          <div class="ctrl-section-lbl">📝 Notas / observaciones</div>
+          <textarea id="nota-${m.id}" class="ctrl-notes" placeholder="Agrega observaciones sobre este cruce (ej: se corrigió el responsable de #1424192, pendiente confirmar con supervisor…)">${nota}</textarea>
+          <button class="btn btn-out btn-sm" style="margin-top:5px" onclick="saveNota('${m.id}')">Guardar nota</button>
+        </div>
+
+        <!-- Tabs de detalle -->
+        <div class="ctrl-section">
+          <div class="ctrl-section-lbl">📊 Detalle de inconsistencias</div>
+          <div class="dtab-bar">
+            <button class="dtab active" id="dtab-inco-${m.id}" onclick="switchDtab('${m.id}','inco')">⚠ Todas (${totalInco})</button>
+            <button class="dtab" id="dtab-ol-${m.id}" onclick="switchDtab('${m.id}','ol')">🔴 Solo OL (${m.soloOL})</button>
+            <button class="dtab" id="dtab-mb-${m.id}" onclick="switchDtab('${m.id}','mb')">🔵 Solo MB (${m.soloMB})</button>
+            <button class="dtab" id="dtab-diff-${m.id}" onclick="switchDtab('${m.id}','diff')">🟡 Diffs (${m.diff})</button>
+          </div>
+          <div id="dtab-content-${m.id}" style="overflow:auto;max-height:360px;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px">
+            ${renderIncoStatic(inco,checks,m.id,'inco')}
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDetalle(id){
+  const body=document.getElementById('body-'+id);
+  if(!body)return;
+  body.classList.toggle('open');
+}
+
+function switchDtab(cruceId,tipo){
+  ['inco','ol','mb','diff'].forEach(t=>{
+    const btn=document.getElementById(`dtab-${t}-${cruceId}`);
+    if(btn)btn.classList.toggle('active',t===tipo);
+  });
+  let inco=[];try{inco=JSON.parse(localStorage.getItem('vt_data_'+cruceId)||'[]');}catch(e){}
+  const checks=getChecks(cruceId);
+  const content=document.getElementById(`dtab-content-${cruceId}`);
+  if(content)content.innerHTML=renderIncoStatic(inco,checks,cruceId,tipo);
+}
+
+function guardarLabel(id){
+  const inp=document.getElementById('lbl-inp-'+id);
+  if(!inp)return;
+  const val=inp.value.trim()||`Cruce`;
+  updateMeta(id,{label:val});
+  const lbl=document.getElementById('label-'+id);
+  if(lbl)lbl.textContent=val;
+}
+
+function duplicarComoCruce(id){
+  if(!confirm('Esto te lleva al panel de Nuevo Cruce para ejecutar una versión actualizada.\n¿Continuar?'))return;
+  showPanel('cruce');
+  setTimeout(()=>{
+    alert('Sube los archivos nuevos (Agenda_OL y MyBig) y presiona Ejecutar Cruce.\nCuando guardes, se creará un nuevo registro en el historial.');
+  },300);
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER INCONSISTENCIAS ESTÁTICO (panel control)
+// ═══════════════════════════════════════════════════
+function renderIncoStatic(inco,checks,cruceId,filtro){
+  let rows=inco;
+  if(filtro==='ol')rows=inco.filter(r=>r.tipo===T.OL);
+  else if(filtro==='mb')rows=inco.filter(r=>r.tipo===T.MB);
+  else if(filtro==='diff')rows=inco.filter(r=>r.tipo===T.DIFF);
+
+  if(!rows.length)return`<div class="empty" style="padding:24px"><div class="ei" style="font-size:24px">✅</div><p>Sin registros en esta categoría.</p></div>`;
+
+  let html=`<table><thead><tr>
+    <th class="th-std" style="width:32px">✓</th>
+    <th class="th-std">Tipo</th><th class="th-std">ID</th>
+    <th class="th-ol">Fecha OL</th><th class="th-ol">Hora OL</th><th class="th-ol">Inic. OL</th>
+    <th class="th-mb">Cliente MB</th><th class="th-mb">Fecha MB</th><th class="th-mb">Hora MB</th><th class="th-mb">Resp. MB</th>
+    <th class="th-std">Diferencias</th>
+  </tr></thead><tbody>`;
+
+  rows.forEach(r=>{
+    const checked=checks[r.tid];
+    const pill=r.tipo===T.OL?'<span class="pill pr">Solo OL</span>':r.tipo===T.MB?'<span class="pill pb">Solo MB</span>':'<span class="pill pa">Diff.</span>';
+    const fd=r.diffs?.some(d=>d.c==='Fecha'),hd=r.diffs?.some(d=>d.c==='Hora'),rd=r.diffs?.some(d=>d.c==='Responsable');
+    const detHtml=r.tipo===T.OL?'No existe en MyBig':r.tipo===T.MB?'Sin evento OL':r.diffs?.map(d=>`<div style="font-size:10px">${d.c}: <b>${d.ol}</b> ≠ <b>${d.mb}</b></div>`).join('')||'';
+    const bg=r.tipo===T.OL?'#FFF5F5':r.tipo===T.MB?'#EBF4FF':'#FFFBF0';
+    html+=`<tr style="background:${bg}${checked?';opacity:.65':''}">
+      <td style="text-align:center">
+        <div class="chk-cell">
+          <button class="chk-btn ${checked?'checked':''}" onclick="toggleCheckStatic('${cruceId}','${r.tid}',this)">${checked?'✓':''}</button>
+          <div class="chk-info">${checked?checked.ts.split(',')[0]:''}</div>
+        </div>
+      </td>
+      <td>${pill}</td><td><span class="tid">#${r.tid}</span></td>
+      <td>${r.oFec?`<span${fd?' class="dv"':''}>${r.oFec}</span>`:'<span class="na">—</span>'}</td>
+      <td>${r.oHor?`<span${hd?' class="dv"':''}>${r.oHor}</span>`:'<span class="na">—</span>'}</td>
+      <td style="font-weight:700;color:var(--navy)">${r.oInics||'—'}</td>
+      <td>${r.mCli||'<span class="na">—</span>'}</td>
+      <td>${r.mFec?`<span${fd?' class="dv"':''}>${r.mFec}</span>`:'<span class="na">—</span>'}</td>
+      <td>${r.mHor?`<span${hd?' class="dv"':''}>${r.mHor}</span>`:'<span class="na">—</span>'}</td>
+      <td>${r.mResp?`<span${rd?' class="dv"':''}>${r.mResp}</span>`:'<span class="na">—</span>'}</td>
+      <td style="font-size:10.5px;line-height:1.5">${detHtml}</td>
+    </tr>`;
+  });
+  return html+`</tbody></table>`;
+}
+
+function toggleCheckStatic(cruceId,tid,btn){
+  const c=getChecks(cruceId);
+  if(c[tid]){delete c[tid];btn.classList.remove('checked');btn.textContent='';btn.parentElement.querySelector('.chk-info').textContent='';}
+  else{c[tid]={ts:new Date().toLocaleString('es-PE'),by:'CID'};btn.classList.add('checked');btn.textContent='✓';btn.parentElement.querySelector('.chk-info').textContent=c[tid].ts.split(',')[0];}
+  localStorage.setItem('vt_chk_'+cruceId,JSON.stringify(c));
+  // Actualizar barra de progreso
+  const meta=getMeta(cruceId);
+  if(meta){
+    const total=meta.soloOL+meta.soloMB+meta.diff;
+    const verif=Object.keys(c).length;
+    const pct=total>0?Math.round(verif/total*100):100;
+    const pb=document.getElementById('prog-bar-'+cruceId);if(pb)pb.style.width=pct+'%';
+    const lbl=document.getElementById('prog-lbl-'+cruceId);if(lbl)lbl.textContent=`Revisadas: ${verif}/${total} (${pct}%)`;
+  }
+}
+
+// Exportar todo el historial a Excel
+function exportarTodoExcel(){
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  if(!list.length){alert('No hay cruces guardados.');return;}
+  const wb=XLSX.utils.book_new();
+  const resumen=[['HISTORIAL DE CRUCES · VINATEA & TOYAMA'],[''],
+    ['ID','Fecha','Período','Estado','Nota','Total OL','OK','Solo OL','Solo MB','Diffs','Verificadas']];
+  list.forEach(m=>{
+    const checks=getChecks(m.id);
+    resumen.push([m.id,m.fecha,m.rango,m.estado||'pendiente',m.nota||'',m.totalOL,m.ok,m.soloOL,m.soloMB,m.diff,Object.keys(checks).length]);
+  });
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumen),'Historial');
+  // Hoja por cada cruce
+  list.forEach(m=>{
+    let inco=[];try{inco=JSON.parse(localStorage.getItem('vt_data_'+m.id)||'[]');}catch(e){}
+    const checks=getChecks(m.id);
+    if(!inco.length)return;
+    const hdr=[['Rev.','Tipo','ID','Fecha OL','Hora OL','Inic. OL','Cliente MB','Tarea MB','Fecha MB','Hora MB','Resp. MB','Diferencias']];
+    const rows=inco.map(r=>[checks[r.tid]?'✔':'',r.tipo===T.OL?'Solo OL':r.tipo===T.MB?'Solo MB':'Diff',r.tid,r.oFec,r.oHor,r.oInics,r.mCli,r.mTarea,r.mFec,r.mHor,r.mResp,r.diffs?.map(d=>d.c+':'+d.ol+'≠'+d.mb).join('|')||'']);
+    const shName=(m.label||m.fecha).replace(/[:\\/?*[\]]/g,'').slice(0,28);
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([...hdr,...rows]),shName);
+  });
+  XLSX.writeFile(wb,`Historial_Cruces_${new Date().toLocaleDateString('es-PE').replace(/\//g,'-')}.xlsx`);
+}
+
+function deleteCruce(id){
+  if(!confirm('¿Eliminar este cruce del historial?'))return;
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  localStorage.setItem('vt_cruce_list',JSON.stringify(list.filter(x=>x.id!==id)));
+  localStorage.removeItem('vt_data_'+id);
+  localStorage.removeItem('vt_chk_'+id);
+  renderControlPanel();
+}
+function clearHistory(){
+  if(!confirm('¿Limpiar todo el historial de cruces guardados?'))return;
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  list.forEach(m=>{localStorage.removeItem('vt_data_'+m.id);localStorage.removeItem('vt_chk_'+m.id);});
+  localStorage.removeItem('vt_cruce_list');
+  renderControlPanel();
+}
+
+// ═══════════════════════════════════════════════════
+// EXPORTAR REPORTE PARA JEFES (HTML standalone)
+// ═══════════════════════════════════════════════════
+function exportarReporte(){
+  if(!res.length){alert('Ejecuta un cruce primero.');return;}
+  exportarReporteCruce(curCruceId,res);
+}
+function exportarReporteCruce(id,datos){
+  let inco=datos;
+  if(!inco){try{inco=JSON.parse(localStorage.getItem('vt_data_'+id)||'[]');}catch(e){inco=[];}}
+  else{inco=res.filter(r=>[T.OL,T.MB,T.DIFF].includes(r.tipo)).map(r=>({tipo:r.tipo,tid:r.tid,oFec:r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'',oHor:r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'',oInics:exIniciales(r.ol?.Asunto||'').join(' & '),mCli:r.mb?String(r.mb[C.cli]||''):'',mTarea:r.mb?String(r.mb[C.tarea]||'').slice(0,80):'',mFec:r.mb?nFec(r.mb[C.fecha]):'',mHor:r.mb?nHor(r.mb[C.hora]):'',mResp:r.mb?String(r.mb[C.resp]||''):'',mSup:r.mb?String(r.mb[C.sup]||''):'',diffs:r.diffs}));}
+
+  const checks=getChecks(id);
+  let list=[];try{list=JSON.parse(localStorage.getItem('vt_cruce_list')||'[]');}catch(e){}
+  const meta=list.find(x=>x.id===id)||{fecha:new Date().toLocaleString('es-PE'),rango:document.getElementById('rangoPill')?.textContent||'—',soloOL:res.filter(r=>r.tipo===T.OL).length,soloMB:res.filter(r=>r.tipo===T.MB).length,diff:res.filter(r=>r.tipo===T.DIFF).length,ok:res.filter(r=>r.tipo===T.OK).length};
+  const verif=Object.keys(checks).length;
+  const totalI=meta.soloOL+meta.soloMB+meta.diff;
+
+  const filas=inco.map(r=>{
+    const chk=checks[r.tid];
+    const tipo=r.tipo===T.OL?'Solo Outlook':r.tipo===T.MB?'Solo MyBig':'Diferencia';
+    const color=r.tipo===T.OL?'#FDECEA':r.tipo===T.MB?'#EBF4FF':'#FEF3E2';
+    const dets=r.diffs?.map(d=>`${d.c}: OL=${d.ol} ≠ MB=${d.mb}`).join('; ')||'—';
+    return`<tr style="background:${color}${chk?';opacity:.7':''}">
+      <td>${chk?`<span style="color:#1A7A4A;font-weight:700">✔</span><br><span style="font-size:9px;color:#888">${chk.ts.split(',')[0]}</span>`:'<span style="color:#ccc">○</span>'}</td>
+      <td><b style="font-size:10px">${tipo}</b></td>
+      <td style="font-family:monospace">#${r.tid}</td>
+      <td>${r.oFec||'—'}</td><td>${r.oHor||'—'}</td>
+      <td style="font-weight:700">${r.oInics||'—'}</td>
+      <td>${r.mCli||'—'}</td>
+      <td style="font-size:10px">${r.mTarea||'—'}</td>
+      <td>${r.mFec||'—'}</td><td>${r.mHor||'—'}</td>
+      <td>${r.mResp||'—'}</td><td>${r.mSup||'—'}</td>
+      <td style="font-size:10px">${dets}</td>
+    </tr>`;
+  }).join('');
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
+  <title>Reporte Cruce Agendas · Vinatea & Toyama</title>
+  <style>body{font-family:Calibri,sans-serif;font-size:11px;color:#1a2540;margin:0;padding:0}
+  header{background:#1F3864;color:#fff;padding:16px 28px}
+  h1{font-size:18px;margin:0 0 4px}
+  .sub{font-size:11px;opacity:.7}
+  .stats{display:flex;gap:12px;padding:14px 28px;background:#F4F6FA;border-bottom:1px solid #D8DEE9;flex-wrap:wrap}
+  .s{background:#fff;border-radius:6px;padding:10px 14px;border:1px solid #D8DEE9;min-width:100px;text-align:center}
+  .sn{font-size:22px;font-weight:700}.sl{font-size:9px;text-transform:uppercase;color:#6B7A99;margin-top:2px}
+  .s.cr .sn{color:#C0392B}.s.cb .sn{color:#1549A0}.s.ca .sn{color:#D4730A}.s.cg .sn{color:#1A7A4A}
+  .wrap{padding:14px 28px}
+  table{width:100%;border-collapse:collapse;font-size:10px}
+  th{background:#1F3864;color:#fff;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+  td{padding:5px 8px;border-bottom:1px solid #D8DEE9;vertical-align:middle}
+  .prog{background:#E8F5EE;border:1px solid #1A7A4A;border-radius:4px;padding:6px 12px;font-size:11px;display:inline-block;margin-bottom:12px}
+  footer{text-align:center;padding:12px;font-size:9px;color:#aaa;border-top:1px solid #eee;margin-top:24px}
+  @media print{.no-print{display:none}}
+  </style></head><body>
+  <header>
+    <h1>Vinatea &amp; Toyama · Reporte de Cruce de Agendas</h1>
+    <div class="sub">Centro de Información y Documentación (CID) · Generado: ${meta.fecha} · Período: ${meta.rango}</div>
+  </header>
+  <div class="stats">
+    <div class="s cr"><div class="sn">${meta.soloOL}</div><div class="sl">Solo Outlook</div></div>
+    <div class="s cb"><div class="sn">${meta.soloMB}</div><div class="sl">Solo MyBig</div></div>
+    <div class="s ca"><div class="sn">${meta.diff}</div><div class="sl">Diferencias</div></div>
+    <div class="s cg"><div class="sn">${meta.ok}</div><div class="sl">Confirmados OK</div></div>
+    <div class="s cg"><div class="sn">${verif}/${totalI}</div><div class="sl">Revisados</div></div>
+  </div>
+  <div class="wrap">
+    <div class="prog">Estado de revisión: ${verif} de ${totalI} inconsistencias verificadas (${totalI>0?Math.round(verif/totalI*100):100}%)</div>
+    <table><thead><tr><th>Rev.</th><th>Tipo</th><th>ID Tarea</th><th>Fecha OL</th><th>Hora OL</th><th>Inic. OL</th><th>Cliente MB</th><th>Tarea MB</th><th>Fecha MB</th><th>Hora MB</th><th>Responsable MB</th><th>Supervisor</th><th>Diferencias</th></tr></thead>
+    <tbody>${filas}</tbody></table>
+  </div>
+  <footer>Vinatea &amp; Toyama · CID · Este documento es de uso interno</footer>
+  </body></html>`;
+
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`Reporte_Cruce_${meta.fecha.replace(/[/:,\s]/g,'-').slice(0,16)}.html`;
+  a.click();
+}
+
+// ═══════════════════════════════════════════════════
+// EXPORT EXCEL
+// ═══════════════════════════════════════════════════
+function exportarExcel(){
+  if(!res.length){alert('Ejecuta un cruce primero.');return;}
+  const wb=XLSX.utils.book_new(),hoy=new Date().toLocaleDateString('es-PE');
+  const checks=getChecks(curCruceId||'tmp');
+  const sh=(data,name)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(data),name);
+
+  sh([['CRUCE AGENDAS · V&T',''],['Generado:',hoy],['Período:',document.getElementById('rangoPill').textContent],[''],
+      ['Total OL:',olRows?.length||0],['Sin inconsistencias:',res.filter(r=>r.tipo===T.OK).length],
+      ['Solo OL:',res.filter(r=>r.tipo===T.OL).length],['Solo MB:',res.filter(r=>r.tipo===T.MB).length],
+      ['Diferencias:',res.filter(r=>r.tipo===T.DIFF).length],['Sin código:',res.filter(r=>r.tipo===T.NC).length],
+      ['Verificadas:',Object.keys(checks).length]],'Resumen');
+
+  const iH=['Revisado','Fecha Rev.','Tipo','ID Tarea','Tarea OL','Fecha OL','Hora OL','Inic. OL','Cliente MB','Tarea MB','Fecha MB','Hora MB','Resp. MB','Supervisor MB','Diferencias'];
+  const iR=res.filter(r=>[T.OL,T.MB,T.DIFF].includes(r.tipo)).map(r=>{
+    const chk=checks[r.tid];
+    return[chk?'✔':'',chk?chk.ts:'',
+      r.tipo===T.OL?'Solo Outlook':r.tipo===T.MB?'Solo MyBig':'Diferencia',r.tid,
+      r.ol?String(r.ol.Asunto||r.ol.Subject||'').slice(0,100):'—',
+      r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'—',
+      r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'—',
+      r.ol?exIniciales(r.ol.Asunto||r.ol.Subject||'').join(' & '):'—',
+      r.mb?String(r.mb[C.cli]||''):'—',r.mb?String(r.mb[C.tarea]||'').slice(0,80):'—',
+      r.mb?nFec(r.mb[C.fecha]):'—',r.mb?nHor(r.mb[C.hora]):'—',
+      r.mb?String(r.mb[C.resp]||''):'—',r.mb?String(r.mb[C.sup]||''):'—',
+      r.diffs?.map(d=>d.c+': OL='+d.ol+' vs MB='+d.mb).join(' | ')||''];
+  });
+  sh([iH,...iR],'Inconsistencias');
+  XLSX.writeFile(wb,`Cruce_Agendas_${hoy.replace(/\//g,'-')}.xlsx`);
+}
+
+// ═══════════════════════════════════════════════════
+// AI
+// ═══════════════════════════════════════════════════
+async function analizarIA(){
+  const key=document.getElementById('apiKey').value.trim();
+  if(!key){alert('Ingresa tu API Key de Anthropic.');return;}
+  document.getElementById('aiBox').style.display='block';
+  document.getElementById('aiTxt').innerHTML='<span class="ai-sp"></span>Analizando con Claude…';
+  document.getElementById('btnAI').disabled=true;
+  const olNo=res.filter(r=>r.tipo===T.OL),mbNo=res.filter(r=>r.tipo===T.MB),di=res.filter(r=>r.tipo===T.DIFF);
+  const l1=olNo.slice(0,12).map(r=>`  - #${r.tid} | ${nFec(r.ol?.Fecha||'')} | ${(r.ol?.Asunto||'').slice(0,60)}`).join('\n');
+  const l2=mbNo.slice(0,8).map(r=>`  - #${r.tid} | ${r.mb?.[C.cli]||''} | ${r.mb?.[C.tarea]||''}`).join('\n');
+  const l3=di.slice(0,8).map(r=>`  - #${r.tid} | ${r.mb?.[C.cli]||''} | ${r.diffs.map(d=>d.c+': OL='+d.ol+' vs MB='+d.mb).join('; ')}`).join('\n');
+  const p=`Eres asistente de gestión procesal laboral de Vinatea & Toyama (Lima, Perú). Cruce Outlook vs MyBig:
+- Solo en Outlook: ${olNo.length} | Solo en MyBig: ${mbNo.length} | Diferencias: ${di.length} | OK: ${res.filter(r=>r.tipo===T.OK).length}
+Muestra OL:\n${l1||'(ninguno)'}\nMuestra MB:\n${l2||'(ninguno)'}\nMuestra Diffs:\n${l3||'(ninguno)'}
+Genera resumen ejecutivo en español (5-6 oraciones): estado general, inconsistencia más crítica, acciones concretas, nivel de alerta. Lenguaje de gestión legal peruana.`;
+  try{
+    const d=await(await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:p}]})})).json();
+    if(d.error)throw new Error(d.error.message);
+    document.getElementById('aiTxt').textContent=d.content[0].text;
+  }catch(e){document.getElementById('aiTxt').textContent='Error: '+e.message;}
+  document.getElementById('btnAI').disabled=false;
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
