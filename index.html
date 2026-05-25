@@ -289,6 +289,7 @@ td{padding:7px 11px;vertical-align:middle}
       <div class="sc cb"><div class="sn" id="s3">0</div><div class="sl">⚠ Sin evento OL</div></div>
       <div class="sc ca"><div class="sn" id="s4">0</div><div class="sl">⚠ Fecha/Hora diff.</div></div>
       <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">⚠ Resp. no coincide</div></div>
+      <div class="sc" style="border-top:3px solid #888"><div class="sn" id="s7" style="color:#555">0</div><div class="sl">⚠ Sin iniciales OL</div></div>
       <div class="sc ck"><div class="sn" id="s6">0</div><div class="sl">✔ Verificados</div></div>
     </div>
 
@@ -353,7 +354,7 @@ td{padding:7px 11px;vertical-align:middle}
     <div class="filters">
       <div class="fg"><label>Supervisor</label><select id="f-sup" onchange="render()"><option value="">Todos</option></select></div>
       <div class="fg"><label>Responsable</label><select id="f-resp" onchange="render()"><option value="">Todos</option></select></div>
-      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="mb">🔵 Sin evento en Outlook</option><option value="diff">🟡 Fecha/Hora diff.</option><option value="resp">🟣 Resp. no coincide</option></select></div>
+      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="mb">🔵 Sin evento en Outlook</option><option value="diff">🟡 Fecha/Hora diff.</option><option value="resp">🟣 Resp. no coincide</option><option value="noinic">⚫ Sin iniciales OL</option></select></div>
       <div class="fg"><label>Estado</label><select id="f-est" onchange="render()"><option value="">Todos</option><option value="0">Pendientes</option><option value="1">Verificados</option></select></div>
       <div class="fg"><label>Desde</label><input type="date" id="f-desde" onchange="render()"/></div>
       <div class="fg"><label>Hasta</label><input type="date" id="f-hasta" onchange="render()"/></div>
@@ -573,17 +574,17 @@ function toISO(s){if(!s||s.length<10)return'';const p=s.split('/');return p.leng
 // DICCIONARIO DE INICIALES ↔ NOMBRES (fijo V&T)
 // ═══════════════════════════════════════════════════
 const DICT_INICS={
-  AZL:'Alessandra Zegarra', AHG:'Alfonso Higa',     AHR:'Andres Herles',
+  AZB:'Alessandra Zegarra', AHG:'Alfonso Higa',     AHR:'Andres Herles',
   ATG:'Arturo Trelles',     CCB:'Carlos Ciriaco',   CMP:'Carlos Morales',
-  CLG:'Cynthia Lagos',      DTT:'Daniela Torres',   EMV:'Eduardo Mercado',
-  EAB:'Elyana Arias',       HLJ:'Henrry Lopez',     IGV:'Ivan Gonzalez',
-  JAS:'Jimena Alcorta',     JBA:'Jose Bacalla',     KJM:'Katia Jacinto',
-  LVR:'Luis Vinatea',       MAS:'Magaly Alarcon',   MGE:'Maria Grazzia Espinoza',
-  MAV:'Mariel Abad',        MFM:'Melissa Flores',   MSN:'Milagritos Sueyoshi',
-  NVF:'Nuria Vega',         RMR:'Roberto Matallana',RZA:'Rodrigo Zavala',
-  SPE:'Samuel Paz',         SCC:'Sandra Carrión',   STV:'Sergio Tejada',
-  SMO:'Silvia Maldonado',   KYS:'Sofia Yomond',     SAS:'Sol Aragon',
-  SER:'Solanch Estrella'
+  CLG:'Cynthia Lagos',      DTT:'Daniela Torres',   DTM:'Daniela Torres',
+  EMV:'Eduardo Mercado',    EAB:'Elyana Arias',      HLJ:'Henrry Lopez',
+  IGV:'Ivan Gonzalez',      JAS:'Jimena Alcorta',    JBA:'Jose Bacalla',
+  KJM:'Katia Jacinto',      LVR:'Luis Vinatea',      MAS:'Magaly Alarcon',
+  MGE:'Maria Grazzia Espinoza', MAV:'Mariel Abad',   MFM:'Melissa Flores',
+  MSN:'Milagritos Sueyoshi', NVF:'Nuria Vega',       RMR:'Roberto Matallana',
+  RZA:'Rodrigo Zavala',     SPE:'Samuel Paz',        SCC:'Sandra Carrión',
+  STV:'Sergio Tejada',      SMO:'Silvia Maldonado',  KYS:'Sofia Yomond',
+  SAS:'Sol Aragon',         SER:'Solanch Estrella'
 };
 // Inverso: nombre completo → código (normalizado a minúsculas sin tilde para match flexible)
 const DICT_NOMBRE={};
@@ -712,13 +713,20 @@ function _run(){
     if(mF&&fec&&mF!==fec)diffs.push({c:'Fecha',ol:fec,mb:mF});
     if(mH&&hor&&mH!==hor)diffs.push({c:'Hora',ol:hor,mb:mH});
 
-    // Responsable
+    // Responsable / iniciales
     const asunto=String(row['Asunto']||row['Subject']||'');
     const olInics=exIniciales(asunto);
-    if(olInics.length>0){
-      const r1=String(mb[C.resp]||''),r2=String(mb[cR2]||'');
-      if(!matchResp(olInics,r1,r2)){
-        diffs.push({c:'Responsable',ol:olInics.join(' & '),mb:r1+(r2&&r2!=='-'?' / '+r2:''),olInics,r1,r2});
+    // Excluir eventos que son "SIN EVENTO EN OUTLOOK" — no tienen asunto real
+    const esSinEvento=String(row['EstadoOL']||'').toUpperCase()==='SIN EVENTO EN OUTLOOK';
+    if(!esSinEvento){
+      if(olInics.length>0){
+        const r1=String(mb[C.resp]||''),r2=String(mb[cR2]||'');
+        if(!matchResp(olInics,r1,r2)){
+          diffs.push({c:'Responsable',ol:olInics.join(' & '),mb:r1+(r2&&r2!=='-'?' / '+r2:''),olInics,r1,r2});
+        }
+      } else {
+        // El asunto no tiene prefijo de iniciales → no se puede verificar responsable
+        diffs.push({c:'Sin iniciales',ol:'—',mb:String(mb[C.resp]||''),olInics:[],r1:String(mb[C.resp]||''),r2:String(mb[cR2]||'')});
       }
     }
     res.push({tipo:diffs.length?T.DIFF:T.OK,tid,ol:row,mb,diffs});
@@ -735,14 +743,15 @@ function _run(){
   // Stats
   const cnt=t=>res.filter(r=>r.tipo===t).length;
   const cntResp=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
+  const cntSinInic=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')).length;
   const sinEventoOL=res.filter(r=>r.tipo===T.MB).length;
   document.getElementById('s0').textContent=olRows.filter(r=>String(r['EstadoOL']||'').toUpperCase()!=='SIN EVENTO EN OUTLOOK').length;
   document.getElementById('s1').textContent=cnt(T.OK);
-  document.getElementById('s2').textContent=cnt(T.OL); // debería ser 0 con macro nueva
   document.getElementById('s3').textContent=sinEventoOL;
-  document.getElementById('s4').textContent=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable')).length;
+  document.getElementById('s4').textContent=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales')).length;
   document.getElementById('s5').textContent=cntResp;
   document.getElementById('s6').textContent=0;
+  document.getElementById('s7').textContent=cntSinInic;
 
   const ti=sinEventoOL+cnt(T.DIFF);
   document.getElementById('tb-inco').textContent=ti;
@@ -779,7 +788,9 @@ function applyF(rows){
     if(resp&&(!r.mb||r.mb[C.resp]!==resp))return false;
     if(tipo){
       if(tipo==='resp'&&!(r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')))return false;
-      if(tipo!=='resp'&&r.tipo!==tipo)return false;
+      if(tipo==='noinic'&&!(r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')))return false;
+      if(tipo==='diff'&&!(r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales')))return false;
+      if(tipo!=='resp'&&tipo!=='noinic'&&tipo!=='diff'&&r.tipo!==tipo)return false;
     }
     if(est==='0'&&checks[r.tid])return false;
     if(est==='1'&&!checks[r.tid])return false;
@@ -804,7 +815,7 @@ function filtrarPorTarjeta(tipo){
   const actual=sel.value;
   sel.value=(actual===tipo)?'':tipo;
   // Resaltar tarjeta activa
-  ['mb','diff','resp'].forEach(t=>{
+  ['mb','diff','resp','noinic'].forEach(t=>{
     const ic=document.getElementById('ic-'+t);
     if(ic)ic.classList.toggle('active-filter',sel.value===t);
   });
@@ -858,6 +869,7 @@ function renderInco(wrap){
       <div class="ic icb" id="ic-mb" onclick="filtrarPorTarjeta('mb')" title="Clic para filtrar"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">🔵 Sin evento en Outlook</div><div class="ic-d">En MyBig pero sin cita agendada</div></div></div>
       <div class="ic ica" id="ic-diff" onclick="filtrarPorTarjeta('diff')" title="Clic para filtrar"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">🟡 Fecha / Hora diferente</div><div class="ic-d">Dato desactualizado en uno de los sistemas</div></div></div>
       <div class="ic icp" id="ic-resp" onclick="filtrarPorTarjeta('resp')" title="Clic para filtrar"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">🟣 Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable en MyBig</div></div></div>
+      <div class="ic" id="ic-noinic" onclick="filtrarPorTarjeta('noinic')" style="background:#F5F5F5;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .15s" title="Clic para filtrar"><div class="ic-n" style="color:#555">${res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')).length}</div><div><div class="ic-l" style="font-size:11.5px;font-weight:600">⚫ Sin iniciales OL</div><div class="ic-d">Asunto sin prefijo de responsable</div></div></div>
     </div>
     <p style="font-size:11px;color:var(--muted)">Haz clic en una tarjeta para filtrar · marca ✓ cada fila revisada</p>
   </div>`;
@@ -911,13 +923,17 @@ function renderInco(wrap){
     const fd=r.diffs?.some(d=>d.c==='Fecha');
     const hd=r.diffs?.some(d=>d.c==='Hora');
     const rd=r.diffs?.find(d=>d.c==='Responsable');
+    const hasResp=rd!=null;
+    const hasSinInic=r.diffs?.some(d=>d.c==='Sin iniciales');
+    const hasFecHor=fd||hd;
 
     let pillHtml;
-    if(r.tipo===T.OL)      pillHtml=`<span class="pill pr" style="opacity:.7">Solo OL</span>`;
-    else if(r.tipo===T.MB) pillHtml=`<span class="pill pb">Sin evento OL</span>`;
-    else if(rd&&!fd&&!hd)  pillHtml=`<span class="pill pp">Resp. diff.</span>`;
-    else if(rd&&(fd||hd))  pillHtml=`<span class="pill pa">Múltiple</span>`;
-    else                   pillHtml=`<span class="pill pa">Fec/Hora</span>`;
+    if(r.tipo===T.OL)           pillHtml=`<span class="pill pr" style="opacity:.7">Solo OL</span>`;
+    else if(r.tipo===T.MB)      pillHtml=`<span class="pill pb">Sin evento OL</span>`;
+    else if(hasSinInic&&!hasResp&&!hasFecHor) pillHtml=`<span class="pill px">Sin iniciales</span>`;
+    else if(hasResp&&!hasFecHor&&!hasSinInic)  pillHtml=`<span class="pill pp">Resp. diff.</span>`;
+    else if(hasFecHor&&!hasResp&&!hasSinInic)  pillHtml=`<span class="pill pa">Fec/Hora</span>`;
+    else                         pillHtml=`<span class="pill pa">Múltiple</span>`;
 
     // Iniciales con tooltip de nombre completo
     const inicsHtml=oInics==='—'?'<span class="na">—</span>':oInics.split(' & ').map(cod=>{
@@ -933,6 +949,11 @@ function renderInco(wrap){
       difHtml=`<span style="color:var(--blue);font-size:11px">Sin evento en Outlook</span>`;
     } else {
       difHtml=r.diffs.map(d=>{
+        if(d.c==='Sin iniciales')
+          return`<div style="font-size:10.5px;margin:2px 0;color:#555">
+            <b>Sin iniciales:</b> El asunto de Outlook no tiene prefijo de responsable (ej: <code>RZA:</code>).<br>
+            Resp. MB: <span style="font-weight:600">${d.r1}${d.r2&&d.r2!=='-'?' / '+d.r2:''}</span>
+          </div>`;
         if(d.c==='Responsable'){
           const nombresOL=(d.olInics||[]).map(c=>DICT_INICS[c]?`${c} (${DICT_INICS[c]})`:c).join(', ')||d.ol;
           const codMB1=codDeNombre(d.r1),codMB2=codDeNombre(d.r2);
