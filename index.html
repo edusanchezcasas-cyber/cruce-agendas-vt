@@ -451,6 +451,7 @@ td{padding:7px 11px;vertical-align:middle}
 const T={OL:'ol',MB:'mb',DIFF:'diff',OK:'ok',NC:'nc'};
 const C={tid:'tareasid',fecha:'FECHA',hora:'HORA',cli:'CLIENTE',tarea:'TAREA',
          sup:'SUPERVISOR',resp:'RESPONSABLE DE LA TAREA',
+         resp2:'RESPONSABLE DE LA TAREA II',
          exp:'EXP.',estado:'tareaestado'};
 
 let olRows=null,mbRows=null,res=[],curTab='inco',curCruceId=null;
@@ -621,9 +622,6 @@ function nombreDeInic(cod){return DICT_INICS[cod]||cod;}
 function matchResp(olInics,r1,r2){
   if(!olInics||!olInics.length)return true;
   const codsMyBig=[codDeNombre(r1),codDeNombre(r2)].filter(Boolean);
-  // TODAS las iniciales de OL deben encontrarse en los responsables de MB
-  // Ej: SER + SCC → resp1=Solanch Estrella (SER) y resp2=Sandra Carrión (SCC) → OK
-  //     SER + SCC → solo resp1=Solanch Estrella → FALLA (SCC no cubierta)
   return olInics.every(ini=>codsMyBig.some(c=>c===ini||c.startsWith(ini)||ini.startsWith(c)));
 }
 
@@ -888,7 +886,7 @@ function renderInco(wrap){
       <th class="th-std" rowspan="2" style="width:32px">✓</th>
       <th class="th-std" rowspan="2">Inconsistencia</th>
       <th class="th-std" rowspan="2">ID Tarea</th>
-      <th class="th-group-ol" colspan="4">📅 OUTLOOK</th>
+      <th class="th-group-ol" colspan="5">📅 OUTLOOK</th>
       <th class="th-group-mb" colspan="5">📊 MYBIG</th>
       <th class="th-std" rowspan="2" style="min-width:180px">🔍 Diferencias</th>
     </tr>
@@ -897,6 +895,7 @@ function renderInco(wrap){
       <th class="th-ol">Fecha OL</th>
       <th class="th-ol">Hora OL</th>
       <th class="th-ol">Iniciales</th>
+      <th class="th-ol">Supervisor OL</th>
       <th class="th-mb">Cliente</th>
       <th class="th-mb">Tarea MB</th>
       <th class="th-mb">Fecha MB</th>
@@ -911,6 +910,7 @@ function renderInco(wrap){
     const oFec=r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'';
     const oHor=r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'';
     const oInics=exIniciales(asunto).join(' & ')||'—';
+    const oSup=r.ol?String(r.ol['Supervisor']||r.ol['supervisor']||''):'';
     const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,3).join(' / ').slice(0,110);
     const asuntoFull=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'');
 
@@ -987,6 +987,7 @@ function renderInco(wrap){
       <td>${oFec?`<span${fd?' class="dv"':''}>${oFec}</span>`:'<span class="na">—</span>'}</td>
       <td>${oHor?`<span${hd?' class="dv"':''}>${oHor}</span>`:'<span class="na">—</span>'}</td>
       <td style="font-weight:700;color:var(--navy)">${inicsHtml}</td>
+      <td style="font-size:11px;color:var(--navy2)">${oSup||'<span class="na">—</span>'}</td>
       <td>${mCli||'<span class="na">—</span>'}</td>
       <td><span class="trunc" title="${esc(String(r.mb?r.mb[C.tarea]||'':''))}">${esc(mTarea)||'<span class="na">—</span>'}</span></td>
       <td>${mFec?`<span${fd?' class="dv"':''}>${mFec}</span>`:'<span class="na">—</span>'}</td>
@@ -1008,7 +1009,7 @@ function renderSimple(wrap,rows,t){
     let html=`<table><thead>
       <tr>
         <th class="th-std" rowspan="2">ID Tarea</th>
-        <th class="th-group-ol" colspan="4">📅 OUTLOOK</th>
+        <th class="th-group-ol" colspan="5">📅 OUTLOOK</th>
         <th class="th-group-mb" colspan="6">📊 MYBIG</th>
         <th class="th-std" rowspan="2">Estado</th>
       </tr>
@@ -1017,6 +1018,7 @@ function renderSimple(wrap,rows,t){
         <th class="th-ol">Fecha OL</th>
         <th class="th-ol">Hora OL</th>
         <th class="th-ol">Iniciales</th>
+        <th class="th-ol">Supervisor OL</th>
         <th class="th-mb">Cliente</th>
         <th class="th-mb">Tarea MB</th>
         <th class="th-mb">Expediente</th>
@@ -1031,6 +1033,7 @@ function renderSimple(wrap,rows,t){
       const oFec=r.ol?nFec(r.ol.Fecha||r.ol['Start Date']||''):'';
       const oHor=r.ol?nHor(r.ol.HoraInicio||r.ol['Start Time']||''):'';
       const oInics=exIniciales(asunto).join(' & ')||'—';
+      const oSup2=r.ol?String(r.ol['Supervisor']||r.ol['supervisor']||''):'';
       const asuntoCorto=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'').split('/').slice(0,3).join(' / ').slice(0,80);
       const asuntoFull=asunto.replace(/^[A-Z&\s]{2,10}:\s*/,'');
       const inicsHtml=oInics==='—'?'<span class="na">—</span>':oInics.split(' & ').map(cod=>{
@@ -1050,6 +1053,7 @@ function renderSimple(wrap,rows,t){
         <td><span style="color:var(--green);font-weight:600">${oFec}</span></td>
         <td><span style="color:var(--green);font-weight:600">${oHor}</span></td>
         <td style="font-weight:700;color:var(--navy)">${inicsHtml}</td>
+        <td style="font-size:11px;color:var(--navy2);font-weight:600">${oSup2||'<span class="na">—</span>'}</td>
         <td>${r.mb[C.cli]||''}</td>
         <td><span class="trunc">${esc(r.mb[C.tarea]||'')}</span></td>
         <td style="font-size:10.5px">${r.mb[C.exp]||''}</td>
