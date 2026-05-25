@@ -523,15 +523,42 @@ function chkReady(){
 const _p=n=>String(n).padStart(2,'0');
 function nFec(v){
   if(!v&&v!==0)return'';
-  if(v instanceof Date){if(isNaN(v))return'';return _p(v.getDate())+'/'+_p(v.getMonth()+1)+'/'+v.getFullYear();}
+
+  // Date object (cellDates:true) — usar UTC para evitar desfase de zona horaria
+  if(v instanceof Date){
+    if(isNaN(v))return'';
+    return _p(v.getUTCDate())+'/'+_p(v.getUTCMonth()+1)+'/'+v.getUTCFullYear();
+  }
+
+  // Número serial Excel
   if(typeof v==='number'){
     try{const d=new Date(Math.round((v-25569)*86400*1000));if(!isNaN(d))return _p(d.getUTCDate())+'/'+_p(d.getUTCMonth()+1)+'/'+d.getUTCFullYear();}catch(e){}return'';
   }
+
   const s=String(v).trim();if(!s)return'';
+
+  // dd/mm/yyyy  ya normalizado
   if(/^\d{2}\/\d{2}\/\d{4}$/.test(s))return s;
+
+  // ISO yyyy-mm-dd
   if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4);
+
+  // Formato ambiguo d/m/yy, d/m/yyyy, dd/mm/yy, mm/dd/yyyy
   const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
-  if(m){let p1=parseInt(m[1]),p2=parseInt(m[2]);const yr=m[3].length===2?2000+parseInt(m[3]):parseInt(m[3]);return p2>12?_p(p2)+'/'+_p(p1)+'/'+yr:_p(p1)+'/'+_p(p2)+'/'+yr;}
+  if(m){
+    let p1=parseInt(m[1]),p2=parseInt(m[2]);
+    const yr=m[3].length===2?2000+parseInt(m[3]):parseInt(m[3]);
+    // Si p1 > 12 → definitivamente es día (dd/mm)
+    // Si p2 > 12 → definitivamente es día como segundo campo, i.e. mm/dd → invertir a dd/mm
+    // Si ambos ≤ 12 → asumir dd/mm (contexto peruano / macro escribe dd/mm/yyyy)
+    if(p2>12){
+      // Es mm/dd/yyyy → convertir a dd/mm/yyyy
+      return _p(p2)+'/'+_p(p1)+'/'+yr;
+    }else{
+      // Tratar como dd/mm/yyyy (el macro siempre escribe en este orden)
+      return _p(p1)+'/'+_p(p2)+'/'+yr;
+    }
+  }
   return s.slice(0,10);
 }
 function nHor(v){
