@@ -621,7 +621,10 @@ function nombreDeInic(cod){return DICT_INICS[cod]||cod;}
 function matchResp(olInics,r1,r2){
   if(!olInics||!olInics.length)return true;
   const codsMyBig=[codDeNombre(r1),codDeNombre(r2)].filter(Boolean);
-  return olInics.some(ini=>codsMyBig.includes(ini));
+  // TODAS las iniciales de OL deben encontrarse en los responsables de MB
+  // Ej: SER + SCC → resp1=Solanch Estrella (SER) y resp2=Sandra Carrión (SCC) → OK
+  //     SER + SCC → solo resp1=Solanch Estrella → FALLA (SCC no cubierta)
+  return olInics.every(ini=>codsMyBig.some(c=>c===ini||c.startsWith(ini)||ini.startsWith(c)));
 }
 
 // Genera tooltip con nombre completo para un código
