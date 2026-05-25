@@ -828,6 +828,14 @@ function toggleLeyenda(){
 function sTab(t){
   curTab=t;
   ['inco','ok'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
+  // Limpiar filtro Tipo al cambiar pestaña — evita que un filtro de inconsistencias
+  // quede activo en la pestaña Todo correcto y muestre vacío
+  const selTipo=document.getElementById('f-tipo');
+  if(selTipo)selTipo.value='';
+  ['mb','diff','resp'].forEach(t=>{
+    const ic=document.getElementById('ic-'+t);
+    if(ic)ic.classList.remove('active-filter');
+  });
   render();
 }
 function render(){
