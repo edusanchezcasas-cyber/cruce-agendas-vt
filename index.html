@@ -289,7 +289,6 @@ td{padding:7px 11px;vertical-align:middle}
       <div class="sc cb"><div class="sn" id="s3">0</div><div class="sl">⚠ Sin evento OL</div></div>
       <div class="sc ca"><div class="sn" id="s4">0</div><div class="sl">⚠ Fecha/Hora diff.</div></div>
       <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">⚠ Resp. no coincide</div></div>
-      <div class="sc cr"><div class="sn" id="s2">0</div><div class="sl">Solo OL (sin MB)</div></div>
       <div class="sc ck"><div class="sn" id="s6">0</div><div class="sl">✔ Verificados</div></div>
     </div>
 
@@ -297,7 +296,6 @@ td{padding:7px 11px;vertical-align:middle}
     <div class="tabbar">
       <button class="tab active" id="tab-inco" onclick="sTab('inco')">⚠ Inconsistencias <span class="tbadge tba" id="tb-inco">0</span></button>
       <button class="tab" id="tab-ok" onclick="sTab('ok')">🟢 Todo correcto <span class="tbadge tbg" id="tb-ok">0</span></button>
-      <button class="tab" id="tab-nc" onclick="sTab('nc')">⚫ Sin código OL <span class="tbadge tbx" id="tb-nc">0</span></button>
       <button class="tab" onclick="toggleLeyenda()" id="tab-leyenda" style="margin-left:auto;color:var(--muted);font-size:11px">❓ ¿Qué significa cada indicador?</button>
     </div>
 
@@ -355,7 +353,7 @@ td{padding:7px 11px;vertical-align:middle}
     <div class="filters">
       <div class="fg"><label>Supervisor</label><select id="f-sup" onchange="render()"><option value="">Todos</option></select></div>
       <div class="fg"><label>Responsable</label><select id="f-resp" onchange="render()"><option value="">Todos</option></select></div>
-      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="mb">🔵 Sin evento en Outlook</option><option value="diff">🟡 Fecha/Hora diff.</option><option value="resp">🟣 Resp. no coincide</option><option value="ol">🔴 Solo OL (sin MB)</option></select></div>
+      <div class="fg"><label>Tipo</label><select id="f-tipo" onchange="render()"><option value="">Todos</option><option value="mb">🔵 Sin evento en Outlook</option><option value="diff">🟡 Fecha/Hora diff.</option><option value="resp">🟣 Resp. no coincide</option></select></div>
       <div class="fg"><label>Estado</label><select id="f-est" onchange="render()"><option value="">Todos</option><option value="0">Pendientes</option><option value="1">Verificados</option></select></div>
       <div class="fg"><label>Desde</label><input type="date" id="f-desde" onchange="render()"/></div>
       <div class="fg"><label>Hasta</label><input type="date" id="f-hasta" onchange="render()"/></div>
@@ -746,10 +744,9 @@ function _run(){
   document.getElementById('s5').textContent=cntResp;
   document.getElementById('s6').textContent=0;
 
-  const ti=cnt(T.OL)+sinEventoOL+cnt(T.DIFF);
+  const ti=sinEventoOL+cnt(T.DIFF);
   document.getElementById('tb-inco').textContent=ti;
   document.getElementById('tb-ok').textContent=cnt(T.OK);
-  document.getElementById('tb-nc').textContent=cnt(T.NC);
 
   if(fechas.length){
     const mn=new Date(Math.min(...fechas.map(f=>f.getTime()))),mx=new Date(Math.max(...fechas.map(f=>f.getTime())));
@@ -807,7 +804,7 @@ function filtrarPorTarjeta(tipo){
   const actual=sel.value;
   sel.value=(actual===tipo)?'':tipo;
   // Resaltar tarjeta activa
-  ['mb','diff','resp','ol'].forEach(t=>{
+  ['mb','diff','resp'].forEach(t=>{
     const ic=document.getElementById('ic-'+t);
     if(ic)ic.classList.toggle('active-filter',sel.value===t);
   });
@@ -830,14 +827,13 @@ function toggleLeyenda(){
 
 function sTab(t){
   curTab=t;
-  ['inco','ok','nc'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
+  ['inco','ok'].forEach(id=>document.getElementById('tab-'+id).classList.toggle('active',id===t));
   render();
 }
 function render(){
   const wrap=document.getElementById('tableWrap');
   if(curTab==='inco'){renderInco(wrap);return;}
-  if(curTab==='ok'){renderSimple(wrap,applyF(res.filter(r=>r.tipo===T.OK)),'ok');return;}
-  renderSimple(wrap,applyF(res.filter(r=>r.tipo===T.NC)),'nc');
+  renderSimple(wrap,applyF(res.filter(r=>r.tipo===T.OK)),'ok');
 }
 
 // ── INCO TABLE (lado a lado) ──────────────────────────────
@@ -854,7 +850,6 @@ function renderInco(wrap){
       <div class="ic icb" id="ic-mb" onclick="filtrarPorTarjeta('mb')" title="Clic para filtrar"><div class="ic-n">${res.filter(r=>r.tipo===T.MB).length}</div><div><div class="ic-l">🔵 Sin evento en Outlook</div><div class="ic-d">En MyBig pero sin cita agendada</div></div></div>
       <div class="ic ica" id="ic-diff" onclick="filtrarPorTarjeta('diff')" title="Clic para filtrar"><div class="ic-n">${fechDi.length}</div><div><div class="ic-l">🟡 Fecha / Hora diferente</div><div class="ic-d">Dato desactualizado en uno de los sistemas</div></div></div>
       <div class="ic icp" id="ic-resp" onclick="filtrarPorTarjeta('resp')" title="Clic para filtrar"><div class="ic-n">${respDi.length}</div><div><div class="ic-l">🟣 Responsable no coincide</div><div class="ic-d">Iniciales OL ≠ responsable en MyBig</div></div></div>
-      <div class="ic icr" id="ic-ol" onclick="filtrarPorTarjeta('ol')" style="opacity:.6" title="Clic para filtrar"><div class="ic-n">${res.filter(r=>r.tipo===T.OL).length}</div><div><div class="ic-l">🔴 Solo Outlook</div><div class="ic-d">tareasid no existe en MyBig</div></div></div>
     </div>
     <p style="font-size:11px;color:var(--muted)">Haz clic en una tarjeta para filtrar · marca ✓ cada fila revisada</p>
   </div>`;
