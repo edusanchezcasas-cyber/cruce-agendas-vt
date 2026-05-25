@@ -919,9 +919,9 @@ function renderInco(wrap){
     const mFec=r.mb?nFec(r.mb[C.fecha]):'';
     const mHor=r.mb?nHor(r.mb[C.hora]):'';
     const mResp=r.mb?String(r.mb[C.resp]||''):'';
-    const mResp2=r.mb?String(r.mb[document.getElementById('colResp2').value]||r.mb['RESPONSABLE DE LA TAREA II']||''):'';
+    const mResp2=r.mb?String(r.mb['RESPONSABLE DE LA TAREA II']||r.mb[(document.getElementById('colResp2')?.value)||'RESPONSABLE DE LA TAREA II']||''):'';
     // Mostrar ambos responsables si hay dos
-    const mRespDisplay=mResp+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
+    const mRespDisplay=(mResp)+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
 
     const fd=r.diffs?.some(d=>d.c==='Fecha');
     const hd=r.diffs?.some(d=>d.c==='Hora');
@@ -1040,9 +1040,9 @@ function renderSimple(wrap,rows,t){
         const nombre=DICT_INICS[cod]||cod;
         return`<span class="tid" title="${nombre}" style="cursor:help;margin-right:2px">${cod}</span>`;
       }).join('');
-      const cR2=document.getElementById('colResp2')?.value||'RESPONSABLE DE LA TAREA II';
+      const cR2='RESPONSABLE DE LA TAREA II';
       const mResp2=r.mb?String(r.mb[cR2]||''):'';
-      const mRespDisplay=r.mb[C.resp]||''+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
+      const mRespDisplay=(r.mb[C.resp]||'')+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
 
       return`<tr style="background:#F5FFF8">
         <td><span class="tid">#${r.tid}</span></td>
