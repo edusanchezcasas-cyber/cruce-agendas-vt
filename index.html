@@ -284,13 +284,23 @@ td{padding:7px 11px;vertical-align:middle}
 
     <!-- STATS -->
     <div class="stats">
-      <div class="sc cn"><div class="sn" id="s0">0</div><div class="sl">Total Outlook</div></div>
+      <div class="sc cn">
+        <div class="sn" id="s0">0</div>
+        <div class="sl">Total IDs enviados</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px" id="s0-sub"></div>
+      </div>
       <div class="sc cg"><div class="sn" id="s1">0</div><div class="sl">✔ Todo correcto</div></div>
       <div class="sc cb"><div class="sn" id="s3">0</div><div class="sl">⚠ Sin evento OL</div></div>
       <div class="sc ca"><div class="sn" id="s4">0</div><div class="sl">⚠ Fecha/Hora diff.</div></div>
       <div class="sc cp"><div class="sn" id="s5">0</div><div class="sl">⚠ Resp. no coincide</div></div>
       <div class="sc" style="border-top:3px solid #888"><div class="sn" id="s7" style="color:#555">0</div><div class="sl">⚠ Sin iniciales OL</div></div>
       <div class="sc ck"><div class="sn" id="s6">0</div><div class="sl">✔ Verificados</div></div>
+    </div>
+
+    <!-- RESUMEN DE CUADRE -->
+    <div id="resumenCuadre" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px 18px;margin-bottom:18px;font-size:12px">
+      <div style="font-weight:600;color:var(--navy);margin-bottom:8px">📊 Resumen de cuadre</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap" id="resumenDetalle"></div>
     </div>
 
     <!-- SUB TABS -->
@@ -741,22 +751,67 @@ function _run(){
     if(t&&!olIdx[t])res.push({tipo:T.MB,tid:t,ol:null,mb:r,diffs:[]});
   });
 
-  // Stats
-  const cnt=t=>res.filter(r=>r.tipo===t).length;
-  const cntResp=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
-  const cntSinInic=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')).length;
-  const sinEventoOL=res.filter(r=>r.tipo===T.MB).length;
-  document.getElementById('s0').textContent=olRows.filter(r=>String(r['EstadoOL']||'').toUpperCase()!=='SIN EVENTO EN OUTLOOK').length;
-  document.getElementById('s1').textContent=cnt(T.OK);
-  document.getElementById('s3').textContent=sinEventoOL;
-  document.getElementById('s4').textContent=res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales')).length;
-  document.getElementById('s5').textContent=cntResp;
-  document.getElementById('s6').textContent=0;
-  document.getElementById('s7').textContent=cntSinInic;
+  // Stats — lógica correcta de cuadre
+  // totalIDs = todos los IDs enviados (olRows = FILTRO_IDs)
+  const totalIDs = olRows.length;
+  // encontradosOL = tienen evento en Outlook
+  const encontradosOL = olRows.filter(r=>String(r['EstadoOL']||'').toUpperCase()!=='SIN EVENTO EN OUTLOOK').length;
+  // sinEventoOL = no tienen evento en Outlook
+  const sinEventoOL = res.filter(r=>r.tipo===T.MB).length;
 
-  const ti=sinEventoOL+cnt(T.DIFF);
-  document.getElementById('tb-inco').textContent=ti;
-  document.getElementById('tb-ok').textContent=cnt(T.OK);
+  // De los encontrados: cuántos están bien vs cuántos tienen algún diff
+  const cntOK  = res.filter(r=>r.tipo===T.OK).length;
+  const cntDIFF = res.filter(r=>r.tipo===T.DIFF).length;
+
+  // Breakdown de tipos de diff (una fila puede tener varios)
+  const cntFecHor  = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Fecha'||d.c==='Hora')).length;
+  const cntResp    = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
+  const cntSinInic = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')).length;
+
+  document.getElementById('s0').textContent = totalIDs;
+  document.getElementById('s0-sub').textContent = encontradosOL + ' encontrados / ' + sinEventoOL + ' sin evento';
+  document.getElementById('s1').textContent = cntOK;
+  document.getElementById('s3').textContent = sinEventoOL;
+  document.getElementById('s4').textContent = cntFecHor;
+  document.getElementById('s5').textContent = cntResp;
+  document.getElementById('s6').textContent = 0;
+  document.getElementById('s7').textContent = cntSinInic;
+
+  // Resumen de cuadre: verificar que totalIDs = encontradosOL + sinEventoOL
+  // y que encontradosOL = cntOK + cntDIFF
+  const cuadraTotal = (encontradosOL + sinEventoOL) === totalIDs;
+  const cuadraEncontrados = (cntOK + cntDIFF) === encontradosOL;
+
+  const rc = document.getElementById('resumenCuadre');
+  const rd = document.getElementById('resumenDetalle');
+  rc.style.display = 'block';
+
+  const item = (lbl, val, color) =>
+    `<div style="display:flex;flex-direction:column;gap:2px;min-width:140px">
+      <div style="font-size:18px;font-weight:700;color:${color}">${val}</div>
+      <div style="font-size:11px;color:var(--muted)">${lbl}</div>
+    </div>`;
+
+  const sep = `<div style="width:1px;background:var(--border);margin:0 4px"></div>`;
+
+  rd.innerHTML =
+    item('Total IDs (MyBig)', totalIDs, 'var(--navy)') + sep +
+    item('Encontrados en OL', encontradosOL, 'var(--green)') + sep +
+    item('Sin evento OL', sinEventoOL, 'var(--blue)') + sep +
+    item('Con inconsistencia', cntDIFF, 'var(--amber)') + sep +
+    item('Todo correcto', cntOK, 'var(--green)') +
+    `<div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11.5px">` +
+    `<span style="color:${cuadraTotal?'var(--green)':'var(--red)'}">
+      ${cuadraTotal ? '✔ Cuadra: '+encontradosOL+' + '+sinEventoOL+' = '+totalIDs : '⚠ No cuadra: '+encontradosOL+' + '+sinEventoOL+' ≠ '+totalIDs}
+    </span>` +
+    `<span style="color:${cuadraEncontrados?'var(--green)':'var(--red)'}">
+      ${cuadraEncontrados ? '✔ Cuadra: '+cntOK+' + '+cntDIFF+' = '+encontradosOL : '⚠ '+cntOK+' + '+cntDIFF+' ≠ '+encontradosOL}
+    </span>` +
+    `</div>`;
+
+  const ti = sinEventoOL + cntDIFF;
+  document.getElementById('tb-inco').textContent = ti;
+  document.getElementById('tb-ok').textContent = cntOK;
 
   if(fechas.length){
     // También incluir fechas de MyBig para cubrir las filas "Sin evento OL"
