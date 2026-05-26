@@ -576,7 +576,18 @@ function nHor(v){
   if(typeof v==='number'){const t=Math.round(v*24*60);return _p(Math.floor(t/60)%24)+':'+_p(t%60);}
   const s=String(v).trim();if(!s)return'';
   const m=s.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/i);
-  if(m){let h=parseInt(m[1]),mn=parseInt(m[2]);const sf=(m[3]||'').toUpperCase();if(sf==='PM'&&h<12)h+=12;if(sf==='AM'&&h===12)h=0;return _p(h)+':'+_p(mn);}
+  if(m){
+    let h=parseInt(m[1]),mn=parseInt(m[2]);
+    const sf=(m[3]||'').toUpperCase();
+    if(sf==='PM'&&h<12)h+=12;
+    else if(sf==='AM'&&h===12)h=0;
+    else if(!sf){
+      // Sin AM/PM: en contexto de diligencias judiciales no hay audiencias
+      // de madrugada — si la hora es 1-6, casi seguro es PM (13-18h)
+      if(h>=1&&h<=6)h+=12;
+    }
+    return _p(h)+':'+_p(mn);
+  }
   return s.slice(0,5);
 }
 function toISO(s){if(!s||s.length<10)return'';const p=s.split('/');return p.length===3?p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0'):''}
