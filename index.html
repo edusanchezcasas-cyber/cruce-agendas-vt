@@ -774,8 +774,9 @@ function _run(){
   const cntOK  = res.filter(r=>r.tipo===T.OK).length;
   const cntDIFF = res.filter(r=>r.tipo===T.DIFF).length;
 
-  // Breakdown de tipos de diff (una fila puede tener varios)
-  const cntFecHor  = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Fecha'||d.c==='Hora')).length;
+  // Breakdown de tipos de diff — usando la MISMA condición que los filtros
+  // para que el número del stat coincida exactamente con lo que se ve al hacer clic
+  const cntFecHor  = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales')).length;
   const cntResp    = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
   const cntSinInic = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')).length;
 
