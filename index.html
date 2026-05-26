@@ -776,8 +776,7 @@ function _run(){
 
   // Breakdown de tipos de diff — usando la MISMA condición que los filtros
   // para que el número del stat coincida exactamente con lo que se ve al hacer clic
-  const cntFecHor  = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales')).length;
-  const cntResp    = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
+  const cntFecHor  = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales')).length;  const cntResp    = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Responsable')).length;
   const cntSinInic = res.filter(r=>r.tipo===T.DIFF&&r.diffs.some(d=>d.c==='Sin iniciales')).length;
 
   document.getElementById('s0').textContent = totalIDs;
@@ -935,7 +934,7 @@ function renderInco(wrap){
   const checks=getChecks(curCruceId||'tmp');
 
   const respDi=inco.filter(r=>r.diffs?.some(d=>d.c==='Responsable'));
-  const fechDi=inco.filter(r=>r.diffs?.some(d=>d.c!=='Responsable'));
+  const fechDi=inco.filter(r=>r.diffs?.some(d=>d.c!=='Responsable'&&d.c!=='Sin iniciales'));
 
   let html=`<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--card)">
     <div class="icards">
