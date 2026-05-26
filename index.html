@@ -759,6 +759,11 @@ function _run(){
   document.getElementById('tb-ok').textContent=cnt(T.OK);
 
   if(fechas.length){
+    // También incluir fechas de MyBig para cubrir las filas "Sin evento OL"
+    mbRows.forEach(r=>{
+      const fMB=nFec(r[cFec]);
+      if(fMB){const d=new Date(toISO(fMB));if(!isNaN(d))fechas.push(d);}
+    });
     const mn=new Date(Math.min(...fechas.map(f=>f.getTime()))),mx=new Date(Math.max(...fechas.map(f=>f.getTime())));
     document.getElementById('rangoPill').textContent=nFec(mn)+' → '+nFec(mx);
   }
