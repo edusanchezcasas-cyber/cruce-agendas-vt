@@ -2457,7 +2457,7 @@ function rsClearFiltros(){
   ['rs-desde','rs-hasta'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ssSelected['org']='';ssInit('org',ssOpts['org']||[]);
   COL_KEYS.forEach(k=>{ssSelected[k]='';});
-  ['sr-exp','sr-cli','sr-tarea','sr-proc','sr-dilig','sr-est'].forEach(k=>{ssSelected[k]='';ssOpts[k]=undefined;});
+  ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est'].forEach(k=>{ssSelected[k]='';ssOpts[k]=undefined;});
   rsRender();
 }
 
@@ -2620,6 +2620,7 @@ function rsRenderAbogado(){
         ['sr-exp',  r=>String(r[C.exp]||'').trim()],
         ['sr-cli',  r=>String(r[C.cli]||'').trim()],
         ['sr-tarea',r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
+        ['sr-org',  r=>String(r[C.org]||'').trim()],
         ['sr-proc', r=>String(r[C.respProc]||'').trim()],
         ['sr-dilig',r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}],
       ];
@@ -2636,6 +2637,8 @@ function rsRenderAbogado(){
     if(srExp)    diligSR=diligSR.filter(r=>String(r[C.exp]||'').toLowerCase().includes(srExp));
     if(srCli)    diligSR=diligSR.filter(r=>String(r[C.cli]||'').toLowerCase().includes(srCli));
     if(srTarea)  diligSR=diligSR.filter(r=>String(r[C.tarea]||'').toLowerCase().includes(srTarea));
+    const srOrg  =(ssSelected['sr-org']  ||'').toLowerCase();
+    if(srOrg)    diligSR=diligSR.filter(r=>String(r[C.org]||'').toLowerCase().includes(srOrg));
     if(srProc)   diligSR=diligSR.filter(r=>String(r[C.respProc]||'').toLowerCase().includes(srProc));
     if(srDilig)  diligSR=diligSR.filter(r=>(String(r[C.resp]||'')+' '+String(r[C.resp2]||'')).toLowerCase().includes(srDilig));
     if(srEst){
@@ -2725,11 +2728,12 @@ function rsRenderAbogado(){
         <span>Todas las diligencias — ordenadas por fecha · <strong>${diligSR.length}</strong> de ${dilig.length}</span>
         ${Object.keys(ssOpts).some(k=>k.startsWith('sr-')&&ssSelected[k])?`<button class="fclear" onclick="srLimpiarFiltros()" style="font-size:10.5px">Limpiar filtros</button>`:''}
       </div>
-      <table style="min-width:1100px;border-collapse:collapse;font-size:12px"><thead>
+      <table style="min-width:1200px;border-collapse:collapse;font-size:12px"><thead>
       <tr>
         <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
         <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
-        <th class="th-std">Tarea</th><th class="th-std">Resp. proceso</th>
+        <th class="th-std">Tarea</th><th class="th-std">Órgano Jurisd.</th>
+        <th class="th-std">Resp. proceso</th>
         <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
       </tr>
       <tr>
@@ -2737,6 +2741,7 @@ function rsRenderAbogado(){
         <th class="th-filter">${srCC('sr-exp','Exp...')}</th>
         <th class="th-filter">${srCC('sr-cli','Cliente...')}</th>
         <th class="th-filter">${srCC('sr-tarea','Tarea...')}</th>
+        <th class="th-filter">${srCC('sr-org','Organo...')}</th>
         <th class="th-filter">${srCC('sr-proc','Resp. proceso...')}</th>
         <th class="th-filter">${srCC('sr-dilig','Resp. diligencia...')}</th>
         <th class="th-filter">${srCC('sr-est','Estado...')}</th>
@@ -2766,6 +2771,7 @@ function rsRenderAbogado(){
         <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
         <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
         <td style="padding:7px 10px;font-size:11px;max-width:200px;white-space:normal;word-break:break-word">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
+        <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}</td>
         <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
         <td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">${respDisplay}</td>
         <td style="padding:7px 10px">${estadoHtml}</td>
@@ -2776,7 +2782,7 @@ function rsRenderAbogado(){
 
     tabla.innerHTML=html;
     // Inicializar mini-dropdowns de la tabla resumen
-    ['sr-exp','sr-cli','sr-tarea','sr-proc','sr-dilig','sr-est'].forEach(k=>ssInit(k,ssOpts[k]||[]));
+    ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est'].forEach(k=>ssInit(k,ssOpts[k]||[]));
     return;
   }
 
@@ -2912,7 +2918,7 @@ function rsRenderAbogado(){
 }
 
 function srLimpiarFiltros(){
-  ['sr-exp','sr-cli','sr-tarea','sr-proc','sr-dilig','sr-est'].forEach(k=>{
+  ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est'].forEach(k=>{
     ssSelected[k]='';ssOpts[k]=undefined;
   });
   rsRender();
