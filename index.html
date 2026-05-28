@@ -269,14 +269,14 @@ td{padding:7px 11px;vertical-align:middle}
 .rs-empty{text-align:center;padding:48px;color:var(--muted)}
 .rs-empty .ei{font-size:36px;margin-bottom:10px}
 /* Tarjetas resumen por abogado */
-.rs-resumen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding:4px 2px}
-.rs-abog-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .15s;position:relative}
-.rs-abog-card:hover{border-color:var(--navy);box-shadow:0 3px 12px rgba(31,56,100,.12);transform:translateY(-1px)}
-.rs-abog-card.has-prop{border-left:4px solid var(--amber)}
-.rs-abog-name{font-weight:700;font-size:13.5px;color:var(--navy);margin-bottom:6px}
-.rs-abog-count{font-family:'DM Serif Display',serif;font-size:28px;line-height:1;color:var(--navy)}
-.rs-abog-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
-.rs-abog-badge{position:absolute;top:12px;right:12px}
+.rs-resumen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;padding:4px 2px}
+.rs-abog-card{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:9px 11px;cursor:pointer;transition:all .15s;position:relative}
+.rs-abog-card:hover{border-color:var(--navy);box-shadow:0 2px 6px rgba(31,56,100,.1);transform:translateY(-1px)}
+.rs-abog-card.has-prop{border-left:3px solid var(--amber)}
+.rs-abog-name{font-weight:700;font-size:11px;color:var(--navy);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-abog-count{font-family:'DM Serif Display',serif;font-size:18px;line-height:1;color:var(--navy)}
+.rs-abog-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+.rs-abog-badge{position:absolute;top:6px;right:6px}
 
 /* ─ AGENDA / CALENDARIO ─ */
 .ag-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
@@ -1003,10 +1003,28 @@ function detectCols(){
     }
     return candidatos[0]; // default
   }
+  C.resp    =mejor(['RESPONSABLE DE LA TAREA','RESPONSABLE TAREA','RESP. TAREA']);
+  // Usar el valor del input colResp2 como fuente autoritativa si existe en las columnas
+  const colResp2Input=document.getElementById('colResp2')?.value||'RESPONSABLE DE LA TAREA II';
+  const colResp2Exacto=keys.find(k=>norm(k)===norm(colResp2Input));
+  if(colResp2Exacto){
+    C.resp2=colResp2Exacto;
+  } else {
+    C.resp2=mejor(['RESPONSABLE DE LA TAREA II','RESPONSABLE DE LA TAREA 2','RESPONSABLE TAREA II','RESPONSABLE TAREA 2','RESP. TAREA II','RESP. TAREA 2']);
+  }
+  // Asegurar que resp2 no apunte a la misma columna que resp
+  if(C.resp2===C.resp){
+    const r2=keys.find(k=>{const n=norm(k);return(n.endsWith(' ii')||n.endsWith(' 2'))&&n.includes('responsable')&&n.includes('tarea');});
+    if(r2)C.resp2=r2;
+  }
+  C.respProc=mejor(['RESPONSABLE DEL PROCESO','ABOGADO RESPONSABLE','RESPONSABLE PROCESO','RESP. PROCESO']);
   C.respProc=mejor(['RESPONSABLE DEL PROCESO','ABOGADO RESPONSABLE','RESPONSABLE PROCESO','RESP. PROCESO']);
   C.org     =mejor(['ORGANO JURISDICCIONAL','ÓRGANO JURISDICCIONAL','ORGANO JURISD.','ORGANO JURISD','JUZGADO']);
   C.via     =mejor(['VIA PROCESAL','VÍA PROCESAL','TIPO DE PROCESO','VIA']);
   C.contra  =mejor(['CONTRAPARTE','DEMANDANTE','PARTE CONTRARIA','TRABAJADOR']);
+  // Diagnóstico: ver qué columnas se detectaron
+  console.log('[CID] detectCols → resp:', JSON.stringify(C.resp), '| resp2:', JSON.stringify(C.resp2));
+  console.log('[CID] Columnas con "responsable":', keys.filter(k=>norm(k).includes('responsable')));
 }
 
 let olRows=null,mbRows=null,res=[],curTab='inco',curCruceId=null;
@@ -2416,6 +2434,7 @@ function rsClearFiltros(){
   ['rs-desde','rs-hasta'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ssSelected['org']='';ssInit('org',ssOpts['org']||[]);
   COL_KEYS.forEach(k=>{ssSelected[k]='';});
+  ['sr-exp','sr-cli','sr-tarea','sr-proc','sr-dilig','sr-est'].forEach(k=>{ssSelected[k]='';ssOpts[k]=undefined;});
   rsRender();
 }
 
@@ -2474,7 +2493,7 @@ function rsRender(){
 
 function rsEliminarPropuesta(tid){
   if(!confirm('¿Eliminar esta propuesta? Esta acción no se puede deshacer.'))return;
-  const arr=rsGetAll().filter(p=>!(p.tid===tid&&p.estado==='propuesta'));
+  const arr=rsGetAll().filter(p=>!(p.tid===tid&&p.estado!=='ejecutada'));
   rsSave(arr);
   rsRender();
 }
@@ -2507,12 +2526,18 @@ function rsRenderAbogado(){
 
   // ── VISTA RESUMEN: si no hay ningún filtro activo, mostrar tarjetas por abogado ──
   if(!fDilig&&!fProc&&!fVia&&!fOrg&&!fDesde&&!fHasta&&!hayFiltroCol){
-    // Agrupar por resp. diligencia
+    // Agrupar por resp. diligencia (incluyendo resp2)
     const grupos={};
     dilig.forEach(r=>{
-      const resp=String(r[C.resp]||'Sin asignar').trim();
+      const resp =String(r[C.resp]||'Sin asignar').trim();
+      const resp2=String(r[C.resp2]||'').trim();
       if(!grupos[resp])grupos[resp]=[];
       grupos[resp].push(r);
+      // Si hay segundo responsable distinto, también aparece en su tarjeta
+      if(resp2&&resp2!=='-'&&resp2!==resp){
+        if(!grupos[resp2])grupos[resp2]=[];
+        grupos[resp2].push(r);
+      }
     });
     const totalDilig=dilig.length;
     let html=`<div style="padding:16px">
@@ -2535,10 +2560,64 @@ function rsRenderAbogado(){
     });
     html+=`</div></div>`;
 
-    // Tabla completa de todas las diligencias debajo de las tarjetas
+    // ── Variables de filtro de la tabla resumen ──
+    const srExp   =(ssSelected['sr-exp']   ||'').toLowerCase();
+    const srCli   =(ssSelected['sr-cli']   ||'').toLowerCase();
+    const srTarea =(ssSelected['sr-tarea'] ||'').toLowerCase();
+    const srProc  =(ssSelected['sr-proc']  ||'').toLowerCase();
+    const srDilig =(ssSelected['sr-dilig'] ||'').toLowerCase();
+    const srEst   =(ssSelected['sr-est']   ||'').toLowerCase();
+
+    // Poblar opciones si aún no están
+    if(!ssOpts['sr-exp']){
+      const SR_DEFS=[
+        ['sr-exp',  r=>String(r[C.exp]||'').trim()],
+        ['sr-cli',  r=>String(r[C.cli]||'').trim()],
+        ['sr-tarea',r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
+        ['sr-proc', r=>String(r[C.respProc]||'').trim()],
+        ['sr-dilig',r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}],
+      ];
+      SR_DEFS.forEach(([key,fn])=>{
+        const vals=new Set();dilig.forEach(r=>{const v=fn(r);if(v)vals.add(v);});
+        ssOpts[key]=[...vals].sort();if(ssSelected[key]===undefined)ssSelected[key]='';
+      });
+      ssOpts['sr-est']=['🟡 Pendiente','🟢 Confirmada','🔵 Ejecutada','— Sin propuesta'];
+      if(ssSelected['sr-est']===undefined)ssSelected['sr-est']='';
+    }
+
+    // Aplicar filtros sobre dilig
+    let diligSR=[...dilig];
+    if(srExp)    diligSR=diligSR.filter(r=>String(r[C.exp]||'').toLowerCase().includes(srExp));
+    if(srCli)    diligSR=diligSR.filter(r=>String(r[C.cli]||'').toLowerCase().includes(srCli));
+    if(srTarea)  diligSR=diligSR.filter(r=>String(r[C.tarea]||'').toLowerCase().includes(srTarea));
+    if(srProc)   diligSR=diligSR.filter(r=>String(r[C.respProc]||'').toLowerCase().includes(srProc));
+    if(srDilig)  diligSR=diligSR.filter(r=>(String(r[C.resp]||'')+' '+String(r[C.resp2]||'')).toLowerCase().includes(srDilig));
+    if(srEst){
+      diligSR=diligSR.filter(r=>{
+        const tid=String(r[C.tid]||'').trim();
+        const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
+        if(srEst.includes('sin propuesta'))return!prop;
+        if(srEst.includes('pendiente'))return prop&&prop.estado==='propuesta';
+        if(srEst.includes('confirmada'))return prop&&prop.estado==='confirmada';
+        if(srEst.includes('ejecutada'))return prop&&prop.estado==='ejecutada';
+        return true;
+      });
+    }
+
+    // Ordenar por fecha
+    diligSR.sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha]))));
+
+    const srCC=(key,ph)=>`<div class="ss-wrap ss-mini" id="ss-${key}" style="width:100%">
+      <input type="text" class="ss-input" id="ss-${key}-input" placeholder="${ph}" autocomplete="off" spellcheck="false"
+        oninput="ssFilter('${key}')" onfocus="ssOpen('${key}')" onblur="ssBlur('${key}')">
+      <button class="ss-clear-btn" onclick="ssClear('${key}')" tabindex="-1">✕</button>
+      <div class="ss-list" id="ss-${key}-list"></div>
+    </div>`;
+
     html+=`<div style="margin-top:18px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px">
-        Todas las diligencias del equipo — ordenadas por fecha
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px;display:flex;align-items:center;justify-content:space-between">
+        <span>Todas las diligencias — ordenadas por fecha · <strong>${diligSR.length}</strong> de ${dilig.length}</span>
+        ${Object.keys(ssOpts).some(k=>k.startsWith('sr-')&&ssSelected[k])?`<button class="fclear" onclick="srLimpiarFiltros()" style="font-size:10.5px">Limpiar filtros</button>`:''}
       </div>
       <table style="min-width:1100px;border-collapse:collapse;font-size:12px"><thead>
       <tr>
@@ -2546,9 +2625,20 @@ function rsRenderAbogado(){
         <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
         <th class="th-std">Tarea</th><th class="th-std">Resp. proceso</th>
         <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
-      </tr></thead><tbody>`;
-    const todasDilig=[...dilig].sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha]))));
-    todasDilig.forEach(r=>{
+      </tr>
+      <tr>
+        <th class="th-filter"></th><th class="th-filter"></th><th class="th-filter"></th>
+        <th class="th-filter">${srCC('sr-exp','Exp...')}</th>
+        <th class="th-filter">${srCC('sr-cli','Cliente...')}</th>
+        <th class="th-filter">${srCC('sr-tarea','Tarea...')}</th>
+        <th class="th-filter">${srCC('sr-proc','Resp. proceso...')}</th>
+        <th class="th-filter">${srCC('sr-dilig','Resp. diligencia...')}</th>
+        <th class="th-filter">${srCC('sr-est','Estado...')}</th>
+        <th class="th-filter"></th>
+      </tr>
+      </thead><tbody>`;
+
+    diligSR.forEach(r=>{
       const tid=String(r[C.tid]||'').trim();
       const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
       let estadoHtml='<span style="font-size:11px;color:var(--muted)">—</span>';
@@ -2557,9 +2647,12 @@ function rsRenderAbogado(){
         const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
         const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
         estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
-        const elimBtn=prop.estado==='propuesta'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
+        const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
         accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
       }
+      const respV =String(r[C.resp]||'').trim();
+      const resp2v=String(r[C.resp2]||'').trim();
+      const respDisplay=respV+(resp2v&&resp2v!=='-'&&resp2v!==respV?`<br><span style="font-size:10px;color:var(--muted);font-weight:400">${esc(resp2v)}</span>`:'');
       html+=`<tr style="background:#FAFBFC;border-bottom:1px solid var(--border)">
         <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
         <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
@@ -2568,7 +2661,7 @@ function rsRenderAbogado(){
         <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
         <td style="padding:7px 10px;font-size:11px;max-width:200px;white-space:normal;word-break:break-word">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
         <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
-        <td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">${esc(String(r[C.resp]||''))}</td>
+        <td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">${respDisplay}</td>
         <td style="padding:7px 10px">${estadoHtml}</td>
         <td style="padding:7px 10px">${accionHtml}</td>
       </tr>`;
@@ -2576,6 +2669,8 @@ function rsRenderAbogado(){
     html+=`</tbody></table></div>`;
 
     tabla.innerHTML=html;
+    // Inicializar mini-dropdowns de la tabla resumen
+    ['sr-exp','sr-cli','sr-tarea','sr-proc','sr-dilig','sr-est'].forEach(k=>ssInit(k,ssOpts[k]||[]));
     return;
   }
 
@@ -2713,6 +2808,13 @@ function rsRenderAbogado(){
   html+=`</tbody></table>`;
   tabla.innerHTML=html;
   initColFilters();
+}
+
+function srLimpiarFiltros(){
+  ['sr-exp','sr-cli','sr-tarea','sr-proc','sr-dilig','sr-est'].forEach(k=>{
+    ssSelected[k]='';ssOpts[k]=undefined;
+  });
+  rsRender();
 }
 
 function rsVerAbogado(nombre){
@@ -3139,7 +3241,8 @@ function renderMes(){
     const max=3;
     evs.slice(0,max).forEach(ev=>{
       const cls=supClase(ev.sup);
-      html+=`<div class="cal-evento ${cls}" onclick="event.stopPropagation();abrirEvento('${ev.tid}')" title="${esc(ev.tarea)} — ${ev.hora}">${ev.hora} ${esc(ev.cliente.split(' ').slice(0,2).join(' '))}</div>`;
+      const resp2txt=ev.resp2&&ev.resp2!=='-'?` / ${ev.resp2.split(' ').slice(-1)[0]}`:'';
+      html+=`<div class="cal-evento ${cls}" onclick="event.stopPropagation();abrirEvento('${ev.tid}')" title="${esc(ev.tarea)} — ${ev.hora}\n${esc(ev.resp)}${resp2txt?'\n'+esc(ev.resp2):''}">${ev.hora} ${esc(ev.resp.split(' ').slice(-1)[0])}${resp2txt}</div>`;
     });
     if(evs.length>max)html+=`<div class="cal-mas" onclick="event.stopPropagation();agDiaClick('${iso}')">+${evs.length-max} más</div>`;
     html+=`</div>`;
@@ -3179,7 +3282,8 @@ function renderSemana(lun){
       html+=`<div class="cal-sem-cel${esHoy?' hoy-col':''}">`;
       evs.forEach(ev=>{
         const cls=supClase(ev.sup);
-        html+=`<div class="cal-ev-bloque ${cls}" onclick="abrirEvento('${ev.tid}')" title="${esc(ev.tarea)}">${ev.hora} ${esc(ev.cliente.split(' ').slice(0,2).join(' '))}</div>`;
+        const resp2txt=ev.resp2&&ev.resp2!=='-'?` / ${ev.resp2.split(' ').slice(-1)[0]}`:'';
+        html+=`<div class="cal-ev-bloque ${cls}" onclick="abrirEvento('${ev.tid}')" title="${esc(ev.tarea)}">${ev.hora} ${esc(ev.resp.split(' ').slice(-1)[0])}${resp2txt}</div>`;
       });
       html+=`</div>`;
     });
