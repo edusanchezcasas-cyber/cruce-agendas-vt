@@ -208,6 +208,144 @@ td{padding:7px 11px;vertical-align:middle}
 .step-txt strong{display:block;margin-bottom:2px;color:var(--navy)}
 .code-block{background:var(--navy3);color:#7FDBCA;border-radius:6px;padding:8px 12px;font-family:monospace;font-size:12px;margin:6px 0;line-height:1.6}
 .tip-box{background:var(--ok-bg);border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:10px 14px;font-size:11.5px;color:var(--green);margin-top:12px}
+/* ─ REASIGNACIONES ─ */
+.rs-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:18px}
+.rs-rol{display:flex;gap:4px}
+.rs-rol-btn{padding:7px 18px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);font-family:inherit;color:var(--muted);transition:all .14s}
+.rs-rol-btn:hover{border-color:var(--navy);color:var(--navy)}
+.rs-rol-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rs-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.rs-stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;min-width:130px;cursor:pointer;transition:all .15s;user-select:none}
+.rs-stat:hover{box-shadow:0 2px 10px rgba(0,0,0,.1);transform:translateY(-1px)}
+.rs-stat.active-stat{border-width:2px;box-shadow:0 3px 12px rgba(0,0,0,.15)}
+.rs-stat.pend.active-stat{border-color:var(--amber);background:#FFFBF0}
+.rs-stat.conf.active-stat{border-color:var(--green);background:#F0FAF5}
+.rs-stat.ejec.active-stat{border-color:var(--blue);background:#EBF4FF}
+.rs-stat.rech.active-stat{border-color:var(--red);background:#FFF5F5}
+.rs-stat-n{font-family:'DM Serif Display',serif;font-size:24px;line-height:1}
+.rs-stat-l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.rs-stat.pend .rs-stat-n{color:var(--amber)}
+.rs-stat.conf .rs-stat-n{color:var(--green)}
+.rs-stat.rech .rs-stat-n{color:var(--red)}
+.rs-stat.ejec .rs-stat-n{color:var(--blue)}
+.rs-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:600px}
+.rs-prop-btn{background:var(--warn-bg);color:var(--amber);border:1px solid var(--amber);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .14s}
+.rs-prop-btn:hover{background:var(--amber);color:#fff}
+/* Filtros de columna en thead */
+.th-filter{background:var(--navy2);padding:4px 6px}
+.th-filter input{width:100%;border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:3px 6px;font-size:10.5px;font-family:inherit;background:rgba(255,255,255,.08);color:#fff;outline:none}
+.th-filter input::placeholder{color:rgba(255,255,255,.35)}
+.th-filter input:focus{border-color:var(--gold);background:rgba(255,255,255,.14)}
+/* Buscador org */
+.ss-wrap{position:relative;display:inline-block}
+.ss-input{border:1px solid var(--border);border-radius:5px;padding:4px 24px 4px 8px;font-size:11.5px;font-family:inherit;color:var(--text);background:var(--bg);width:220px}
+.ss-input:focus{outline:2px solid var(--navy);border-color:transparent}
+.ss-list{position:absolute;top:calc(100% + 2px);left:0;z-index:200;background:var(--card);border:1px solid var(--border);border-radius:0 0 7px 7px;box-shadow:0 4px 18px rgba(0,0,0,.14);max-height:230px;overflow-y:auto;min-width:100%;display:none;min-width:280px}
+.ss-wrap.open .ss-list{display:block}
+.ss-item{padding:7px 12px;font-size:11.5px;cursor:pointer;white-space:nowrap}
+.ss-item:hover{background:var(--bg);color:var(--navy);font-weight:600}
+.ss-item.sel{background:#EEF2FA;color:var(--navy);font-weight:700}
+.ss-clear-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0;line-height:1;display:none}
+.ss-wrap.has-val .ss-clear-btn{display:block}
+/* Variante mini (filtros de columna en tabla) */
+.ss-mini .ss-input{width:100%;min-width:0;box-sizing:border-box;font-size:10px;padding:3px 20px 3px 6px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
+.ss-mini .ss-input::placeholder{color:rgba(255,255,255,.4)}
+.ss-mini .ss-input:focus{outline:1px solid var(--gold);border-color:transparent}
+.ss-mini .ss-clear-btn{color:rgba(255,255,255,.5);font-size:11px}
+.ss-mini .ss-list{min-width:220px;max-height:200px;z-index:400}
+.rs-badge{display:inline-flex;align-items:center;gap:3px;border-radius:9px;padding:2px 8px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.rs-pend{background:var(--warn-bg);color:var(--amber)}
+.rs-conf{background:var(--ok-bg);color:var(--green)}
+.rs-rech{background:var(--err-bg);color:var(--red)}
+.rs-ejec{background:var(--mb-bg);color:var(--blue)}
+.rs-motivo{font-size:10.5px;color:var(--muted);font-style:italic;max-width:200px}
+.rs-modal{background:var(--card);border-radius:12px;padding:24px 26px;max-width:480px;width:92%;position:relative}
+.rs-modal h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--navy);margin-bottom:4px}
+.rs-fld{margin-bottom:12px}
+.rs-fld label{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.rs-fld select,.rs-fld textarea,.rs-fld input{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit;color:var(--text);background:var(--bg)}
+.rs-fld textarea{resize:vertical;min-height:60px}
+.rs-nota-cid{background:#FFFBF0;border:1px solid var(--amber);border-radius:6px;padding:8px 10px;font-size:11.5px;color:var(--amber);margin-top:6px}
+.rs-empty{text-align:center;padding:48px;color:var(--muted)}
+.rs-empty .ei{font-size:36px;margin-bottom:10px}
+/* Tarjetas resumen por abogado */
+.rs-resumen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding:4px 2px}
+.rs-abog-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .15s;position:relative}
+.rs-abog-card:hover{border-color:var(--navy);box-shadow:0 3px 12px rgba(31,56,100,.12);transform:translateY(-1px)}
+.rs-abog-card.has-prop{border-left:4px solid var(--amber)}
+.rs-abog-name{font-weight:700;font-size:13.5px;color:var(--navy);margin-bottom:6px}
+.rs-abog-count{font-family:'DM Serif Display',serif;font-size:28px;line-height:1;color:var(--navy)}
+.rs-abog-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.rs-abog-badge{position:absolute;top:12px;right:12px}
+
+/* ─ AGENDA / CALENDARIO ─ */
+.ag-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.ag-mode{display:flex;gap:6px;align-items:center}
+.ag-mode label{font-size:11.5px;color:var(--muted);font-weight:500}
+.ag-mode select{border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;font-family:inherit;background:var(--bg)}
+.ag-nav{display:flex;align-items:center;gap:6px;margin-left:auto}
+.ag-nav button{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .14s}
+.ag-nav button:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ag-nav .ag-title{font-weight:700;font-size:13.5px;color:var(--navy);min-width:180px;text-align:center}
+.ag-view-btns{display:flex;gap:3px}
+.ag-vbtn{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 14px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--muted);transition:all .14s}
+.ag-vbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+/* Mes */
+.cal-mes{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cal-mes-head{display:grid;grid-template-columns:repeat(7,1fr);background:var(--navy)}
+.cal-mes-head div{padding:8px;text-align:center;font-size:11px;font-weight:700;color:#fff;letter-spacing:.5px}
+.cal-mes-body{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-dia{min-height:90px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:5px;cursor:pointer;transition:background .1s;position:relative}
+.cal-dia:hover{background:#F0F4FF}
+.cal-dia.hoy{background:#EEF2FF}
+.cal-dia.hoy .cal-dia-num{background:var(--navy);color:#fff;border-radius:50%;width:22px;height:22px;display:grid;place-items:center}
+.cal-dia.otro-mes{background:#FAFAFA}.cal-dia.otro-mes .cal-dia-num{color:#ccc}
+.cal-dia-num{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:3px;display:inline-block}
+.cal-evento{border-radius:4px;padding:2px 5px;font-size:10px;font-weight:600;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:filter .1s}
+.cal-evento:hover{filter:brightness(.92)}
+.cal-mas{font-size:10px;color:var(--muted);cursor:pointer;padding:1px 3px}
+.cal-mas:hover{color:var(--navy);font-weight:600}
+/* Semana */
+.cal-sem{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cal-sem-head{display:grid;grid-template-columns:52px repeat(7,1fr);background:var(--navy)}
+.cal-sem-head div{padding:8px 4px;text-align:center;font-size:11px;font-weight:700;color:#fff}
+.cal-sem-head div.hoy-col{background:rgba(255,255,255,.15)}
+.cal-sem-body{display:grid;grid-template-columns:52px repeat(7,1fr);max-height:560px;overflow-y:auto}
+.cal-hora-lbl{font-size:10px;color:var(--muted);text-align:right;padding:0 6px;height:44px;display:flex;align-items:flex-start;justify-content:flex-end;padding-top:2px;border-bottom:1px solid var(--border)}
+.cal-sem-cel{height:44px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;cursor:pointer}
+.cal-sem-cel:hover{background:#F8FAFE}
+.cal-sem-cel.hoy-col{background:#F0F4FF}
+.cal-ev-bloque{position:absolute;left:2px;right:2px;border-radius:4px;padding:2px 4px;font-size:9.5px;font-weight:600;overflow:hidden;cursor:pointer;z-index:1;transition:filter .1s}
+.cal-ev-bloque:hover{filter:brightness(.9);z-index:2}
+/* Día */
+.cal-dia-view{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cal-dia-head{background:var(--navy);color:#fff;padding:12px 18px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px}
+.cal-dia-body{max-height:580px;overflow-y:auto}
+.cal-dia-fila{display:grid;grid-template-columns:52px 1fr;border-bottom:1px solid var(--border)}
+.cal-dia-hora{font-size:10.5px;color:var(--muted);padding:8px 6px 0;text-align:right;border-right:1px solid var(--border);height:48px}
+.cal-dia-slot{height:48px;padding:2px 6px;position:relative}
+.cal-ev-dia{border-radius:5px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;transition:filter .1s;display:inline-flex;align-items:center;gap:6px}
+.cal-ev-dia:hover{filter:brightness(.9)}
+/* Colores por supervisor */
+.sup-elyana{background:#DBEAFE;color:#1549A0;border-left:3px solid #1549A0}
+.sup-solanch{background:#EDE9FE;color:#5B21B6;border-left:3px solid #7C3AED}
+.sup-samuel{background:#D1FAE5;color:#065F46;border-left:3px solid #059669}
+.sup-carlos{background:#FEF3C7;color:#92400E;border-left:3px solid #D97706}
+.sup-cynthia{background:#CCFBF1;color:#134E4A;border-left:3px solid #0D9488}
+.sup-katia{background:#FCE7F3;color:#831843;border-left:3px solid #DB2777}
+.sup-default{background:#F1F5F9;color:#475569;border-left:3px solid #94A3B8}
+/* Modal evento */
+.ev-modal{background:var(--card);border-radius:12px;padding:24px 26px;max-width:520px;width:92%;max-height:85vh;overflow-y:auto;position:relative}
+.ev-modal h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--navy);margin-bottom:4px}
+.ev-modal .ev-meta{font-size:11.5px;color:var(--muted);margin-bottom:16px}
+.ev-field{margin-bottom:12px}
+.ev-field label{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.ev-field select,.ev-field textarea,.ev-field input{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit;color:var(--text);background:var(--bg)}
+.ev-field textarea{resize:vertical;min-height:70px}
+.ev-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.ev-tag{display:inline-flex;align-items:center;gap:4px;border-radius:10px;padding:3px 9px;font-size:10.5px;font-weight:600}
+.no-datos-agenda{text-align:center;padding:60px;color:var(--muted)}
+.no-datos-agenda .ei{font-size:48px;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -223,6 +361,8 @@ td{padding:7px 11px;vertical-align:middle}
 
 <div class="main-nav">
   <button class="mnav active" onclick="showPanel('cruce')">⚡ Nuevo Cruce</button>
+  <button class="mnav" onclick="showPanel('agenda')">📅 Agenda</button>
+  <button class="mnav" onclick="showPanel('reasig')">🔄 Reasignaciones</button>
   <button class="mnav" onclick="showPanel('control')">📋 Panel de Control</button>
 </div>
 
@@ -377,6 +517,252 @@ td{padding:7px 11px;vertical-align:middle}
   </div>
 </div>
 
+<!-- ══ PANEL: REASIGNACIONES ══════════════════════════════════ -->
+<div id="panel-reasig" class="panel">
+
+  <!-- Upload propio si no hay datos cargados -->
+  <div id="rs-upload-area" style="display:none;background:var(--card);border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;margin-bottom:18px;position:relative">
+    <input type="file" accept=".xlsx,.xls" onchange="rsCargarMB(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer"/>
+    <div style="font-size:28px;margin-bottom:8px">📊</div>
+    <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">Cargar Reporte MyBig</div>
+    <div style="font-size:12px;color:var(--muted)">Sube el Excel semanal de diligencias (hoja <em>Datos</em>)<br/>o primero ejecuta un cruce en <strong>⚡ Nuevo Cruce</strong></div>
+    <div id="rs-mb-badge" class="ubadge" style="display:none;margin:8px auto 0">✔ <span id="rs-mb-fname"></span></div>
+  </div>
+
+  <!-- Toolbar fila 1: equipo + filtros -->
+  <div class="rs-toolbar">
+    <!-- Equipo -->
+    <div id="rs-equipo-wrap" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div>
+        <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px;font-weight:600">Supervisor / Equipo</div>
+        <select id="rs-supervisor" onchange="rsEquipoChange()" style="border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12.5px;font-family:inherit;min-width:175px">
+          <option value="">— seleccionar —</option>
+          <option>Elyana Arias</option>
+          <option>Solanch Estrella</option>
+          <option>Samuel Paz</option>
+          <option>Carlos Morales</option>
+          <option>Cynthia Lagos</option>
+          <option>Katia Jacinto</option>
+        </select>
+      </div>
+      <div id="rs-resp-dilig-wrap" style="display:none">
+        <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px;font-weight:600">Resp. diligencia</div>
+        <select id="rs-abogado-filtro" onchange="rsRender()" style="border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12.5px;font-family:inherit;min-width:175px">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div id="rs-resp-proc-wrap" style="display:none">
+        <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px;font-weight:600">Resp. proceso</div>
+        <select id="rs-resp-proc-filtro" onchange="rsRender()" style="border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12.5px;font-family:inherit;min-width:175px">
+          <option value="">Todos</option>
+        </select>
+      </div>
+    </div>
+    <!-- Filtro estado (solo vista Paralegal) -->
+    <div id="rs-filtro-wrap" style="display:none;gap:8px;align-items:flex-end">
+      <div>
+        <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px;font-weight:600">Filtrar por estado</div>
+        <select id="rs-filtro-estado" onchange="rsRender()" style="border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12.5px;font-family:inherit">
+          <option value="">Todos</option>
+          <option value="propuesta">🟡 Propuestas</option>
+          <option value="confirmada">🟢 Confirmadas</option>
+          <option value="rechazada">🔴 Rechazadas</option>
+          <option value="ejecutada">🔵 Ejecutadas</option>
+        </select>
+      </div>
+    </div>
+    <!-- Acciones derecha -->
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <button id="rs-btn-paralegal" class="btn btn-out btn-sm" onclick="rsToggleParalegal()">📋 Vista Paralegal</button>
+      <button class="btn btn-out btn-sm" onclick="rsExportar()">⬇ Exportar reporte</button>
+    </div>
+  </div>
+
+  <!-- Toolbar fila 2: filtros extra (solo Abogado + equipo seleccionado) -->
+  <div id="rs-filtros-extra" style="display:none;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:9px 14px;gap:10px;flex-wrap:wrap;align-items:flex-end">
+    <div class="fg">
+      <label>Órgano jurisdiccional</label>
+      <div class="ss-wrap" id="ss-org">
+        <input type="text" class="ss-input" id="ss-org-input" placeholder="Buscar organo…" autocomplete="off" spellcheck="false"
+          oninput="ssFilter('org')" onfocus="ssOpen('org')" onblur="ssBlur('org')">
+        <button class="ss-clear-btn" onclick="ssClear('org')" tabindex="-1">✕</button>
+        <div class="ss-list" id="ss-org-list"></div>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Vía procesal</label>
+      <select id="rs-via-filtro" onchange="rsRender()" style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:inherit;color:var(--text);background:var(--bg)">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="fg"><label>Desde</label><input type="date" id="rs-desde" onchange="rsRender()" style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:inherit;"/></div>
+    <div class="fg"><label>Hasta</label><input type="date" id="rs-hasta" onchange="rsRender()" style="border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:inherit;"/></div>
+    <button class="fclear" onclick="rsClearFiltros()" style="align-self:flex-end">Limpiar filtros</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="rs-stats">
+    <div class="rs-stat pend" id="rss-card-pend" onclick="rsStatFiltrar('propuesta')"><div class="rs-stat-n" id="rss-pend">0</div><div class="rs-stat-l">Propuestas</div></div>
+    <div class="rs-stat conf" id="rss-card-conf" onclick="rsStatFiltrar('confirmada')"><div class="rs-stat-n" id="rss-conf">0</div><div class="rs-stat-l">Confirmadas</div></div>
+    <div class="rs-stat ejec" id="rss-card-ejec" onclick="rsStatFiltrar('ejecutada')"><div class="rs-stat-n" id="rss-ejec">0</div><div class="rs-stat-l">Ejecutadas</div></div>
+    <div class="rs-stat rech" id="rss-card-rech" onclick="rsStatFiltrar('rechazada')"><div class="rs-stat-n" id="rss-rech">0</div><div class="rs-stat-l">Rechazadas</div></div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="rs-table-wrap" id="rs-tabla"></div>
+
+</div>
+
+<!-- Modal proponer reasignación -->
+<div class="modal-overlay" id="rsModal">
+  <div class="rs-modal">
+    <button class="modal-close" onclick="rsModalClose()">✕</button>
+    <h3 id="rs-modal-titulo">Proponer reasignación</h3>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:14px" id="rs-modal-sub"></div>
+    <div class="rs-fld">
+      <label>Responsable actual</label>
+      <div id="rs-resp-actual" style="font-size:13px;font-weight:600;color:var(--navy);padding:6px 0"></div>
+    </div>
+    <div class="rs-fld">
+      <label>Nuevo responsable</label>
+      <select id="rs-nuevo-resp"><option value="">— seleccionar —</option></select>
+    </div>
+    <div class="rs-fld">
+      <label>Nuevo responsable II (opcional)</label>
+      <select id="rs-nuevo-resp2"><option value="">— ninguno —</option></select>
+    </div>
+    <div class="rs-fld">
+      <label>Motivo de la reasignación</label>
+      <textarea id="rs-motivo-txt" placeholder="Ej: Conflicto de agenda, el abogado estará en otra audiencia…"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-navy btn-sm" onclick="rsGuardarPropuesta()">📨 Enviar propuesta</button>
+      <button class="btn btn-out btn-sm" onclick="rsModalClose()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal revisar (CID) -->
+<div class="modal-overlay" id="rsCIDModal">
+  <div class="rs-modal">
+    <button class="modal-close" onclick="document.getElementById('rsCIDModal').classList.remove('open')">✕</button>
+    <h3>Revisar propuesta</h3>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:14px" id="cid-modal-sub"></div>
+    <div style="background:var(--bg);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px" id="cid-detalle"></div>
+    <div class="rs-fld">
+      <label>Nota del CID (opcional)</label>
+      <textarea id="cid-nota" placeholder="Observación o motivo de rechazo…"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-green btn-sm" onclick="rsCIDAccion('confirmada')">✔ Confirmar</button>
+      <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none" onclick="rsCIDAccion('rechazada')">✕ Rechazar</button>
+      <button class="btn btn-out btn-sm" onclick="document.getElementById('rsCIDModal').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL: AGENDA ══════════════════════════════════════════ -->
+<div id="panel-agenda" class="panel">
+
+  <div class="ag-toolbar">
+    <!-- Modo -->
+    <div class="ag-mode">
+      <label>Modo:</label>
+      <select id="ag-modo" onchange="agCambiarModo()">
+        <option value="cid">👥 Ver por abogado (CID)</option>
+        <option value="personal">👤 Mi agenda</option>
+      </select>
+    </div>
+    <div class="ag-mode">
+      <label>Abogado:</label>
+      <select id="ag-abogado" onchange="agRender()" style="min-width:180px">
+        <option value="">— seleccionar —</option>
+      </select>
+    </div>
+    <div class="ag-mode" id="ag-yo-wrap" style="display:none">
+      <label>Soy:</label>
+      <select id="ag-yo" onchange="agSoy()" style="min-width:180px">
+        <option value="">— mi nombre —</option>
+      </select>
+    </div>
+    <!-- Vistas -->
+    <div class="ag-view-btns" style="margin-left:8px">
+      <button class="ag-vbtn active" id="vbtn-mes" onclick="agVista('mes')">Mes</button>
+      <button class="ag-vbtn" id="vbtn-sem" onclick="agVista('sem')">Semana</button>
+      <button class="ag-vbtn" id="vbtn-dia" onclick="agVista('dia')">Día</button>
+    </div>
+    <!-- Navegación -->
+    <div class="ag-nav">
+      <button onclick="agNavegar(-1)">‹</button>
+      <span class="ag-title" id="ag-titulo">—</span>
+      <button onclick="agNavegar(1)">›</button>
+      <button onclick="agHoy()" style="font-size:11px;padding:5px 10px">Hoy</button>
+    </div>
+    <!-- Acciones -->
+    <button class="btn btn-out btn-sm" onclick="agExportar()" style="margin-left:auto">⬇ Exportar agenda</button>
+  </div>
+
+  <!-- Leyenda supervisores -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:11px">
+    <span style="color:var(--muted);font-weight:600;align-self:center">Supervisor:</span>
+    <span class="ev-tag sup-elyana">Elyana Arias</span>
+    <span class="ev-tag sup-solanch">Solanch Estrella</span>
+    <span class="ev-tag sup-samuel">Samuel Paz</span>
+    <span class="ev-tag sup-carlos">Carlos Morales</span>
+    <span class="ev-tag sup-cynthia">Cynthia Lagos</span>
+    <span class="ev-tag sup-katia">Katia Jacinto</span>
+  </div>
+
+  <!-- Contenedor del calendario -->
+  <div id="ag-calendario"></div>
+
+</div>
+
+<!-- Modal detalle evento -->
+<div class="modal-overlay" id="evModal">
+  <div class="ev-modal">
+    <button class="modal-close" onclick="cerrarEvModal()">✕</button>
+    <div id="ev-sup-badge" class="ev-tag" style="margin-bottom:8px;font-size:11px"></div>
+    <h3 id="ev-titulo">—</h3>
+    <div class="ev-meta" id="ev-meta">—</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Cliente</div><div id="ev-cliente" style="font-size:12.5px"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Expediente</div><div id="ev-exp" style="font-size:12px;font-family:monospace"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Tarea</div><div id="ev-tarea" style="font-size:12px"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Estado</div><div id="ev-estado" style="font-size:12px"></div></div>
+    </div>
+    <div class="ev-field">
+      <label>Responsable actual</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div id="ev-resp-actual" style="font-size:13px;font-weight:600;color:var(--navy);flex:1"></div>
+        <button class="btn btn-out btn-sm" onclick="toggleReasignar()" id="btn-reasig">✏ Reasignar</button>
+      </div>
+    </div>
+    <div id="reasig-wrap" style="display:none">
+      <div class="ev-field">
+        <label>Nuevo responsable</label>
+        <select id="ev-nuevo-resp" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit">
+          <option value="">— seleccionar —</option>
+        </select>
+      </div>
+      <div class="ev-field">
+        <label>Nuevo responsable II (opcional)</label>
+        <select id="ev-nuevo-resp2" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit">
+          <option value="">— ninguno —</option>
+        </select>
+      </div>
+    </div>
+    <div class="ev-field">
+      <label>Notas</label>
+      <textarea id="ev-nota" placeholder="Agrega observaciones sobre esta diligencia…"></textarea>
+    </div>
+    <div class="ev-actions">
+      <button class="btn btn-navy btn-sm" onclick="guardarEvento()">💾 Guardar</button>
+      <button class="btn btn-out btn-sm" onclick="cerrarEvModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ PANEL: CONTROL ════════════════════════════════════════ -->
 <div id="panel-control" class="panel">
   <div class="ctrl-head">
@@ -462,9 +848,104 @@ const T={OL:'ol',MB:'mb',DIFF:'diff',OK:'ok',NC:'nc'};
 const C={tid:'tareasid',fecha:'FECHA',hora:'HORA',cli:'CLIENTE',tarea:'TAREA',
          sup:'SUPERVISOR',resp:'RESPONSABLE DE LA TAREA',
          resp2:'RESPONSABLE DE LA TAREA II',
-         exp:'EXP.',estado:'tareaestado'};
+         exp:'EXP.',estado:'tareaestado',
+         respProc:'RESPONSABLE DEL PROCESO',
+         org:'ORGANO JURISDICCIONAL',
+         via:'VIA PROCESAL',
+         contra:'CONTRAPARTE'};
+
+// Tareas que NO son diligencias judiciales — se excluyen de Agenda y Reasignaciones
+const TAREAS_EXCLUIDAS=/presentaci[oó]n\s+de\s+demanda|presenta\s+demanda|contest[ao]\s+demanda|contestaci[oó]n\s+de\s+demanda|contesta\s+la\s+demanda/i;
+function esDiligenciaExcluida(r){
+  const t=String(r[C.tarea]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return TAREAS_EXCLUIDAS.test(t);
+}
+function detectCols(){
+  if(!mbRows||!mbRows.length)return;
+  const keys=Object.keys(mbRows[0]);
+  const norm=s=>String(s).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+  function mejor(candidatos){
+    for(const c of candidatos){
+      const match=keys.find(k=>norm(k)===norm(c));
+      if(match)return match;
+    }
+    // fallback: contiene la primera palabra clave
+    for(const c of candidatos){
+      const kw=norm(c).split(' ')[0];
+      const match=keys.find(k=>norm(k).includes(kw));
+      if(match)return match;
+    }
+    return candidatos[0]; // default
+  }
+  C.respProc=mejor(['RESPONSABLE DEL PROCESO','ABOGADO RESPONSABLE','RESPONSABLE PROCESO','RESP. PROCESO']);
+  C.org     =mejor(['ORGANO JURISDICCIONAL','ÓRGANO JURISDICCIONAL','ORGANO JURISD.','ORGANO JURISD','JUZGADO']);
+  C.via     =mejor(['VIA PROCESAL','VÍA PROCESAL','TIPO DE PROCESO','VIA']);
+  C.contra  =mejor(['CONTRAPARTE','DEMANDANTE','PARTE CONTRARIA','TRABAJADOR']);
+}
 
 let olRows=null,mbRows=null,res=[],curTab='inco',curCruceId=null;
+
+// ─ Filtros de columna en tabla Abogado ─
+const COL_KEYS=['col-exp','col-cli','col-contra','col-via','col-org','col-tarea','col-proc','col-dilig'];
+
+function poblarColFiltros(equipo){
+  const defs=[
+    ['col-exp',   r=>String(r[C.exp]||'').trim()],
+    ['col-cli',   r=>String(r[C.cli]||'').trim()],
+    ['col-contra',r=>String(r[C.contra]||'').trim()],
+    ['col-via',   r=>String(r[C.via]||'').trim()],
+    ['col-org',   r=>String(r[C.org]||'').trim()],
+    ['col-tarea', r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
+    ['col-proc',  r=>String(r[C.respProc]||'').trim()],
+    ['col-dilig', r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}]
+  ];
+  defs.forEach(([key,fn])=>{
+    const vals=new Set();
+    equipo.forEach(r=>{const v=fn(r);if(v&&v!=='-')vals.add(v);});
+    ssOpts[key]=[...vals].sort();
+    if(ssSelected[key]===undefined)ssSelected[key]='';
+  });
+}
+
+function initColFilters(){
+  COL_KEYS.forEach(k=>ssInit(k,ssOpts[k]||[]));
+}
+
+// ─ SearchSelect (buscador org) ─
+let ssOpts={org:[]}, ssSelected={org:''};
+function ssInit(id,opts){
+  ssOpts[id]=opts;
+  const list=document.getElementById('ss-'+id+'-list');
+  const inp=document.getElementById('ss-'+id+'-input');
+  const wrap=document.getElementById('ss-'+id);
+  if(!list||!inp||!wrap)return;
+  wrap.classList.toggle('has-val',!!ssSelected[id]);
+  inp.value=ssSelected[id]||'';
+  ssRenderList(id,inp.value);
+}
+function ssOpen(id){document.getElementById('ss-'+id)?.classList.add('open');ssRenderList(id,document.getElementById('ss-'+id+'-input')?.value||'');}
+function ssBlur(id){setTimeout(()=>document.getElementById('ss-'+id)?.classList.remove('open'),180);}
+function ssFilter(id){const q=document.getElementById('ss-'+id+'-input')?.value||'';document.getElementById('ss-'+id)?.classList.add('open');ssRenderList(id,q);}
+function ssRenderList(id,q){
+  const list=document.getElementById('ss-'+id+'-list');if(!list)return;
+  const opts=ssOpts[id]||[];
+  const fil=q?opts.filter(o=>o.toLowerCase().includes(q.toLowerCase())):opts;
+  const escSQ=s=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  list.innerHTML=`<div class="ss-item${!ssSelected[id]?' sel':''}" onmousedown="ssSelect('${id}','')">— Todos —</div>`+
+    fil.map(o=>`<div class="ss-item${ssSelected[id]===o?' sel':''}" onmousedown="ssSelect('${id}','${escSQ(o)}')">${esc(o)}</div>`).join('');
+}
+function ssSelect(id,val){
+  ssSelected[id]=val;
+  const wrap=document.getElementById('ss-'+id);
+  wrap?.classList.remove('open');
+  wrap?.classList.toggle('has-val',!!val);
+  const inp=document.getElementById('ss-'+id+'-input');
+  if(inp)inp.value=val;
+  ssRenderList(id,val);
+  rsRender();
+}
+function ssClear(id){ssSelect(id,'');}
+document.addEventListener('click',e=>{if(!e.target.closest('.ss-wrap'))document.querySelectorAll('.ss-wrap.open').forEach(w=>w.classList.remove('open'));});
 
 // ═══════════════════════════════════════════════════
 // PANEL NAVIGATION
@@ -475,6 +956,8 @@ function showPanel(id){
   document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.mnav[onclick="showPanel('${id}')"]`).classList.add('active');
   if(id==='control')renderControlPanel();
+  if(id==='agenda')initAgenda();
+  if(id==='reasig')initReasig();
 }
 
 // ═══════════════════════════════════════════════════
@@ -491,7 +974,11 @@ function pFile(file,t){
   const btn=document.getElementById('refresh-'+t);
   if(btn)btn.style.display='block';
   const sheet=t==='ol'?'Agenda_OL':(document.getElementById('sheetMB').value||'Datos');
-  readXL(file,sheet,rows=>{if(t==='ol')olRows=rows;else mbRows=rows;chkReady();});
+  readXL(file,sheet,rows=>{
+    if(t==='ol') olRows=rows;
+    else { mbRows=rows; detectCols(); }
+    chkReady();
+  });
 }
 
 function resetArchivo(t){
@@ -1672,8 +2159,960 @@ function exportarExcel(){
 
 // ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
-// UTILS
+// REASIGNACIONES
 // ═══════════════════════════════════════════════════
+let rsRolActual='abogado';
+let rsPropActual=null; // propuesta abierta en modal CID
+
+const RS_KEY='vt_reasig_v1';
+
+function rsGetAll(){try{return JSON.parse(localStorage.getItem(RS_KEY)||'[]');}catch(e){return[];}}
+function rsSave(arr){localStorage.setItem(RS_KEY,JSON.stringify(arr));}
+
+function initReasig(){
+  const uploadArea=document.getElementById('rs-upload-area');
+
+  // Siempre arrancar en modo abogado (no hay selector de rol)
+  rsRolActual='abogado';
+  const btn=document.getElementById('rs-btn-paralegal');
+  if(btn){btn.textContent='📋 Vista Paralegal';btn.classList.remove('btn-navy');btn.classList.add('btn-out');}
+  document.getElementById('rs-equipo-wrap').style.display='flex';
+  document.getElementById('rs-filtro-wrap').style.display='none';
+
+  // Mostrar upload solo si no hay datos de MB cargados
+  if(!mbRows||!mbRows.length){
+    uploadArea.style.display='block';
+  } else {
+    uploadArea.style.display='none';
+  }
+
+  // Poblar selects de responsables si hay datos
+  if(mbRows&&mbRows.length){
+    detectCols();
+    rsPoblarSelects();
+    if(document.getElementById('rs-supervisor').value) rsEquipoChange();
+    else rsRender();
+  } else {
+    rsRender();
+  }
+}
+
+function rsCargarMB(input){
+  if(!input.files[0])return;
+  const file=input.files[0];
+  document.getElementById('rs-mb-fname').textContent=file.name;
+  document.getElementById('rs-mb-badge').style.display='inline-flex';
+  readXL(file,'Datos',rows=>{
+    mbRows=rows;
+    detectCols();
+    document.getElementById('rs-upload-area').style.display='none';
+    rsPoblarSelects();
+    // Si ya había un equipo seleccionado, re-poblar todos los filtros de equipo
+    if(document.getElementById('rs-supervisor').value) rsEquipoChange();
+    else rsRender();
+  });
+}
+
+function rsPoblarSelects(){
+  const nombres=new Set();
+  mbRows.forEach(r=>{
+    if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]));
+    if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]));
+  });
+  const sorted=[...nombres].sort();
+  ['rs-nuevo-resp','rs-nuevo-resp2'].forEach(id=>{
+    const sel=document.getElementById(id);
+    const base=id==='rs-nuevo-resp2'?'<option value="">— ninguno —</option>':'<option value="">— seleccionar —</option>';
+    sel.innerHTML=base+sorted.map(n=>`<option>${n}</option>`).join('');
+  });
+}
+
+function rsEquipoChange(){
+  const sup=document.getElementById('rs-supervisor').value;
+  const mostrar=!!(sup&&mbRows&&mbRows.length);
+
+  // Filtros extra fila 2
+  const extra=document.getElementById('rs-filtros-extra');
+  extra.style.display=mostrar?'flex':'none';
+
+  ['rs-resp-dilig-wrap','rs-resp-proc-wrap'].forEach(id=>{
+    document.getElementById(id).style.display=mostrar?'block':'none';
+  });
+
+  if(!mostrar){rsRender();return;}
+
+  const equipo=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&!esDiligenciaExcluida(r));
+
+  // Helper para poblar un select con valores únicos de una columna
+  function poblarSel(id,col,allLabel='Todos'){
+    const vals=new Set();
+    equipo.forEach(r=>{const v=String(r[col]||'').trim();if(v&&v!=='-')vals.add(v);});
+    const sorted=[...vals].sort();
+    const sel=document.getElementById(id);
+    sel.innerHTML=`<option value="">${allLabel}</option>`+sorted.map(v=>`<option>${esc(v)}</option>`).join('');
+  }
+
+  // Resp. diligencia (resp + resp2)
+  const diligNombres=new Set();
+  equipo.forEach(r=>{
+    if(r[C.resp]&&r[C.resp]!=='-')diligNombres.add(String(r[C.resp]).trim());
+    if(r[C.resp2]&&r[C.resp2]!=='-')diligNombres.add(String(r[C.resp2]).trim());
+  });
+  document.getElementById('rs-abogado-filtro').innerHTML=
+    '<option value="">Todos</option>'+[...diligNombres].sort().map(n=>`<option>${n}</option>`).join('');
+
+  poblarSel('rs-resp-proc-filtro',C.respProc,'Todos');
+  poblarSel('rs-via-filtro',C.via,'Todas');
+  // Órgano: usar buscador
+  const orgVals=new Set();
+  equipo.forEach(r=>{const v=String(r[C.org]||'').trim();if(v&&v!=='-')orgVals.add(v);});
+  ssOpts['org']=[...orgVals].sort();
+  ssSelected['org']=ssSelected['org']||'';
+  ssInit('org',ssOpts['org']);
+  // Filtros de columna
+  poblarColFiltros(equipo);
+
+  rsRender();
+}
+
+function rsClearFiltros(){
+  ['rs-abogado-filtro','rs-resp-proc-filtro','rs-via-filtro'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  ['rs-desde','rs-hasta'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ssSelected['org']='';ssInit('org',ssOpts['org']||[]);
+  COL_KEYS.forEach(k=>{ssSelected[k]='';});
+  rsRender();
+}
+
+function rsToggleParalegal(){
+  const entrando=rsRolActual!=='paralegal';
+  rsRolActual=entrando?'paralegal':'abogado';
+  const btn=document.getElementById('rs-btn-paralegal');
+  if(btn){
+    btn.textContent=entrando?'✕ Cerrar Paralegal':'📋 Vista Paralegal';
+    btn.classList.toggle('btn-navy',entrando);
+    btn.classList.toggle('btn-out',!entrando);
+  }
+  document.getElementById('rs-equipo-wrap').style.display=entrando?'none':'flex';
+  document.getElementById('rs-filtros-extra').style.display=
+    (!entrando&&document.getElementById('rs-supervisor').value)?'flex':'none';
+  document.getElementById('rs-filtro-wrap').style.display=entrando?'flex':'none';
+  if(entrando)document.getElementById('rs-filtro-estado').value='';
+  rsRender();
+}
+
+function rsStatFiltrar(estado){
+  // Toggle: si ya está activo ese filtro, limpiar
+  const sel=document.getElementById('rs-filtro-estado');
+  if(sel) sel.value=(sel.value===estado)?'':estado;
+  rsRender();
+}
+
+function rsRender(){
+  const todas=rsGetAll();
+  // Filtrar stats por equipo seleccionado (si hay uno)
+  const sup=document.getElementById('rs-supervisor')?.value||'';
+  const propsFiltradas=sup&&mbRows&&mbRows.length
+    ? todas.filter(p=>{
+        const r=mbRows.find(r=>String(r[C.tid]||'').trim()===String(p.tid||'').trim());
+        return r&&String(r[C.sup]||'').includes(sup);
+      })
+    : todas;
+
+  document.getElementById('rss-pend').textContent=propsFiltradas.filter(r=>r.estado==='propuesta').length;
+  document.getElementById('rss-conf').textContent=propsFiltradas.filter(r=>r.estado==='confirmada').length;
+  document.getElementById('rss-ejec').textContent=propsFiltradas.filter(r=>r.estado==='ejecutada').length;
+  document.getElementById('rss-rech').textContent=propsFiltradas.filter(r=>r.estado==='rechazada').length;
+  // Resaltar card activa (solo en modo Paralegal)
+  const filtroActivo=document.getElementById('rs-filtro-estado')?.value||'';
+  const mapaCard={propuesta:'pend',confirmada:'conf',ejecutada:'ejec',rechazada:'rech'};
+  ['pend','conf','ejec','rech'].forEach(k=>{
+    const card=document.getElementById('rss-card-'+k);
+    if(!card)return;
+    const esParalegal=rsRolActual==='paralegal';
+    card.style.display=esParalegal||(k==='pend')?'flex':'none';
+    card.classList.toggle('active-stat',esParalegal&&filtroActivo&&mapaCard[filtroActivo]===k);
+  });
+  if(rsRolActual==='paralegal') rsRenderParalegal();
+  else rsRenderAbogado();
+}
+
+function rsEliminarPropuesta(tid){
+  if(!confirm('¿Eliminar esta propuesta? Esta acción no se puede deshacer.'))return;
+  const arr=rsGetAll().filter(p=>!(p.tid===tid&&p.estado==='propuesta'));
+  rsSave(arr);
+  rsRender();
+}
+
+// ── ABOGADO: ver diligencias del equipo y proponer ───────────
+function rsRenderAbogado(){
+  const sup=document.getElementById('rs-supervisor').value;
+  const tabla=document.getElementById('rs-tabla');
+
+  if(!mbRows||!mbRows.length){
+    tabla.innerHTML=`<div class="rs-empty"><div class="ei">📊</div><p>Primero carga el reporte MyBig en <strong>⚡ Nuevo Cruce</strong>.</p></div>`;
+    return;
+  }
+  if(!sup){
+    tabla.innerHTML=`<div class="rs-empty"><div class="ei">👥</div><p>Selecciona tu supervisor / equipo arriba.</p></div>`;
+    return;
+  }
+
+  // Leer filtros barra superior
+  const fDilig=(document.getElementById('rs-abogado-filtro')?.value||'').trim();
+  const fProc =(document.getElementById('rs-resp-proc-filtro')?.value||'').trim();
+  const fVia  =(document.getElementById('rs-via-filtro')?.value||'').trim();
+  const fOrg  =ssSelected['org']||'';
+  const fDesde=(document.getElementById('rs-desde')?.value||'');
+  const fHasta=(document.getElementById('rs-hasta')?.value||'');
+  const hayFiltroCol=COL_KEYS.some(k=>ssSelected[k]);
+
+  const todas=rsGetAll();
+  let dilig=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&!esDiligenciaExcluida(r));
+
+  // ── VISTA RESUMEN: si no hay ningún filtro activo, mostrar tarjetas por abogado ──
+  if(!fDilig&&!fProc&&!fVia&&!fOrg&&!fDesde&&!fHasta&&!hayFiltroCol){
+    // Agrupar por resp. diligencia
+    const grupos={};
+    dilig.forEach(r=>{
+      const resp=String(r[C.resp]||'Sin asignar').trim();
+      if(!grupos[resp])grupos[resp]=[];
+      grupos[resp].push(r);
+    });
+    const totalDilig=dilig.length;
+    let html=`<div style="padding:16px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+        Equipo <strong>${esc(sup)}</strong> — ${Object.keys(grupos).length} abogados · ${totalDilig} diligencias en total.
+        Haz clic en un abogado para ver sus diligencias.
+      </div>
+      <div class="rs-resumen-grid">`;
+    Object.entries(grupos).sort().forEach(([resp,rows])=>{
+      const propsPend=todas.filter(p=>rows.some(r=>String(r[C.tid]||'').trim()===p.tid)&&p.estado==='propuesta').length;
+      const propsOtras=todas.filter(p=>rows.some(r=>String(r[C.tid]||'').trim()===p.tid)&&p.estado!=='rechazada'&&p.estado!=='propuesta').length;
+      const escResp=resp.replace(/'/g,"\\'");
+      html+=`<div class="rs-abog-card${propsPend?' has-prop':''}" onclick="rsVerAbogado('${escResp}')">
+        ${propsPend?`<div class="rs-abog-badge"><span class="rs-badge rs-pend">🟡 ${propsPend} pendiente${propsPend!==1?'s':''}</span></div>`:''}
+        ${propsOtras&&!propsPend?`<div class="rs-abog-badge"><span class="rs-badge rs-conf">✔ ${propsOtras}</span></div>`:''}
+        <div class="rs-abog-name">${esc(resp)}</div>
+        <div class="rs-abog-count">${rows.length}</div>
+        <div class="rs-abog-label">diligencia${rows.length!==1?'s':''}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+    tabla.innerHTML=html;
+    return;
+  }
+
+  // ── VISTA DETALLE: hay algún filtro activo ──
+  if(fDilig) dilig=dilig.filter(r=>{const r1=String(r[C.resp]||'').trim(),r2=String(r[C.resp2]||'').trim();return r1===fDilig||r2===fDilig;});
+  if(fProc)  dilig=dilig.filter(r=>String(r[C.respProc]||'').trim()===fProc);
+  if(fVia)   dilig=dilig.filter(r=>String(r[C.via]||'').trim()===fVia);
+  if(fOrg)   dilig=dilig.filter(r=>String(r[C.org]||'').toLowerCase().includes(fOrg.toLowerCase()));
+  if(fDesde) dilig=dilig.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso>=fDesde;});
+  if(fHasta) dilig=dilig.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso<=fHasta;});
+  const fcExp   =(ssSelected['col-exp']   ||'').toLowerCase();
+  const fcCli   =(ssSelected['col-cli']   ||'').toLowerCase();
+  const fcContra=(ssSelected['col-contra']||'').toLowerCase();
+  const fcVia2  =(ssSelected['col-via']   ||'').toLowerCase();
+  const fcOrg2  =(ssSelected['col-org']   ||'').toLowerCase();
+  const fcTarea =(ssSelected['col-tarea'] ||'').toLowerCase();
+  const fcProc2 =(ssSelected['col-proc']  ||'').toLowerCase();
+  const fcDilig2=(ssSelected['col-dilig'] ||'').toLowerCase();
+  if(fcExp)    dilig=dilig.filter(r=>String(r[C.exp]||'').toLowerCase().includes(fcExp));
+  if(fcCli)    dilig=dilig.filter(r=>String(r[C.cli]||'').toLowerCase().includes(fcCli));
+  if(fcContra) dilig=dilig.filter(r=>String(r[C.contra]||'').toLowerCase().includes(fcContra));
+  if(fcVia2)   dilig=dilig.filter(r=>String(r[C.via]||'').toLowerCase().includes(fcVia2));
+  if(fcOrg2)   dilig=dilig.filter(r=>String(r[C.org]||'').toLowerCase().includes(fcOrg2));
+  if(fcTarea)  dilig=dilig.filter(r=>String(r[C.tarea]||'').toLowerCase().includes(fcTarea));
+  if(fcProc2)  dilig=dilig.filter(r=>String(r[C.respProc]||'').toLowerCase().includes(fcProc2));
+  if(fcDilig2) dilig=dilig.filter(r=>(String(r[C.resp]||'')+' '+String(r[C.resp2]||'')).toLowerCase().includes(fcDilig2));
+
+  if(!dilig.length){
+    tabla.innerHTML=`<div class="rs-empty"><div class="ei">📭</div><p>Sin diligencias con los filtros actuales.</p></div>`;
+    return;
+  }
+
+  // Agrupar por responsable de diligencia
+  const grupos={};
+  dilig.forEach(r=>{
+    const resp=String(r[C.resp]||'Sin asignar').trim();
+    if(!grupos[resp])grupos[resp]=[];
+    grupos[resp].push(r);
+  });
+
+  const NCOLS=13;
+  const fcCC=(key,ph)=>`<div class="ss-wrap ss-mini" id="ss-${key}" style="width:100%">
+    <input type="text" class="ss-input" id="ss-${key}-input" placeholder="${ph}" autocomplete="off" spellcheck="false"
+      oninput="ssFilter('${key}')" onfocus="ssOpen('${key}')" onblur="ssBlur('${key}')">
+    <button class="ss-clear-btn" onclick="ssClear('${key}')" tabindex="-1">✕</button>
+    <div class="ss-list" id="ss-${key}-list"></div>
+  </div>`;
+
+  // Botón volver al resumen
+  const volverBtn=`<div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--card)">
+    <button class="btn btn-out btn-sm" onclick="rsVolverResumen()">← Volver al resumen</button>
+    <span style="font-size:12px;color:var(--muted);margin-left:10px">${dilig.length} diligencia${dilig.length!==1?'s':''} encontradas</span>
+  </div>`;
+
+  let html=volverBtn+`<table style="min-width:1200px"><thead>
+  <tr>
+    <th class="th-std">ID</th>
+    <th class="th-std">Fecha</th>
+    <th class="th-std">Hora</th>
+    <th class="th-std">Expediente</th>
+    <th class="th-std">Cliente</th>
+    <th class="th-std">Contraparte</th>
+    <th class="th-std">Vía Procesal</th>
+    <th class="th-std" style="min-width:160px">Órgano Jurisd.</th>
+    <th class="th-std" style="min-width:220px">Tarea</th>
+    <th class="th-std">Resp. proceso</th>
+    <th class="th-std">Resp. diligencia</th>
+    <th class="th-std">Estado reasig.</th>
+    <th class="th-std">Acción</th>
+  </tr>
+  <tr>
+    <th class="th-filter"></th>
+    <th class="th-filter"></th>
+    <th class="th-filter"></th>
+    <th class="th-filter">${fcCC('col-exp','Exp...')}</th>
+    <th class="th-filter">${fcCC('col-cli','Cliente...')}</th>
+    <th class="th-filter">${fcCC('col-contra','Contraparte...')}</th>
+    <th class="th-filter">${fcCC('col-via','Vía...')}</th>
+    <th class="th-filter">${fcCC('col-org','Organo...')}</th>
+    <th class="th-filter">${fcCC('col-tarea','Tarea...')}</th>
+    <th class="th-filter">${fcCC('col-proc','Resp. proceso...')}</th>
+    <th class="th-filter">${fcCC('col-dilig','Resp. diligencia...')}</th>
+    <th class="th-filter"></th>
+    <th class="th-filter"></th>
+  </tr>
+  </thead><tbody>`;
+
+  Object.entries(grupos).sort().forEach(([resp,rows])=>{
+    html+=`<tr style="background:var(--navy)"><td colspan="${NCOLS}" style="color:#fff;font-weight:700;font-size:11px;padding:6px 12px">
+      👤 ${esc(resp)} — ${rows.length} diligencia${rows.length!==1?'s':''}
+    </td></tr>`;
+    rows.sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha])))).forEach(r=>{
+      const tid=String(r[C.tid]||'').trim();
+      const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
+
+      let estadoHtml='<span style="font-size:11px;color:var(--muted)">—</span>';
+      let accionHtml=`<button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">✏ Proponer</button>`;
+      if(prop){
+        const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
+        const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
+        estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span><div class="rs-motivo">${esc(prop.nuevoResp)}</div>`;
+        const elimBtn=prop.estado==='propuesta'
+          ?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;margin-top:4px;font-size:10.5px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
+        accionHtml=`<div style="display:flex;flex-direction:column;gap:3px">
+          <button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>
+          ${elimBtn}
+        </div>`;
+      }
+
+      const rProc =String(r[C.respProc]||'').trim();
+      const rVia  =String(r[C.via]||'').trim();
+      const rOrg  =String(r[C.org]||'').trim();
+      const rContra=String(r[C.contra]||'').trim();
+      const rExp  =String(r[C.exp]||'').trim();
+      const resp2v=String(r[C.resp2]||'').trim();
+
+      html+=`<tr style="background:#FAFBFC">
+        <td><span class="tid">#${tid||'—'}</span></td>
+        <td style="white-space:nowrap">${nFec(r[C.fecha])}</td>
+        <td>${nHor(r[C.hora])}</td>
+        <td style="font-family:monospace;font-size:10.5px">${esc(rExp)||'<span class="na">—</span>'}</td>
+        <td style="font-size:11.5px">${esc(r[C.cli]||'')}</td>
+        <td style="font-size:11px">${esc(rContra)||'<span class="na">—</span>'}</td>
+        <td style="font-size:11px"><span class="pill px" style="white-space:normal">${esc(rVia)||'—'}</span></td>
+        <td style="font-size:11px">${esc(rOrg)||'<span class="na">—</span>'}</td>
+        <td style="min-width:220px;max-width:320px;white-space:normal;word-break:break-word;font-size:11.5px;line-height:1.4">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
+        <td style="font-size:11.5px;color:var(--navy)">${esc(rProc)||'<span class="na">—</span>'}</td>
+        <td style="font-weight:600;color:var(--navy);font-size:11.5px">${esc(resp)}${resp2v&&resp2v!=='-'?`<br><span style="font-size:10px;color:var(--muted)">${esc(resp2v)}</span>`:''}</td>
+        <td>${estadoHtml}</td>
+        <td>${accionHtml}</td>
+      </tr>`;
+    });
+  });
+
+  html+=`</tbody></table>`;
+  tabla.innerHTML=html;
+  initColFilters();
+}
+
+function rsVerAbogado(nombre){
+  const sel=document.getElementById('rs-abogado-filtro');
+  if(sel){sel.value=nombre;}
+  rsRender();
+}
+
+function rsVolverResumen(){
+  const sel=document.getElementById('rs-abogado-filtro');
+  if(sel) sel.value='';
+  COL_KEYS.forEach(k=>{ssSelected[k]='';});
+  rsRender();
+}
+
+// ── PARALEGAL: revisa propuestas + ejecuta confirmadas ────────
+function rsRenderParalegal(){
+  const filtro=document.getElementById('rs-filtro-estado').value;
+  let props=rsGetAll();
+  // Filtrar por equipo si hay uno seleccionado
+  const supPL=document.getElementById('rs-supervisor')?.value||'';
+  if(supPL&&mbRows&&mbRows.length){
+    props=props.filter(p=>{
+      const r=mbRows.find(r=>String(r[C.tid]||'').trim()===String(p.tid||'').trim());
+      return r&&String(r[C.sup]||'').includes(supPL);
+    });
+  }
+  if(filtro) props=props.filter(p=>p.estado===filtro);
+  // Ordenar por fecha de propuesta (más reciente primero)
+  props.sort((a,b)=>new Date(b.fechaProp||0)-new Date(a.fechaProp||0));
+  const tabla=document.getElementById('rs-tabla');
+  if(!props.length){
+    tabla.innerHTML=`<div class="rs-empty"><div class="ei">📋</div><p>No hay reasignaciones ${filtro?'con ese estado':''} registradas.</p></div>`;
+    return;
+  }
+  let html=`<table><thead><tr>
+    <th class="th-std">Estado</th><th class="th-std">ID</th>
+    <th class="th-std">Cliente</th><th class="th-std">Tarea</th>
+    <th class="th-std">Fecha</th><th class="th-std">Hora</th>
+    <th class="th-std">Resp. actual</th><th class="th-std">Nuevo resp.</th>
+    <th class="th-std">Motivo</th>
+    <th class="th-std">Nota</th><th class="th-std">Acción</th>
+  </tr></thead><tbody>`;
+  props.forEach(p=>{
+    const badgeCls=p.estado==='propuesta'?'rs-pend':p.estado==='confirmada'?'rs-conf':p.estado==='ejecutada'?'rs-ejec':'rs-rech';
+    const badgeLbl={propuesta:'🟡 Propuesta',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[p.estado]||p.estado;
+    const bg=p.estado==='propuesta'?'#FFFBF0':p.estado==='confirmada'?'#F0FAF5':p.estado==='rechazada'?'#FFF5F5':'#EBF4FF';
+    let accion='';
+    if(p.estado==='propuesta')
+      accion=`<div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="rsPLAccion('${p.id}','confirmada')">✔ Confirmar</button>
+        <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none" onclick="rsPLAccion('${p.id}','rechazada')">✕ Rechazar</button>
+      </div>`;
+    else if(p.estado==='confirmada')
+      accion=`<button class="btn btn-sm" style="background:var(--blue);color:#fff;border:none" onclick="rsEjecutar('${p.id}')">✔ Ejecutado en MB</button>`;
+    else if(p.estado==='ejecutada')
+      accion=`<span style="font-size:11px;color:var(--muted)">✔ ${p.fechaEjec||''}</span>`;
+    else
+      accion=`<span class="na" style="font-size:11px">—</span>`;
+
+    html+=`<tr style="background:${bg}${p.estado==='ejecutada'?';opacity:.75':''}">
+      <td><span class="rs-badge ${badgeCls}">${badgeLbl}</span></td>
+      <td><span class="tid">#${p.tid}</span></td>
+      <td style="font-size:11.5px">${esc(p.cliente||'')}</td>
+      <td style="min-width:180px;white-space:normal;word-break:break-word;font-size:11.5px">${esc(p.tarea||'')}</td>
+      <td style="white-space:nowrap">${p.fecha||''}</td><td>${p.hora||''}</td>
+      <td style="font-size:11.5px;color:var(--red)">${esc(p.respActual||'')}</td>
+      <td style="font-weight:700;color:var(--green)">${esc(p.nuevoResp||'')}${p.nuevoResp2?`<br><span style="font-size:10px;color:var(--muted)">${esc(p.nuevoResp2)}</span>`:''}</td>
+      <td><div class="rs-motivo" style="max-width:180px">${esc(p.motivo||'')}</div></td>
+      <td style="font-size:11px;color:var(--amber)">${p.notaCID?esc(p.notaCID):'—'}</td>
+      <td>${accion}</td>
+    </tr>`;
+  });
+  html+=`</tbody></table>`;
+  tabla.innerHTML=html;
+}
+
+function rsPLAccion(id,estado){
+  const nota=estado==='rechazada'?prompt('Motivo de rechazo (opcional):'):'';
+  const arr=rsGetAll();
+  const idx=arr.findIndex(x=>x.id===id);
+  if(idx<0)return;
+  arr[idx].estado=estado;
+  arr[idx].notaCID=nota||'';
+  arr[idx].revisadoPor='Paralegal';
+  arr[idx].fechaRevision=new Date().toLocaleString('es-PE');
+  rsSave(arr);
+  // Cambiar filtro a "Todos" para que el resultado sea visible
+  const selEstado=document.getElementById('rs-filtro-estado');
+  if(selEstado) selEstado.value='';
+  rsRender();
+}
+
+// ── MODAL PROPONER ────────────────────────────────────────────
+let rsTidActual=null;
+function rsAbrirModal(tid){
+  if(!mbRows)return;
+  const r=mbRows.find(r=>String(r[C.tid]||'')===tid);
+  if(!r)return;
+  rsTidActual=tid;
+  document.getElementById('rsModal').dataset.tid=tid;
+  document.getElementById('rs-modal-titulo').textContent='Proponer reasignación';
+  document.getElementById('rs-modal-sub').textContent=`#${tid} · ${nFec(r[C.fecha])} ${nHor(r[C.hora])} · ${r[C.cli]||''}`;
+  document.getElementById('rs-resp-actual').textContent=(r[C.resp]||'')+(r[C.resp2]&&r[C.resp2]!=='-'?' / '+r[C.resp2]:'');
+  // Si ya hay una propuesta existente para este TID, pre-cargar los valores propuestos (no los del MB)
+  const propPrev=rsGetAll().find(p=>p.tid===tid&&p.estado!=='ejecutada');
+  document.getElementById('rs-nuevo-resp').value  =propPrev ? (propPrev.nuevoResp||'')  : (r[C.resp]||'');
+  document.getElementById('rs-nuevo-resp2').value =propPrev ? (propPrev.nuevoResp2||'') : (r[C.resp2]||'');
+  document.getElementById('rs-motivo-txt').value  =propPrev ? (propPrev.motivo||'')     : '';
+  document.getElementById('rsModal').classList.add('open');
+}
+function rsModalClose(){document.getElementById('rsModal').classList.remove('open');rsTidActual=null;}
+
+function rsGuardarPropuesta(){
+  const tid=rsTidActual||document.getElementById('rsModal').dataset.tid||'';
+  if(!tid){alert('Error: no hay diligencia seleccionada. Cierra y vuelve a intentar.');return;}
+  const nuevoResp=document.getElementById('rs-nuevo-resp').value.trim();
+  const nuevoResp2=document.getElementById('rs-nuevo-resp2').value.trim();
+  const motivo=document.getElementById('rs-motivo-txt').value.trim();
+  if(!nuevoResp && !motivo){alert('Ingresa al menos el motivo o el nuevo responsable.');return;}
+  const r=mbRows&&mbRows.find(r=>String(r[C.tid]||'').trim()===tid.trim());
+  const arr=rsGetAll().filter(p=>p.tid!==tid||p.estado==='ejecutada');
+  arr.push({
+    id:'rs_'+Date.now(),tid,
+    cliente:r?r[C.cli]||'':'',
+    tarea:r?String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''):'',
+    fecha:r?nFec(r[C.fecha]):'',hora:r?nHor(r[C.hora]):'',
+    respActual:(r?r[C.resp]||'':'')+(r&&r[C.resp2]&&r[C.resp2]!=='-'?' / '+r[C.resp2]:''),
+    nuevoResp,nuevoResp2,motivo,
+    fechaProp:new Date().toLocaleString('es-PE'),
+    estado:'propuesta',notaCID:'',revisadoPor:'',fechaRevision:'',fechaEjec:''
+  });
+  rsSave(arr);
+  rsModalClose();
+  rsRender();
+  alert(`✔ Propuesta enviada para #${tid}.\nEl CID la revisará y confirmará.`);
+}
+
+// ── MODAL CID ─────────────────────────────────────────────────
+function rsCIDModal(id){
+  const p=rsGetAll().find(x=>x.id===id);
+  if(!p)return;
+  rsPropActual=p;
+  document.getElementById('cid-modal-sub').textContent=`#${p.tid} · ${p.fecha} ${p.hora} · ${p.cliente}`;
+  document.getElementById('cid-detalle').innerHTML=`
+    <div style="margin-bottom:6px"><b>Tarea:</b> ${esc(p.tarea)}</div>
+    <div style="margin-bottom:6px"><b>Resp. actual:</b> <span style="color:var(--red)">${esc(p.respActual)}</span></div>
+    <div style="margin-bottom:6px"><b>Nuevo resp.:</b> <span style="color:var(--green);font-weight:700">${esc(p.nuevoResp)}${p.nuevoResp2?' / '+esc(p.nuevoResp2):''}</span></div>
+    <div style="margin-bottom:6px"><b>Motivo:</b> ${esc(p.motivo)}</div>
+  `;
+  document.getElementById('cid-nota').value=p.notaCID||'';
+  document.getElementById('rsCIDModal').classList.add('open');
+}
+function rsCIDAccion(estado){
+  if(!rsPropActual)return;
+  const arr=rsGetAll();
+  const idx=arr.findIndex(x=>x.id===rsPropActual.id);
+  if(idx<0)return;
+  arr[idx].estado=estado;
+  arr[idx].notaCID=document.getElementById('cid-nota').value.trim();
+  arr[idx].revisadoPor='CID';
+  arr[idx].fechaRevision=new Date().toLocaleString('es-PE');
+  rsSave(arr);
+  document.getElementById('rsCIDModal').classList.remove('open');
+  rsPropActual=null;
+  rsRender();
+}
+
+// ── PARALEGAL EJECUTAR ────────────────────────────────────────
+function rsEjecutar(id){
+  if(!confirm('¿Confirmas que ya realizaste este cambio en MyBig?'))return;
+  const arr=rsGetAll();
+  const idx=arr.findIndex(x=>x.id===id);
+  if(idx<0)return;
+  arr[idx].estado='ejecutada';
+  arr[idx].fechaEjec=new Date().toLocaleString('es-PE');
+  rsSave(arr);
+  const selEstado=document.getElementById('rs-filtro-estado');
+  if(selEstado) selEstado.value='';
+  rsRender();
+}
+
+// ── EXPORTAR ─────────────────────────────────────────────────
+function rsExportar(){
+  const arr=rsGetAll();
+  if(!arr.length){alert('No hay reasignaciones registradas.');return;}
+  const wb=XLSX.utils.book_new();
+  const hoy=new Date().toLocaleDateString('es-PE');
+  const hdr=['Estado','ID Tarea','Cliente','Tarea','Fecha','Hora',
+             'Resp. actual','Nuevo resp.','Nuevo resp. II',
+             'Motivo','Fecha propuesta',
+             'Nota CID','Revisado por','Fecha revisión','Fecha ejecución'];
+  const filas=arr.map(p=>[
+    p.estado,p.tid,p.cliente,p.tarea,p.fecha,p.hora,
+    p.respActual,p.nuevoResp,p.nuevoResp2||'',
+    p.motivo,p.fechaProp,
+    p.notaCID||'',p.revisadoPor||'',p.fechaRevision||'',p.fechaEjec||''
+  ]);
+  const ws=XLSX.utils.aoa_to_sheet([
+    ['REPORTE DE REASIGNACIONES · VINATEA & TOYAMA'],['Generado:',hoy],[''],
+    hdr,...filas
+  ]);
+  ws['!cols']=[{wch:12},{wch:10},{wch:28},{wch:38},{wch:12},{wch:7},
+               {wch:24},{wch:22},{wch:22},{wch:40},{wch:18},{wch:16},
+               {wch:30},{wch:12},{wch:16},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws,'Reasignaciones');
+  // Hoja solo pendientes de ejecución
+  const pend=arr.filter(p=>p.estado==='confirmada');
+  if(pend.length){
+    const fp=pend.map(p=>[p.tid,p.cliente,p.tarea,p.fecha,p.hora,p.respActual,p.nuevoResp,p.nuevoResp2||'',p.motivo,p.notaCID||'']);
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+      ['PENDIENTES DE EJECUCIÓN EN MYBIG'],[''],
+      ['ID','Cliente','Tarea','Fecha','Hora','Resp. actual','Nuevo resp.','Nuevo resp. II','Motivo','Nota CID'],
+      ...fp
+    ]),'Pendientes MyBig');
+  }
+  XLSX.writeFile(wb,`Reasignaciones_${hoy.replace(/\//g,'-')}.xlsx`);
+}
+
+
+let agVistaActual='mes';
+let agFechaRef=new Date();
+let agPersona='';            // responsable seleccionado
+let agEventos=[];            // eventos filtrados del mbRows
+let agEdits={};              // reasignaciones y notas guardadas localmente
+let agEvActual=null;         // evento abierto en el modal
+
+const SUP_CLASE={
+  'Elyana Arias':'sup-elyana','Solanch Estrella':'sup-solanch',
+  'Samuel Paz':'sup-samuel','Carlos Morales':'sup-carlos',
+  'Cynthia Lagos':'sup-cynthia','Katia Jacinto':'sup-katia'
+};
+
+function supClase(sup){
+  for(const[k,v]of Object.entries(SUP_CLASE)){
+    if(sup&&sup.includes(k))return v;
+  }
+  return'sup-default';
+}
+
+// ── Inicializar agenda cuando se abre el panel ────────────────
+function initAgenda(){
+  if(!mbRows||mbRows.length===0){
+    document.getElementById('ag-calendario').innerHTML=
+      `<div class="no-datos-agenda"><div class="ei">📊</div>
+       <p>Primero carga el reporte MyBig en la pestaña <strong>⚡ Nuevo Cruce</strong>.</p></div>`;
+    return;
+  }
+
+  // Cargar nombres únicos de responsables
+  const nombres=new Set();
+  mbRows.forEach(r=>{
+    if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]));
+    if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]));
+  });
+  const sorted=[...nombres].sort();
+
+  const selAb=document.getElementById('ag-abogado');
+  const selYo=document.getElementById('ag-yo');
+  const selNR=document.getElementById('ev-nuevo-resp');
+  const selNR2=document.getElementById('ev-nuevo-resp2');
+
+  selAb.innerHTML='<option value="">— todos —</option>';
+  selYo.innerHTML='<option value="">— mi nombre —</option>';
+  selNR.innerHTML='<option value="">— seleccionar —</option>';
+  selNR2.innerHTML='<option value="">— ninguno —</option>';
+
+  sorted.forEach(n=>{
+    selAb.innerHTML+=`<option>${n}</option>`;
+    selYo.innerHTML+=`<option>${n}</option>`;
+    selNR.innerHTML+=`<option>${n}</option>`;
+    selNR2.innerHTML+=`<option>${n}</option>`;
+  });
+
+  // Recuperar preferencia guardada
+  const guardado=localStorage.getItem('vt_ag_yo');
+  if(guardado){selYo.value=guardado;}
+
+  agFechaRef=new Date();
+  agRender();
+}
+
+function agCambiarModo(){
+  const modo=document.getElementById('ag-modo').value;
+  document.getElementById('ag-yo-wrap').style.display=modo==='personal'?'flex':'none';
+  document.getElementById('ag-abogado').parentElement.style.display=modo==='personal'?'none':'flex';
+  if(modo==='personal'){
+    const yo=document.getElementById('ag-yo').value;
+    agPersona=yo;
+  }else{
+    agPersona=document.getElementById('ag-abogado').value;
+  }
+  agRender();
+}
+
+function agSoy(){
+  const yo=document.getElementById('ag-yo').value;
+  agPersona=yo;
+  localStorage.setItem('vt_ag_yo',yo);
+  agRender();
+}
+
+// ── Obtener eventos para la persona seleccionada ──────────────
+function agGetEventos(persona){
+  if(!mbRows)return[];
+  return mbRows.filter(r=>{
+    if(!r[C.fecha])return false;
+    if(esDiligenciaExcluida(r))return false;
+    const edit=agEdits[String(r[C.tid]||'')];
+    const resp=edit?edit.resp:(r[C.resp]||'');
+    const resp2=edit?edit.resp2:(r[C.resp2]||'');
+    if(!persona)return true;
+    return String(resp).includes(persona)||String(resp2).includes(persona);
+  }).map(r=>{
+    const tid=String(r[C.tid]||'');
+    const edit=agEdits[tid]||{};
+    return{
+      tid,
+      fecha:nFec(r[C.fecha]),
+      hora:nHor(r[C.hora]),
+      cliente:r[C.cli]||'',
+      tarea:String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''),
+      exp:r[C.exp]||'',
+      estado:r[C.estado]||'',
+      sup:r[C.sup]||'',
+      resp:edit.resp||r[C.resp]||'',
+      resp2:edit.resp2||r[C.resp2]||'',
+      nota:edit.nota||'',
+      reasignado:!!edit.resp,
+      raw:r
+    };
+  });
+}
+
+// ── Vistas ────────────────────────────────────────────────────
+function agVista(v){
+  agVistaActual=v;
+  ['mes','sem','dia'].forEach(x=>{
+    document.getElementById('vbtn-'+x).classList.toggle('active',x===v);
+  });
+  agRender();
+}
+
+function agNavegar(dir){
+  if(agVistaActual==='mes'){agFechaRef=new Date(agFechaRef.getFullYear(),agFechaRef.getMonth()+dir,1);}
+  else if(agVistaActual==='sem'){agFechaRef=new Date(agFechaRef.getTime()+dir*7*86400000);}
+  else{agFechaRef=new Date(agFechaRef.getTime()+dir*86400000);}
+  agRender();
+}
+
+function agHoy(){agFechaRef=new Date();agRender();}
+
+function agRender(){
+  const modo=document.getElementById('ag-modo').value;
+  agPersona=modo==='personal'
+    ?document.getElementById('ag-yo').value
+    :document.getElementById('ag-abogado').value;
+
+  agEventos=agGetEventos(agPersona);
+  const titulo=document.getElementById('ag-titulo');
+
+  if(agVistaActual==='mes'){
+    titulo.textContent=agFechaRef.toLocaleDateString('es-PE',{month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+    renderMes();
+  }else if(agVistaActual==='sem'){
+    const lun=lunesDe(agFechaRef);
+    const vier=new Date(lun.getTime()+6*86400000);
+    titulo.textContent=fmtDia(lun)+' – '+fmtDia(vier);
+    renderSemana(lun);
+  }else{
+    titulo.textContent=agFechaRef.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+    renderDia(agFechaRef);
+  }
+}
+
+// ── helpers de fecha ─────────────────────────────────────────
+function lunesDe(d){const dia=d.getDay();return new Date(d.getTime()-((dia===0?6:dia-1)*86400000));}
+function fmtDia(d){return d.toLocaleDateString('es-PE',{day:'numeric',month:'short'});}
+function isoLocal(d){return d.getFullYear()+'-'+_p(d.getMonth()+1)+'-'+_p(d.getDate());}
+function eventosDe(fechaISO){return agEventos.filter(e=>toISO(e.fecha)===fechaISO);}
+
+// ── VISTA MES ─────────────────────────────────────────────────
+function renderMes(){
+  const año=agFechaRef.getFullYear(),mes=agFechaRef.getMonth();
+  const hoy=isoLocal(new Date());
+  const primerDia=new Date(año,mes,1);
+  const dias=['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+  let html=`<div class="cal-mes"><div class="cal-mes-head">`;
+  dias.forEach(d=>html+=`<div>${d}</div>`);
+  html+=`</div><div class="cal-mes-body">`;
+
+  let inicio=lunesDe(primerDia);
+  for(let i=0;i<42;i++){
+    const d=new Date(inicio.getTime()+i*86400000);
+    const iso=isoLocal(d);
+    const esHoy=iso===hoy;
+    const otroMes=d.getMonth()!==mes;
+    const evs=eventosDe(iso);
+    html+=`<div class="cal-dia${esHoy?' hoy':''}${otroMes?' otro-mes':''}" onclick="agDiaClick('${iso}')">`;
+    html+=`<span class="cal-dia-num">${d.getDate()}</span>`;
+    const max=3;
+    evs.slice(0,max).forEach(ev=>{
+      const cls=supClase(ev.sup);
+      html+=`<div class="cal-evento ${cls}" onclick="event.stopPropagation();abrirEvento('${ev.tid}')" title="${esc(ev.tarea)} — ${ev.hora}">${ev.hora} ${esc(ev.cliente.split(' ').slice(0,2).join(' '))}</div>`;
+    });
+    if(evs.length>max)html+=`<div class="cal-mas" onclick="event.stopPropagation();agDiaClick('${iso}')">+${evs.length-max} más</div>`;
+    html+=`</div>`;
+  }
+  html+=`</div></div>`;
+  document.getElementById('ag-calendario').innerHTML=html;
+}
+
+function agDiaClick(iso){
+  agFechaRef=new Date(iso+'T12:00:00');
+  agVista('dia');
+}
+
+// ── VISTA SEMANA ──────────────────────────────────────────────
+function renderSemana(lun){
+  const hoy=isoLocal(new Date());
+  const horas=[];for(let h=7;h<=20;h++)horas.push(h);
+  const dias=[];for(let i=0;i<7;i++)dias.push(new Date(lun.getTime()+i*86400000));
+
+  let html=`<div class="cal-sem"><div class="cal-sem-head"><div></div>`;
+  dias.forEach(d=>{
+    const iso=isoLocal(d);
+    const esHoy=iso===hoy;
+    html+=`<div class="${esHoy?'hoy-col':''}">${d.toLocaleDateString('es-PE',{weekday:'short',day:'numeric'})}</div>`;
+  });
+  html+=`</div><div class="cal-sem-body">`;
+
+  horas.forEach(h=>{
+    html+=`<div class="cal-hora-lbl">${_p(h)}:00</div>`;
+    dias.forEach(d=>{
+      const iso=isoLocal(d);
+      const esHoy=iso===hoy;
+      const evs=eventosDe(iso).filter(e=>{
+        const eh=parseInt(e.hora.split(':')[0]||0);
+        return eh===h;
+      });
+      html+=`<div class="cal-sem-cel${esHoy?' hoy-col':''}">`;
+      evs.forEach(ev=>{
+        const cls=supClase(ev.sup);
+        html+=`<div class="cal-ev-bloque ${cls}" onclick="abrirEvento('${ev.tid}')" title="${esc(ev.tarea)}">${ev.hora} ${esc(ev.cliente.split(' ').slice(0,2).join(' '))}</div>`;
+      });
+      html+=`</div>`;
+    });
+  });
+  html+=`</div></div>`;
+  document.getElementById('ag-calendario').innerHTML=html;
+}
+
+// ── VISTA DÍA ─────────────────────────────────────────────────
+function renderDia(fecha){
+  const iso=isoLocal(fecha);
+  const evs=eventosDe(iso).sort((a,b)=>a.hora.localeCompare(b.hora));
+  const hoy=isoLocal(new Date());
+  const esHoy=iso===hoy;
+
+  let html=`<div class="cal-dia-view">`;
+  html+=`<div class="cal-dia-head">${esHoy?'📅 Hoy — ':''}`+
+    fecha.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase())+
+    ` <span style="font-size:12px;font-weight:400;opacity:.7">${evs.length} diligencia${evs.length!==1?'s':''}</span></div>`;
+
+  if(evs.length===0){
+    html+=`<div style="text-align:center;padding:40px;color:var(--muted)">Sin diligencias este día</div>`;
+  }else{
+    html+=`<div class="cal-dia-body">`;
+    const horas=[];for(let h=7;h<=20;h++)horas.push(h);
+    horas.forEach(h=>{
+      const ev=evs.filter(e=>parseInt(e.hora.split(':')[0]||0)===h);
+      html+=`<div class="cal-dia-fila"><div class="cal-dia-hora">${_p(h)}:00</div><div class="cal-dia-slot">`;
+      ev.forEach(e=>{
+        const cls=supClase(e.sup);
+        html+=`<div class="cal-ev-dia ${cls}" onclick="abrirEvento('${e.tid}')">
+          <span style="font-weight:700">${e.hora}</span>
+          <span>${esc(e.tarea.slice(0,40))}</span>
+          <span style="opacity:.7">— ${esc(e.cliente)}</span>
+          ${e.reasignado?'<span style="background:#FEF3C7;color:#92400E;border-radius:4px;padding:1px 5px;font-size:9px">Reasignado</span>':''}
+        </div>`;
+      });
+      html+=`</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('ag-calendario').innerHTML=html;
+}
+
+// ── MODAL EVENTO ──────────────────────────────────────────────
+function abrirEvento(tid){
+  const ev=agEventos.find(e=>e.tid===tid);
+  if(!ev)return;
+  agEvActual=ev;
+
+  const cls=supClase(ev.sup);
+  document.getElementById('ev-sup-badge').className='ev-tag '+cls;
+  document.getElementById('ev-sup-badge').textContent='Sup: '+ev.sup;
+  document.getElementById('ev-titulo').textContent=ev.tarea;
+  document.getElementById('ev-meta').textContent=
+    nFec(ev.raw[C.fecha])+' · '+ev.hora+' · #'+ev.tid;
+  document.getElementById('ev-cliente').textContent=ev.cliente;
+  document.getElementById('ev-exp').textContent=ev.exp;
+  document.getElementById('ev-tarea').textContent=ev.tarea;
+  document.getElementById('ev-estado').innerHTML=`<span class="pill pg">${ev.estado}</span>`;
+  document.getElementById('ev-resp-actual').textContent=
+    ev.resp+(ev.resp2&&ev.resp2!=='-'?' / '+ev.resp2:'');
+  document.getElementById('ev-nota').value=ev.nota||'';
+  document.getElementById('ev-nuevo-resp').value=ev.resp||'';
+  document.getElementById('ev-nuevo-resp2').value=ev.resp2||'';
+  document.getElementById('reasig-wrap').style.display='none';
+  document.getElementById('btn-reasig').textContent='✏ Reasignar';
+  document.getElementById('evModal').classList.add('open');
+}
+
+function cerrarEvModal(){
+  document.getElementById('evModal').classList.remove('open');
+  agEvActual=null;
+}
+
+function toggleReasignar(){
+  const wrap=document.getElementById('reasig-wrap');
+  const btn=document.getElementById('btn-reasig');
+  const open=wrap.style.display==='block';
+  wrap.style.display=open?'none':'block';
+  btn.textContent=open?'✏ Reasignar':'✕ Cancelar';
+}
+
+function guardarEvento(){
+  if(!agEvActual)return;
+  const tid=agEvActual.tid;
+  const nuevoResp=document.getElementById('ev-nuevo-resp').value;
+  const nuevoResp2=document.getElementById('ev-nuevo-resp2').value;
+  const nota=document.getElementById('ev-nota').value;
+  const reasig=document.getElementById('reasig-wrap').style.display==='block';
+
+  if(!agEdits[tid])agEdits[tid]={};
+  if(reasig&&nuevoResp){
+    agEdits[tid].resp=nuevoResp;
+    agEdits[tid].resp2=nuevoResp2;
+  }
+  agEdits[tid].nota=nota;
+
+  cerrarEvModal();
+  agRender();
+}
+
+// ── EXPORTAR AGENDA PERSONAL ──────────────────────────────────
+function agExportar(){
+  if(!agEventos.length){alert('No hay diligencias para exportar.');return;}
+  const wb=XLSX.utils.book_new();
+  const hoy=new Date().toLocaleDateString('es-PE');
+  const persona=agPersona||'Todos';
+
+  const meta=[
+    ['AGENDA PERSONAL · VINATEA & TOYAMA'],
+    ['Responsable:',persona],['Generado:',hoy],['']
+  ];
+  const hdr=['Fecha','Hora','Cliente','Expediente','Tarea','Estado','Responsable','Responsable II','Supervisor','Nota'];
+  const filas=agEventos
+    .sort((a,b)=>toISO(a.fecha).localeCompare(toISO(b.fecha))||a.hora.localeCompare(b.hora))
+    .map(e=>[e.fecha,e.hora,e.cliente,e.exp,e.tarea,e.estado,e.resp,e.resp2,e.sup,e.nota||'']);
+
+  const ws=XLSX.utils.aoa_to_sheet([...meta,hdr,...filas]);
+  ws['!cols']=[{wch:12},{wch:7},{wch:30},{wch:28},{wch:45},{wch:12},{wch:22},{wch:22},{wch:16},{wch:40}];
+  XLSX.utils.book_append_sheet(wb,ws,'Agenda');
+  XLSX.writeFile(wb,`Agenda_${persona.replace(/\s/g,'_')}_${hoy.replace(/\//g,'-')}.xlsx`);
+}
+
+// Escuchar clic fuera del modal
+document.addEventListener('click',e=>{
+  if(e.target.id==='evModal')cerrarEvModal();
+});
+
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
