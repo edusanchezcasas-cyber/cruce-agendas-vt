@@ -346,7 +346,20 @@ td{padding:7px 11px;vertical-align:middle}
 .ev-tag{display:inline-flex;align-items:center;gap:4px;border-radius:10px;padding:3px 9px;font-size:10.5px;font-weight:600}
 .no-datos-agenda{text-align:center;padding:60px;color:var(--muted)}
 .no-datos-agenda .ei{font-size:48px;margin-bottom:14px}
+/* BI panel */
+.bi-tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.bi-tl-item:last-child{border-bottom:none}
+.bi-tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.bi-tl-dot.pend{background:var(--amber)}.bi-tl-dot.conf{background:var(--green)}.bi-tl-dot.ejec{background:var(--blue)}.bi-tl-dot.rech{background:var(--red)}
+.bi-kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;cursor:pointer;transition:all .15s}
+.bi-kpi:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(31,56,100,.1)}
+.bi-kpi.active{border-width:2px}
+.bi-kpi-accent{position:absolute;top:0;left:0;width:4px;height:100%;border-radius:10px 0 0 10px}
+.bi-kpi-n{font-family:'DM Serif Display',serif;font-size:32px;line-height:1;color:var(--navy)}
+.bi-kpi-label{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.bi-kpi-pct{position:absolute;bottom:10px;right:12px;font-size:10px;color:var(--light);font-weight:600}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -529,6 +542,17 @@ td{padding:7px 11px;vertical-align:middle}
     <div id="rs-mb-badge" class="ubadge" style="display:none;margin:8px auto 0">✔ <span id="rs-mb-fname"></span></div>
   </div>
 
+  <!-- Botón reemplazar reporte (visible solo cuando hay MB cargado) -->
+  <div id="rs-reload-wrap" style="display:none;margin-bottom:12px">
+    <label style="cursor:pointer;display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--muted);transition:all .15s"
+      onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+      <input type="file" accept=".xlsx,.xls" onchange="rsCargarMB(this)" style="display:none"/>
+      ↺ Cargar nuevo reporte
+      <span id="rs-reload-fname" style="font-weight:400;color:var(--light);font-size:11px"></span>
+    </label>
+  </div>
+
   <!-- Toolbar fila 1: equipo + filtros -->
   <div class="rs-toolbar">
     <!-- Equipo -->
@@ -702,15 +726,16 @@ td{padding:7px 11px;vertical-align:middle}
     <button class="btn btn-out btn-sm" onclick="agExportar()" style="margin-left:auto">⬇ Exportar agenda</button>
   </div>
 
-  <!-- Leyenda supervisores -->
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:11px">
+  <!-- Leyenda supervisores clicables -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;align-items:center">
     <span style="color:var(--muted);font-weight:600;align-self:center">Supervisor:</span>
-    <span class="ev-tag sup-elyana">Elyana Arias</span>
-    <span class="ev-tag sup-solanch">Solanch Estrella</span>
-    <span class="ev-tag sup-samuel">Samuel Paz</span>
-    <span class="ev-tag sup-carlos">Carlos Morales</span>
-    <span class="ev-tag sup-cynthia">Cynthia Lagos</span>
-    <span class="ev-tag sup-katia">Katia Jacinto</span>
+    <span class="ev-tag sup-elyana" id="ag-sup-elyana" onclick="agFiltrarSup('Elyana Arias')" style="cursor:pointer;user-select:none;transition:all .15s">Elyana Arias</span>
+    <span class="ev-tag sup-solanch" id="ag-sup-solanch" onclick="agFiltrarSup('Solanch Estrella')" style="cursor:pointer;user-select:none;transition:all .15s">Solanch Estrella</span>
+    <span class="ev-tag sup-samuel" id="ag-sup-samuel" onclick="agFiltrarSup('Samuel Paz')" style="cursor:pointer;user-select:none;transition:all .15s">Samuel Paz</span>
+    <span class="ev-tag sup-carlos" id="ag-sup-carlos" onclick="agFiltrarSup('Carlos Morales')" style="cursor:pointer;user-select:none;transition:all .15s">Carlos Morales</span>
+    <span class="ev-tag sup-cynthia" id="ag-sup-cynthia" onclick="agFiltrarSup('Cynthia Lagos')" style="cursor:pointer;user-select:none;transition:all .15s">Cynthia Lagos</span>
+    <span class="ev-tag sup-katia" id="ag-sup-katia" onclick="agFiltrarSup('Katia Jacinto')" style="cursor:pointer;user-select:none;transition:all .15s">Katia Jacinto</span>
+    <span id="ag-sup-clear" onclick="agFiltrarSup('')" style="display:none;cursor:pointer;font-size:10.5px;color:var(--muted);padding:3px 8px;border:1px solid var(--border);border-radius:20px;transition:all .15s" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">✕ Quitar filtro</span>
   </div>
 
   <!-- Contenedor del calendario -->
@@ -774,7 +799,108 @@ td{padding:7px 11px;vertical-align:middle}
       <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:1px solid var(--red)" onclick="clearHistory()">🗑 Limpiar</button>
     </div>
   </div>
+
+  <!-- Píldoras de acceso rápido -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+    <div onclick="showPanel('bi')" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px 18px;cursor:pointer;transition:all .15s;min-width:200px"
+      onmouseover="this.style.borderColor='var(--navy)';this.style.boxShadow='0 3px 12px rgba(31,56,100,.1)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+      <span style="font-size:22px">📊</span>
+      <div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">BI Reasignaciones</div>
+        <div style="font-size:11px;color:var(--muted)">Gráficos y análisis por equipo</div>
+      </div>
+    </div>
+  </div>
+
   <div id="ctrlList"></div>
+</div>
+
+<!-- ══ PANEL: BI REASIGNACIONES ══════════════════════════════ -->
+<div id="panel-bi" class="panel" style="display:none">
+  <!-- Header BI -->
+  <div class="ctrl-head" style="margin-bottom:12px">
+    <h3>📊 BI · Reasignaciones</h3>
+    <div class="ctrl-toolbar">
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff" onclick="biCargar()">↺ Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Filtros BI -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
+    <div class="fg"><label>Supervisor / Equipo</label>
+      <select id="bi-f-equipo" onchange="biRenderTodo()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit">
+        <option value="">Todos los equipos</option>
+      </select>
+    </div>
+    <div class="fg"><label>Abogado</label>
+      <select id="bi-f-abogado" onchange="biRenderTodo()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="fg"><label>Desde</label>
+      <input type="date" id="bi-f-desde" onchange="biRenderTodo()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit">
+    </div>
+    <div class="fg"><label>Hasta</label>
+      <input type="date" id="bi-f-hasta" onchange="biRenderTodo()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit">
+    </div>
+    <button class="fclear" onclick="biLimpiar()" style="align-self:flex-end">Limpiar</button>
+  </div>
+
+  <!-- KPIs BI -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px" id="bi-kpis"></div>
+
+  <!-- Charts row 1 -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px">
+      <div style="font-weight:700;font-size:13px;color:var(--navy);margin-bottom:4px">Reasignaciones por equipo</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Propuestas, confirmadas, ejecutadas y rechazadas</div>
+      <div style="position:relative;height:220px"><canvas id="bi-chart-equipos"></canvas></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px">
+      <div style="font-weight:700;font-size:13px;color:var(--navy);margin-bottom:4px">Distribución de estados</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Proporción global</div>
+      <div style="position:relative;height:220px;display:flex;align-items:center;justify-content:center"><canvas id="bi-chart-dona" style="max-width:200px;max-height:200px"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Charts row 2 -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px">
+      <div style="font-weight:700;font-size:13px;color:var(--navy);margin-bottom:4px">Reasignaciones por abogado</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Resp. diligencia más afectados (top 12)</div>
+      <div style="position:relative;height:260px"><canvas id="bi-chart-abogados"></canvas></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;overflow:hidden">
+      <div style="font-weight:700;font-size:13px;color:var(--navy);margin-bottom:4px">Actividad reciente</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Últimas 10 propuestas</div>
+      <div id="bi-timeline" style="overflow-y:auto;max-height:240px"></div>
+    </div>
+  </div>
+
+  <!-- Tabla detalle BI -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Detalle de reasignaciones</div>
+        <div id="bi-tabla-sub" style="font-size:11px;color:var(--muted)"></div>
+      </div>
+    </div>
+    <div style="overflow:auto;max-height:320px">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr>
+            <th class="th-std">Estado</th><th class="th-std">ID</th>
+            <th class="th-std">Cliente</th><th class="th-std">Tarea</th>
+            <th class="th-std">Fecha</th><th class="th-std">Resp. actual</th>
+            <th class="th-std">Nuevo resp.</th><th class="th-std">Motivo</th>
+            <th class="th-std">Propuesto</th>
+          </tr>
+        </thead>
+        <tbody id="bi-tabla-body"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <!-- ══ MODAL: GITHUB ══════════════════════════════════════════ -->
@@ -951,13 +1077,17 @@ document.addEventListener('click',e=>{if(!e.target.closest('.ss-wrap'))document.
 // PANEL NAVIGATION
 // ═══════════════════════════════════════════════════
 function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
+  const panel=document.getElementById('panel-'+id);
+  if(panel){panel.style.display='block';panel.classList.add('active');}
   document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('active'));
-  document.querySelector(`.mnav[onclick="showPanel('${id}')"]`).classList.add('active');
+  const navBtn=document.querySelector(`.mnav[onclick="showPanel('${id}')"]`);
+  if(navBtn) navBtn.classList.add('active');
   if(id==='control')renderControlPanel();
   if(id==='agenda')initAgenda();
   if(id==='reasig')initReasig();
+  if(id==='bi')biCargar();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2182,8 +2312,10 @@ function initReasig(){
   // Mostrar upload solo si no hay datos de MB cargados
   if(!mbRows||!mbRows.length){
     uploadArea.style.display='block';
+    document.getElementById('rs-reload-wrap').style.display='none';
   } else {
     uploadArea.style.display='none';
+    document.getElementById('rs-reload-wrap').style.display='block';
   }
 
   // Poblar selects de responsables si hay datos
@@ -2206,8 +2338,10 @@ function rsCargarMB(input){
     mbRows=rows;
     detectCols();
     document.getElementById('rs-upload-area').style.display='none';
+    document.getElementById('rs-reload-wrap').style.display='block';
+    const fn=document.getElementById('rs-reload-fname');
+    if(fn) fn.textContent=file.name;
     rsPoblarSelects();
-    // Si ya había un equipo seleccionado, re-poblar todos los filtros de equipo
     if(document.getElementById('rs-supervisor').value) rsEquipoChange();
     else rsRender();
   });
@@ -2400,6 +2534,47 @@ function rsRenderAbogado(){
       </div>`;
     });
     html+=`</div></div>`;
+
+    // Tabla completa de todas las diligencias debajo de las tarjetas
+    html+=`<div style="margin-top:18px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px">
+        Todas las diligencias del equipo — ordenadas por fecha
+      </div>
+      <table style="min-width:1100px;border-collapse:collapse;font-size:12px"><thead>
+      <tr>
+        <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
+        <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
+        <th class="th-std">Tarea</th><th class="th-std">Resp. proceso</th>
+        <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
+      </tr></thead><tbody>`;
+    const todasDilig=[...dilig].sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha]))));
+    todasDilig.forEach(r=>{
+      const tid=String(r[C.tid]||'').trim();
+      const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
+      let estadoHtml='<span style="font-size:11px;color:var(--muted)">—</span>';
+      let accionHtml=`<button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">✏ Proponer</button>`;
+      if(prop){
+        const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
+        const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
+        estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
+        const elimBtn=prop.estado==='propuesta'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
+        accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
+      }
+      html+=`<tr style="background:#FAFBFC;border-bottom:1px solid var(--border)">
+        <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
+        <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
+        <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
+        <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
+        <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
+        <td style="padding:7px 10px;font-size:11px;max-width:200px;white-space:normal;word-break:break-word">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
+        <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
+        <td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">${esc(String(r[C.resp]||''))}</td>
+        <td style="padding:7px 10px">${estadoHtml}</td>
+        <td style="padding:7px 10px">${accionHtml}</td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div>`;
+
     tabla.innerHTML=html;
     return;
   }
@@ -2761,6 +2936,27 @@ function rsExportar(){
 let agVistaActual='mes';
 let agFechaRef=new Date();
 let agPersona='';            // responsable seleccionado
+let agFiltroSup='';          // supervisor seleccionado para filtrar
+
+function agFiltrarSup(sup){
+  agFiltroSup=agFiltroSup===sup?'':sup;
+  // Resaltar píldora activa
+  const slugs={
+    'Elyana Arias':'elyana','Solanch Estrella':'solanch','Samuel Paz':'samuel',
+    'Carlos Morales':'carlos','Cynthia Lagos':'cynthia','Katia Jacinto':'katia'
+  };
+  Object.entries(slugs).forEach(([nombre,slug])=>{
+    const el=document.getElementById('ag-sup-'+slug);
+    if(!el)return;
+    el.style.opacity=agFiltroSup&&agFiltroSup!==nombre?'0.35':'1';
+    el.style.fontWeight=agFiltroSup===nombre?'700':'600';
+    el.style.transform=agFiltroSup===nombre?'scale(1.05)':'scale(1)';
+  });
+  const clearBtn=document.getElementById('ag-sup-clear');
+  if(clearBtn) clearBtn.style.display=agFiltroSup?'inline-flex':'none';
+  agEventos=agGetEventos(agPersona);
+  agRender();
+}
 let agEventos=[];            // eventos filtrados del mbRows
 let agEdits={};              // reasignaciones y notas guardadas localmente
 let agEvActual=null;         // evento abierto en el modal
@@ -2846,6 +3042,8 @@ function agGetEventos(persona){
   return mbRows.filter(r=>{
     if(!r[C.fecha])return false;
     if(esDiligenciaExcluida(r))return false;
+    // Filtro por supervisor (píldoras)
+    if(agFiltroSup&&!String(r[C.sup]||'').includes(agFiltroSup))return false;
     const edit=agEdits[String(r[C.tid]||'')];
     const resp=edit?edit.resp:(r[C.resp]||'');
     const resp2=edit?edit.resp2:(r[C.resp2]||'');
@@ -3114,6 +3312,236 @@ document.addEventListener('click',e=>{
 
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ══════════════════════════════════════════════════════
+// BI · REASIGNACIONES
+// ══════════════════════════════════════════════════════
+const BI_ESTADOS=['propuesta','confirmada','ejecutada','rechazada'];
+const BI_LABELS={propuesta:'🟡 Propuesta',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'};
+const BI_COL={
+  propuesta:{bg:'#FEF3C7',border:'#D97706',text:'#92400E'},
+  confirmada:{bg:'#D1FAE5',border:'#059669',text:'#065F46'},
+  ejecutada: {bg:'#DBEAFE',border:'#2563EB',text:'#1e40af'},
+  rechazada: {bg:'#FEE2E2',border:'#DC2626',text:'#991B1B'},
+};
+const BI_BADGE={propuesta:'rs-pend',confirmada:'rs-conf',ejecutada:'rs-ejec',rechazada:'rs-rech'};
+let biProps=[], biCharts={}, biFiltroEstado='';
+
+function biCargar(){
+  try{ biProps=JSON.parse(localStorage.getItem(RS_KEY)||'[]'); }catch(e){ biProps=[]; }
+  // Enriquecer con mbRows si están en memoria
+  biProps=biProps.map(p=>{
+    const mb=mbRows&&mbRows.find(r=>String(r[C.tid]||'').trim()===String(p.tid||'').trim());
+    return {...p, supervisor: mb?String(mb[C.sup]||'').split('/')[0].trim():biGuessSup(p)};
+  });
+  biPoblarFiltros();
+  biRenderTodo();
+}
+
+function biGuessSup(p){
+  const SUPS=['Lagos','Arias','Estrella','Morales','Paz','Jacinto'];
+  for(const s of SUPS) if((p.respActual||'').includes(s)) return s;
+  return 'Sin asignar';
+}
+
+function biPoblarFiltros(){
+  const sups=new Set(biProps.map(p=>p.supervisor).filter(Boolean));
+  const selEq=document.getElementById('bi-f-equipo');
+  const curEq=selEq?selEq.value:'';
+  if(selEq) selEq.innerHTML='<option value="">Todos los equipos</option>'+
+    [...sups].sort().map(s=>`<option${s===curEq?' selected':''}>${s}</option>`).join('');
+  biPoblarAbogados();
+}
+
+function biPoblarAbogados(){
+  const eq=document.getElementById('bi-f-equipo')?.value||'';
+  const fuente=eq?biProps.filter(p=>p.supervisor===eq):biProps;
+  const names=new Set();
+  fuente.forEach(p=>{
+    (p.respActual||'').split('/').forEach(n=>{const t=n.trim();if(t)names.add(t);});
+    if(p.nuevoResp) names.add(p.nuevoResp.trim());
+  });
+  const sel=document.getElementById('bi-f-abogado');
+  const cur=sel?sel.value:'';
+  if(sel) sel.innerHTML='<option value="">Todos</option>'+
+    [...names].sort().map(n=>`<option${n===cur?' selected':''}>${esc(n)}</option>`).join('');
+}
+
+function biGetDatos(){
+  let d=biProps;
+  const eq=document.getElementById('bi-f-equipo')?.value||'';
+  const ab=document.getElementById('bi-f-abogado')?.value||'';
+  const desde=document.getElementById('bi-f-desde')?.value||'';
+  const hasta=document.getElementById('bi-f-hasta')?.value||'';
+  if(eq)    d=d.filter(p=>p.supervisor===eq);
+  if(ab)    d=d.filter(p=>(p.respActual||'').includes(ab)||(p.nuevoResp||'').includes(ab));
+  if(desde) d=d.filter(p=>new Date(p.fechaProp||0)>=new Date(desde));
+  if(hasta) d=d.filter(p=>new Date(p.fechaProp||0)<=new Date(hasta+'T23:59:59'));
+  if(biFiltroEstado) d=d.filter(p=>p.estado===biFiltroEstado);
+  return d;
+}
+
+function biFiltrarEstado(estado){
+  biFiltroEstado=biFiltroEstado===estado?'':estado;
+  document.querySelectorAll('.bi-kpi').forEach(k=>k.classList.remove('active'));
+  if(biFiltroEstado){
+    const mapa={propuesta:'bi-k-pend',confirmada:'bi-k-conf',ejecutada:'bi-k-ejec',rechazada:'bi-k-rech'};
+    document.getElementById(mapa[biFiltroEstado]||'')?.classList.add('active');
+  }
+  biRenderTodo();
+}
+
+function biLimpiar(){
+  biFiltroEstado='';
+  ['bi-f-equipo','bi-f-abogado','bi-f-desde','bi-f-hasta'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.querySelectorAll('.bi-kpi').forEach(k=>k.classList.remove('active'));
+  biPoblarFiltros();
+  biRenderTodo();
+}
+
+function biRenderTodo(){
+  biPoblarAbogados();
+  const d=biGetDatos();
+  biRenderKPIs(d);
+  biRenderEquipos(d);
+  biRenderDona(d);
+  biRenderAbogados(d);
+  biRenderTimeline(d);
+  biRenderTabla(d);
+}
+
+function biRenderKPIs(d){
+  const total=d.length;
+  const n={};
+  BI_ESTADOS.forEach(e=>n[e]=d.filter(p=>p.estado===e).length);
+  const defs=[
+    {id:'bi-k-all',  estado:'',          n:total,         label:'Total',      accent:var_navy()},
+    {id:'bi-k-pend', estado:'propuesta',  n:n.propuesta,   label:'Propuestas', accent:'#D97706'},
+    {id:'bi-k-conf', estado:'confirmada', n:n.confirmada,  label:'Confirmadas',accent:'#059669'},
+    {id:'bi-k-ejec', estado:'ejecutada',  n:n.ejecutada,   label:'Ejecutadas', accent:'#2563EB'},
+    {id:'bi-k-rech', estado:'rechazada',  n:n.rechazada,   label:'Rechazadas', accent:'#DC2626'},
+  ];
+  document.getElementById('bi-kpis').innerHTML=defs.map(({id,estado,n:nv,label,accent})=>`
+    <div class="bi-kpi${biFiltroEstado===estado&&estado?' active':''}" id="${id}" onclick="biFiltrarEstado('${estado}')">
+      <div class="bi-kpi-accent" style="background:${accent}"></div>
+      <div class="bi-kpi-n">${nv}</div>
+      <div class="bi-kpi-label">${label}</div>
+      ${estado?`<div class="bi-kpi-pct">${total?Math.round(nv/total*100):'0'}%</div>`:''}
+    </div>`).join('');
+}
+
+function var_navy(){return getComputedStyle(document.documentElement).getPropertyValue('--navy').trim()||'#1F3864';}
+
+function biRenderEquipos(d){
+  const sups=[...new Set(d.map(p=>p.supervisor).filter(Boolean))].sort();
+  if(!sups.length){biDestroyChart('bi-chart-equipos');return;}
+  const datasets=BI_ESTADOS.map(e=>({
+    label:BI_LABELS[e],
+    data:sups.map(s=>d.filter(p=>p.supervisor===s&&p.estado===e).length),
+    backgroundColor:BI_COL[e].bg, borderColor:BI_COL[e].border, borderWidth:2, borderRadius:3,
+  }));
+  biBuildChart('bi-chart-equipos','bar',{labels:sups,datasets},{
+    scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11},precision:0}}},
+    plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:11,padding:12}}},
+  });
+}
+
+function biRenderDona(d){
+  const vals=BI_ESTADOS.map(e=>d.filter(p=>p.estado===e).length);
+  if(!vals.some(v=>v>0)){biDestroyChart('bi-chart-dona');return;}
+  biBuildChart('bi-chart-dona','doughnut',{
+    labels:BI_ESTADOS.map(e=>BI_LABELS[e]),
+    datasets:[{data:vals,backgroundColor:BI_ESTADOS.map(e=>BI_COL[e].bg),borderColor:BI_ESTADOS.map(e=>BI_COL[e].border),borderWidth:2,hoverOffset:5}],
+  },{
+    cutout:'60%',
+    plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:11,padding:10}},
+      tooltip:{callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.parsed} (${tot?Math.round(ctx.parsed/tot*100):0}%)`;}}}},
+  });
+}
+
+function biRenderAbogados(d){
+  const aboCount={};
+  d.forEach(p=>{
+    const nombre=(p.respActual||'').split('/')[0].trim()||'Sin asignar';
+    if(!aboCount[nombre])aboCount[nombre]={total:0,...Object.fromEntries(BI_ESTADOS.map(e=>[e,0]))};
+    aboCount[nombre].total++;
+    if(aboCount[nombre][p.estado]!==undefined)aboCount[nombre][p.estado]++;
+  });
+  const sorted=Object.entries(aboCount).sort((a,b)=>b[1].total-a[1].total).slice(0,12);
+  if(!sorted.length){biDestroyChart('bi-chart-abogados');return;}
+  biBuildChart('bi-chart-abogados','bar',{
+    labels:sorted.map(([n])=>n),
+    datasets:BI_ESTADOS.map(e=>({
+      label:BI_LABELS[e],
+      data:sorted.map(([,v])=>v[e]),
+      backgroundColor:BI_COL[e].bg,borderColor:BI_COL[e].border,borderWidth:2,borderRadius:3,
+    })),
+  },{
+    indexAxis:'y',
+    scales:{x:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:10},precision:0}},y:{stacked:true,grid:{display:false},ticks:{font:{size:11}}}},
+    plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:11,padding:10}}},
+  });
+}
+
+function biRenderTimeline(d){
+  const wrap=document.getElementById('bi-timeline');
+  if(!wrap)return;
+  const rec=[...d].sort((a,b)=>new Date(b.fechaProp||0)-new Date(a.fechaProp||0)).slice(0,10);
+  if(!rec.length){wrap.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Sin datos</div>';return;}
+  const dotMap={propuesta:'pend',confirmada:'conf',ejecutada:'ejec',rechazada:'rech'};
+  wrap.innerHTML=rec.map(p=>{
+    const fecha=p.fechaProp?new Date(p.fechaProp).toLocaleDateString('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+    return `<div class="bi-tl-item">
+      <div class="bi-tl-dot ${dotMap[p.estado]||'pend'}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.cliente||'#'+p.tid)} → ${esc(p.nuevoResp||'—')}</div>
+        <div style="font-size:10.5px;color:var(--muted);margin-top:1px">${esc(p.tarea||'')} · ${fecha}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function biRenderTabla(d){
+  const body=document.getElementById('bi-tabla-body');
+  const sub=document.getElementById('bi-tabla-sub');
+  if(!body)return;
+  if(sub) sub.textContent=`${d.length} registro${d.length!==1?'s':''}${biFiltroEstado?' · '+BI_LABELS[biFiltroEstado]:''}`;
+  if(!d.length){
+    body.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--light);font-size:12px">Sin datos con los filtros actuales</td></tr>`;
+    return;
+  }
+  const sorted=[...d].sort((a,b)=>new Date(b.fechaProp||0)-new Date(a.fechaProp||0));
+  body.innerHTML=sorted.map(p=>`<tr style="border-bottom:1px solid var(--border)">
+    <td style="padding:8px 12px"><span class="rs-badge ${BI_BADGE[p.estado]||'rs-pend'}">${BI_LABELS[p.estado]||p.estado}</span></td>
+    <td style="padding:8px 12px;font-family:monospace;font-size:10.5px">#${p.tid||'—'}</td>
+    <td style="padding:8px 12px;font-size:11.5px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.cliente||'')}</td>
+    <td style="padding:8px 12px;font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.tarea||'')}</td>
+    <td style="padding:8px 12px;white-space:nowrap;font-size:11.5px">${p.fecha||'—'} ${p.hora||''}</td>
+    <td style="padding:8px 12px;font-size:11.5px;color:var(--red)">${esc(p.respActual||'—')}</td>
+    <td style="padding:8px 12px;font-weight:700;color:var(--navy);font-size:11.5px">${esc(p.nuevoResp||'—')}</td>
+    <td style="padding:8px 12px;font-size:11px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.motivo||'—')}</td>
+    <td style="padding:8px 12px;font-size:11px;color:var(--muted);white-space:nowrap">${p.fechaProp||'—'}</td>
+  </tr>`).join('');
+}
+
+function biBuildChart(id,type,data,options){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  if(biCharts[id]){biCharts[id].destroy();delete biCharts[id];}
+  biCharts[id]=new Chart(canvas,{type,data,options:{
+    responsive:true,maintainAspectRatio:false,...options,
+    plugins:{...options.plugins,tooltip:{...((options.plugins||{}).tooltip||{}),
+      backgroundColor:'#1F3864',titleColor:'#fff',bodyColor:'rgba(255,255,255,.8)',
+      padding:9,cornerRadius:6,bodyFont:{family:'DM Sans'},titleFont:{family:'DM Sans',weight:'600'},
+    }},
+  }});
+}
+
+function biDestroyChart(id){
+  if(biCharts[id]){biCharts[id].destroy();delete biCharts[id];}
+}
+// ══════════════════════════════════════════════════════
 </script>
 </body>
 </html>
