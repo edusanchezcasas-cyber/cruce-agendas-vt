@@ -2524,8 +2524,15 @@ function rsRenderAbogado(){
   const todas=rsGetAll();
   let dilig=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&!esDiligenciaExcluida(r));
 
-  // ── VISTA RESUMEN: si no hay ningún filtro activo, mostrar tarjetas por abogado ──
-  if(!fDilig&&!fProc&&!fVia&&!fOrg&&!fDesde&&!fHasta&&!hayFiltroCol){
+  // Aplicar filtros de barra (excepto resp. diligencia que activa vista detalle)
+  if(fProc)  dilig=dilig.filter(r=>String(r[C.respProc]||'').trim()===fProc);
+  if(fVia)   dilig=dilig.filter(r=>String(r[C.via]||'').trim()===fVia);
+  if(fOrg)   dilig=dilig.filter(r=>String(r[C.org]||'').toLowerCase().includes(fOrg.toLowerCase()));
+  if(fDesde) dilig=dilig.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso>=fDesde;});
+  if(fHasta) dilig=dilig.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso<=fHasta;});
+
+  // ── VISTA RESUMEN: mostrar siempre tarjetas + tabla plana, salvo que haya filtro de abogado específico ──
+  if(!fDilig&&!hayFiltroCol){
     // Agrupar por resp. diligencia (incluyendo resp2)
     const grupos={};
     dilig.forEach(r=>{
@@ -2674,13 +2681,8 @@ function rsRenderAbogado(){
     return;
   }
 
-  // ── VISTA DETALLE: hay algún filtro activo ──
+  // ── VISTA DETALLE: filtro por resp. diligencia o filtros de columna ──
   if(fDilig) dilig=dilig.filter(r=>{const r1=String(r[C.resp]||'').trim(),r2=String(r[C.resp2]||'').trim();return r1===fDilig||r2===fDilig;});
-  if(fProc)  dilig=dilig.filter(r=>String(r[C.respProc]||'').trim()===fProc);
-  if(fVia)   dilig=dilig.filter(r=>String(r[C.via]||'').trim()===fVia);
-  if(fOrg)   dilig=dilig.filter(r=>String(r[C.org]||'').toLowerCase().includes(fOrg.toLowerCase()));
-  if(fDesde) dilig=dilig.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso>=fDesde;});
-  if(fHasta) dilig=dilig.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso<=fHasta;});
   const fcExp   =(ssSelected['col-exp']   ||'').toLowerCase();
   const fcCli   =(ssSelected['col-cli']   ||'').toLowerCase();
   const fcContra=(ssSelected['col-contra']||'').toLowerCase();
