@@ -2689,7 +2689,7 @@ function rsRenderAbogado(){
         if(prop){
           const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
           const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
-          estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
+          estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>${prop.nuevoResp?`<div class="rs-motivo">${esc(prop.nuevoResp)}</div>`:""}`;
           const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
           accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
         }
@@ -2745,7 +2745,7 @@ function rsRenderAbogado(){
       if(prop){
         const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
         const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
-        estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
+        estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>${prop.nuevoResp?`<div class="rs-motivo">${esc(prop.nuevoResp)}</div>`:""}`;
         const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
         accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
       }
@@ -3019,7 +3019,7 @@ function rsRenderLecturas(){
     if(prop){
       const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
       const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
-      estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
+      estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>${prop.nuevoResp?`<div class="rs-motivo">${esc(prop.nuevoResp)}</div>`:""}`;
       const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
       accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
     }
