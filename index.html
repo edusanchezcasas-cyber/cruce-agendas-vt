@@ -334,6 +334,16 @@ td{padding:7px 11px;vertical-align:middle}
 .sup-cynthia{background:#CCFBF1;color:#134E4A;border-left:3px solid #0D9488}
 .sup-katia{background:#FCE7F3;color:#831843;border-left:3px solid #DB2777}
 .sup-default{background:#F1F5F9;color:#475569;border-left:3px solid #94A3B8}
+/* Lectura de sentencia — color especial semi-transparente */
+.ev-lectura{background:rgba(168,85,247,.12);color:#6B21A8;border-left:3px solid rgba(168,85,247,.5);font-style:italic}
+.ev-lectura:hover{background:rgba(168,85,247,.2)}
+/* Pill lectura en reasignaciones */
+.rs-lectura-pill{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:10px;margin-top:14px;overflow:hidden}
+.rs-lectura-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;cursor:pointer;user-select:none;background:rgba(168,85,247,.06)}
+.rs-lectura-header:hover{background:rgba(168,85,247,.12)}
+.rs-lectura-title{font-weight:700;font-size:13px;color:#6B21A8;display:flex;align-items:center;gap:8px}
+.rs-lectura-body{display:none}
+.rs-lectura-body.open{display:block}
 /* Modal evento */
 .ev-modal{background:var(--card);border-radius:12px;padding:24px 26px;max-width:520px;width:92%;max-height:85vh;overflow-y:auto;position:relative}
 .ev-modal h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--navy);margin-bottom:4px}
@@ -635,7 +645,8 @@ td{padding:7px 11px;vertical-align:middle}
   <!-- Tabla -->
   <div class="rs-table-wrap" id="rs-tabla"></div>
 
-</div>
+  <!-- Píldora: Lecturas de Sentencia (renderizado inline en rsRenderAbogado) -->
+  <div id="rs-lectura-pill" style="display:none"></div>
 
 <!-- Modal proponer reasignación -->
 <div class="modal-overlay" id="rsModal">
@@ -982,9 +993,14 @@ const C={tid:'tareasid',fecha:'FECHA',hora:'HORA',cli:'CLIENTE',tarea:'TAREA',
 
 // Tareas que NO son diligencias judiciales — se excluyen de Agenda y Reasignaciones
 const TAREAS_EXCLUIDAS=/presentaci[oó]n\s+de\s+demanda|presenta\s+demanda|contest[ao]\s+demanda|contestaci[oó]n\s+de\s+demanda|contesta\s+la\s+demanda/i;
+const LECTURA_SENTENCIA=/lectura\s+de\s+sentencia/i;
 function esDiligenciaExcluida(r){
   const t=String(r[C.tarea]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   return TAREAS_EXCLUIDAS.test(t);
+}
+function esLecturaSentencia(r){
+  const t=String(r[C.tarea]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return LECTURA_SENTENCIA.test(t);
 }
 function detectCols(){
   if(!mbRows||!mbRows.length)return;
@@ -2488,12 +2504,13 @@ function rsRender(){
     card.classList.toggle('active-stat',esParalegal&&filtroActivo&&mapaCard[filtroActivo]===k);
   });
   if(rsRolActual==='paralegal') rsRenderParalegal();
-  else rsRenderAbogado();
+  else rsRenderAbogado(); // lecturas se renderizan inline dentro de rsRenderAbogado
 }
 
 function rsEliminarPropuesta(tid){
   if(!confirm('¿Eliminar esta propuesta? Esta acción no se puede deshacer.'))return;
-  const arr=rsGetAll().filter(p=>!(p.tid===tid&&p.estado!=='ejecutada'));
+  const tidClean=String(tid).replace(/^#/,'').trim();
+  const arr=rsGetAll().filter(p=>String(p.tid).trim()!==tidClean);
   rsSave(arr);
   rsRender();
 }
@@ -2620,6 +2637,66 @@ function rsRenderAbogado(){
       <button class="ss-clear-btn" onclick="ssClear('${key}')" tabindex="-1">✕</button>
       <div class="ss-list" id="ss-${key}-list"></div>
     </div>`;
+
+    // ── Sección Lecturas de Sentencia (inline, entre tarjetas y tabla) ──
+    const lecturasInline=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&esLecturaSentencia(r));
+    // Aplicar mismos filtros de barra
+    let lecFiltradas=[...lecturasInline];
+    if(fProc)  lecFiltradas=lecFiltradas.filter(r=>String(r[C.respProc]||'').trim()===fProc);
+    if(fDesde) lecFiltradas=lecFiltradas.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso>=fDesde;});
+    if(fHasta) lecFiltradas=lecFiltradas.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso<=fHasta;});
+    lecFiltradas.sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha]))));
+
+    if(lecFiltradas.length){
+      html+=`<div class="rs-lectura-pill" style="margin-top:14px">
+        <div class="rs-lectura-header" onclick="this.nextElementSibling.classList.toggle('open');const chev=this.querySelector('.lec-chev');chev.style.transform=this.nextElementSibling.classList.contains('open')?'rotate(180deg)':'';">
+          <div class="rs-lectura-title">
+            📋 Lecturas de Sentencia
+            <span style="background:rgba(168,85,247,.15);color:#6B21A8;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">${lecFiltradas.length} diligencia${lecFiltradas.length!==1?'s':''}</span>
+          </div>
+          <span class="lec-chev" style="font-size:13px;color:#6B21A8;transition:transform .2s">▼</span>
+        </div>
+        <div class="rs-lectura-body">
+          <div style="overflow:auto">
+          <table style="min-width:950px;border-collapse:collapse;font-size:12px"><thead>
+          <tr>
+            <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
+            <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
+            <th class="th-std">Tarea</th>
+            <th class="th-std">Órgano Jurisd.</th><th class="th-std">Resp. proceso</th>
+            <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
+          </tr></thead><tbody>`;
+      lecFiltradas.forEach(r=>{
+        const tid=String(r[C.tid]||'').trim();
+        const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
+        let estadoHtml='<span style="font-size:11px;color:var(--muted)">—</span>';
+        let accionHtml=`<button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">✏ Proponer</button>`;
+        if(prop){
+          const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
+          const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
+          estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
+          const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
+          accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
+        }
+        const respV=String(r[C.resp]||'').trim();
+        const resp2v=String(r[C.resp2]||'').trim();
+        const tareaV=String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim();
+        html+=`<tr style="background:rgba(168,85,247,.04);border-bottom:1px solid rgba(168,85,247,.15)">
+          <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
+          <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
+          <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
+          <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
+          <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
+          <td style="padding:7px 10px;font-size:11px;max-width:180px;white-space:normal;word-break:break-word;color:#6B21A8;font-weight:600">${esc(tareaV)}</td>
+          <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}</td>
+          <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
+          <td style="padding:7px 10px;font-weight:600;color:#6B21A8;font-size:11.5px">${esc(respV)}${resp2v&&resp2v!=='-'?`<br><span style="font-size:10px;color:var(--muted)">${esc(resp2v)}</span>`:''}</td>
+          <td style="padding:7px 10px">${estadoHtml}</td>
+          <td style="padding:7px 10px">${accionHtml}</td>
+        </tr>`;
+      });
+      html+=`</tbody></table></div></div></div>`;
+    }
 
     html+=`<div style="margin-top:18px">
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px;display:flex;align-items:center;justify-content:space-between">
@@ -2825,6 +2902,132 @@ function rsVerAbogado(nombre){
   rsRender();
 }
 
+function rsLecturaToggle(){
+  const body=document.getElementById('rs-lectura-body');
+  const chev=document.getElementById('rs-lectura-chevron');
+  body.classList.toggle('open');
+  chev.style.transform=body.classList.contains('open')?'rotate(180deg)':'';
+}
+
+function rsRenderLecturas(){
+  if(!mbRows||!mbRows.length){
+    document.getElementById('rs-lectura-pill').style.display='none';
+    return;
+  }
+  const sup=document.getElementById('rs-supervisor')?.value||'';
+  if(!sup){
+    document.getElementById('rs-lectura-pill').style.display='none';
+    return;
+  }
+
+  // Leer filtros barra (mismos que diligencias normales)
+  const fDilig=(document.getElementById('rs-abogado-filtro')?.value||'').trim();
+  const fProc =(document.getElementById('rs-resp-proc-filtro')?.value||'').trim();
+  const fVia  =(document.getElementById('rs-via-filtro')?.value||'').trim();
+  const fOrg  =ssSelected['org']||'';
+  const fDesde=(document.getElementById('rs-desde')?.value||'');
+  const fHasta=(document.getElementById('rs-hasta')?.value||'');
+
+  // Filtrar solo lecturas de sentencia del equipo
+  let lecturas=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&esLecturaSentencia(r));
+  if(fDilig) lecturas=lecturas.filter(r=>{const r1=String(r[C.resp]||'').trim(),r2=String(r[C.resp2]||'').trim();return r1===fDilig||r2===fDilig;});
+  if(fProc)  lecturas=lecturas.filter(r=>String(r[C.respProc]||'').trim()===fProc);
+  if(fVia)   lecturas=lecturas.filter(r=>String(r[C.via]||'').trim()===fVia);
+  if(fOrg)   lecturas=lecturas.filter(r=>String(r[C.org]||'').toLowerCase().includes(fOrg.toLowerCase()));
+  if(fDesde) lecturas=lecturas.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso>=fDesde;});
+  if(fHasta) lecturas=lecturas.filter(r=>{const iso=toISO(nFec(r[C.fecha]));return iso&&iso<=fHasta;});
+
+  const pill=document.getElementById('rs-lectura-pill');
+  if(!lecturas.length){pill.style.display='none';return;}
+  pill.style.display='block';
+  document.getElementById('rs-lectura-count').textContent=lecturas.length+' diligencia'+(lecturas.length!==1?'s':'');
+
+  const todas=rsGetAll();
+  lecturas.sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha]))));
+
+  const fcCC2=(key,ph)=>`<div class="ss-wrap ss-mini" id="ss-lec-${key}" style="width:100%">
+    <input type="text" class="ss-input" id="ss-lec-${key}-input" placeholder="${ph}" autocomplete="off" spellcheck="false"
+      oninput="ssFilter('lec-${key}')" onfocus="ssOpen('lec-${key}')" onblur="ssBlur('lec-${key}')">
+    <button class="ss-clear-btn" onclick="ssClear('lec-${key}')" tabindex="-1">✕</button>
+    <div class="ss-list" id="ss-lec-${key}-list"></div>
+  </div>`;
+
+  // Poblar opciones filtros de columna lectura
+  const LEC_KEYS=['lec-exp','lec-cli','lec-proc','lec-dilig'];
+  const LEC_DEFS=[
+    ['lec-exp',  r=>String(r[C.exp]||'').trim()],
+    ['lec-cli',  r=>String(r[C.cli]||'').trim()],
+    ['lec-proc', r=>String(r[C.respProc]||'').trim()],
+    ['lec-dilig',r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}],
+  ];
+  LEC_DEFS.forEach(([key,fn])=>{
+    const vals=new Set();lecturas.forEach(r=>{const v=fn(r);if(v)vals.add(v);});
+    ssOpts[key]=[...vals].sort();if(ssSelected[key]===undefined)ssSelected[key]='';
+  });
+
+  // Aplicar filtros de columna
+  let lecFil=[...lecturas];
+  const lcExp  =(ssSelected['lec-exp']  ||'').toLowerCase();
+  const lcCli  =(ssSelected['lec-cli']  ||'').toLowerCase();
+  const lcProc =(ssSelected['lec-proc'] ||'').toLowerCase();
+  const lcDilig=(ssSelected['lec-dilig']||'').toLowerCase();
+  if(lcExp)   lecFil=lecFil.filter(r=>String(r[C.exp]||'').toLowerCase().includes(lcExp));
+  if(lcCli)   lecFil=lecFil.filter(r=>String(r[C.cli]||'').toLowerCase().includes(lcCli));
+  if(lcProc)  lecFil=lecFil.filter(r=>String(r[C.respProc]||'').toLowerCase().includes(lcProc));
+  if(lcDilig) lecFil=lecFil.filter(r=>(String(r[C.resp]||'')+' '+String(r[C.resp2]||'')).toLowerCase().includes(lcDilig));
+
+  let html=`<div style="overflow:auto">
+  <table style="min-width:900px;border-collapse:collapse;font-size:12px">
+  <thead>
+  <tr>
+    <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
+    <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
+    <th class="th-std">Órgano Jurisd.</th><th class="th-std">Resp. proceso</th>
+    <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
+  </tr>
+  <tr>
+    <th class="th-filter"></th><th class="th-filter"></th><th class="th-filter"></th>
+    <th class="th-filter">${fcCC2('exp','Exp...')}</th>
+    <th class="th-filter">${fcCC2('cli','Cliente...')}</th>
+    <th class="th-filter"></th>
+    <th class="th-filter">${fcCC2('proc','Resp. proceso...')}</th>
+    <th class="th-filter">${fcCC2('dilig','Resp. diligencia...')}</th>
+    <th class="th-filter"></th><th class="th-filter"></th>
+  </tr>
+  </thead><tbody>`;
+
+  lecFil.forEach(r=>{
+    const tid=String(r[C.tid]||'').trim();
+    const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
+    let estadoHtml='<span style="font-size:11px;color:var(--muted)">—</span>';
+    let accionHtml=`<button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">✏ Proponer</button>`;
+    if(prop){
+      const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
+      const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
+      estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>`;
+      const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
+      accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
+    }
+    const respV =String(r[C.resp]||'').trim();
+    const resp2v=String(r[C.resp2]||'').trim();
+    html+=`<tr style="background:rgba(168,85,247,.04);border-bottom:1px solid rgba(168,85,247,.15)">
+      <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
+      <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
+      <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
+      <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
+      <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
+      <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}</td>
+      <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
+      <td style="padding:7px 10px;font-weight:600;color:#6B21A8;font-size:11.5px">${esc(respV)}${resp2v&&resp2v!=='-'?`<br><span style="font-size:10px;color:var(--muted)">${esc(resp2v)}</span>`:''}</td>
+      <td style="padding:7px 10px">${estadoHtml}</td>
+      <td style="padding:7px 10px">${accionHtml}</td>
+    </tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  document.getElementById('rs-lectura-body').innerHTML=html;
+  LEC_KEYS.forEach(k=>ssInit(k,ssOpts[k]||[]));
+}
+
 function rsVolverResumen(){
   const sel=document.getElementById('rs-abogado-filtro');
   if(sel) sel.value='';
@@ -2914,17 +3117,18 @@ function rsPLAccion(id,estado){
 let rsTidActual=null;
 function rsAbrirModal(tid){
   if(!mbRows)return;
-  const r=mbRows.find(r=>String(r[C.tid]||'')===tid);
+  const tidClean=String(tid).replace(/^#/,'').trim();
+  const r=mbRows.find(r=>String(r[C.tid]||'').trim()===tidClean);
   if(!r)return;
-  rsTidActual=tid;
-  document.getElementById('rsModal').dataset.tid=tid;
+  rsTidActual=tidClean;
+  document.getElementById('rsModal').dataset.tid=tidClean;
   document.getElementById('rs-modal-titulo').textContent='Proponer reasignación';
-  document.getElementById('rs-modal-sub').textContent=`#${tid} · ${nFec(r[C.fecha])} ${nHor(r[C.hora])} · ${r[C.cli]||''}`;
+  document.getElementById('rs-modal-sub').textContent=`#${tidClean} · ${nFec(r[C.fecha])} ${nHor(r[C.hora])} · ${r[C.cli]||''}`;
   document.getElementById('rs-resp-actual').textContent=(r[C.resp]||'')+(r[C.resp2]&&r[C.resp2]!=='-'?' / '+r[C.resp2]:'');
-  // Si ya hay una propuesta existente para este TID, pre-cargar los valores propuestos (no los del MB)
-  const propPrev=rsGetAll().find(p=>p.tid===tid&&p.estado!=='ejecutada');
-  document.getElementById('rs-nuevo-resp').value  =propPrev ? (propPrev.nuevoResp||'')  : (r[C.resp]||'');
-  document.getElementById('rs-nuevo-resp2').value =propPrev ? (propPrev.nuevoResp2||'') : (r[C.resp2]||'');
+  // Si ya hay una propuesta existente, pre-cargar sus valores; si es nueva, dejar en blanco
+  const propPrev=rsGetAll().find(p=>String(p.tid).trim()===tidClean&&p.estado!=='ejecutada');
+  document.getElementById('rs-nuevo-resp').value  =propPrev ? (propPrev.nuevoResp||'')  : '';
+  document.getElementById('rs-nuevo-resp2').value =propPrev ? (propPrev.nuevoResp2||'') : '';
   document.getElementById('rs-motivo-txt').value  =propPrev ? (propPrev.motivo||'')     : '';
   document.getElementById('rsModal').classList.add('open');
 }
@@ -2938,7 +3142,7 @@ function rsGuardarPropuesta(){
   const motivo=document.getElementById('rs-motivo-txt').value.trim();
   if(!nuevoResp && !motivo){alert('Ingresa al menos el motivo o el nuevo responsable.');return;}
   const r=mbRows&&mbRows.find(r=>String(r[C.tid]||'').trim()===tid.trim());
-  const arr=rsGetAll().filter(p=>p.tid!==tid||p.estado==='ejecutada');
+  const arr=rsGetAll().filter(p=>String(p.tid).trim()!==tid.trim()||p.estado==='ejecutada');
   arr.push({
     id:'rs_'+Date.now(),tid,
     cliente:r?r[C.cli]||'':'',
@@ -3242,7 +3446,7 @@ function renderMes(){
     html+=`<span class="cal-dia-num">${d.getDate()}</span>`;
     const max=3;
     evs.slice(0,max).forEach(ev=>{
-      const cls=supClase(ev.sup);
+      const cls=esLecturaSentencia(ev.raw)?'ev-lectura':supClase(ev.sup);
       const resp2txt=ev.resp2&&ev.resp2!=='-'?` / ${ev.resp2.split(' ').slice(-1)[0]}`:'';
       html+=`<div class="cal-evento ${cls}" onclick="event.stopPropagation();abrirEvento('${ev.tid}')" title="${esc(ev.tarea)} — ${ev.hora}\n${esc(ev.resp)}${resp2txt?'\n'+esc(ev.resp2):''}">${ev.hora} ${esc(ev.resp.split(' ').slice(-1)[0])}${resp2txt}</div>`;
     });
@@ -3283,7 +3487,7 @@ function renderSemana(lun){
       });
       html+=`<div class="cal-sem-cel${esHoy?' hoy-col':''}">`;
       evs.forEach(ev=>{
-        const cls=supClase(ev.sup);
+        const cls=esLecturaSentencia(ev.raw)?'ev-lectura':supClase(ev.sup);
         const resp2txt=ev.resp2&&ev.resp2!=='-'?` / ${ev.resp2.split(' ').slice(-1)[0]}`:'';
         html+=`<div class="cal-ev-bloque ${cls}" onclick="abrirEvento('${ev.tid}')" title="${esc(ev.tarea)}">${ev.hora} ${esc(ev.resp.split(' ').slice(-1)[0])}${resp2txt}</div>`;
       });
@@ -3315,7 +3519,7 @@ function renderDia(fecha){
       const ev=evs.filter(e=>parseInt(e.hora.split(':')[0]||0)===h);
       html+=`<div class="cal-dia-fila"><div class="cal-dia-hora">${_p(h)}:00</div><div class="cal-dia-slot">`;
       ev.forEach(e=>{
-        const cls=supClase(e.sup);
+        const cls=esLecturaSentencia(e.raw)?'ev-lectura':supClase(e.sup);
         html+=`<div class="cal-ev-dia ${cls}" onclick="abrirEvento('${e.tid}')">
           <span style="font-weight:700">${e.hora}</span>
           <span>${esc(e.tarea.slice(0,40))}</span>
