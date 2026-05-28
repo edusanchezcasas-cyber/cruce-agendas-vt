@@ -648,6 +648,8 @@ td{padding:7px 11px;vertical-align:middle}
   <!-- Píldora: Lecturas de Sentencia (renderizado inline en rsRenderAbogado) -->
   <div id="rs-lectura-pill" style="display:none"></div>
 
+</div><!-- /panel-reasig -->
+
 <!-- Modal proponer reasignación -->
 <div class="modal-overlay" id="rsModal">
   <div class="rs-modal">
@@ -828,7 +830,7 @@ td{padding:7px 11px;vertical-align:middle}
 </div>
 
 <!-- ══ PANEL: BI REASIGNACIONES ══════════════════════════════ -->
-<div id="panel-bi" class="panel" style="display:none">
+<div id="panel-bi" class="panel">
   <!-- Header BI -->
   <div class="ctrl-head" style="margin-bottom:12px">
     <h3>📊 BI · Reasignaciones</h3>
@@ -1111,10 +1113,15 @@ document.addEventListener('click',e=>{if(!e.target.closest('.ss-wrap'))document.
 // PANEL NAVIGATION
 // ═══════════════════════════════════════════════════
 function showPanel(id){
-  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.remove('active');
+    p.style.display='none';
+  });
   const panel=document.getElementById('panel-'+id);
-  if(panel){panel.style.display='block';panel.classList.add('active');}
+  if(panel){
+    panel.style.display='block';
+    panel.classList.add('active');
+  }
   document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('active'));
   const navBtn=document.querySelector(`.mnav[onclick="showPanel('${id}')"]`);
   if(navBtn) navBtn.classList.add('active');
@@ -3299,6 +3306,7 @@ function supClase(sup){
 
 // ── Inicializar agenda cuando se abre el panel ────────────────
 function initAgenda(){
+  try{
   if(!mbRows||mbRows.length===0){
     document.getElementById('ag-calendario').innerHTML=
       `<div class="no-datos-agenda"><div class="ei">📊</div>
@@ -3337,6 +3345,11 @@ function initAgenda(){
 
   agFechaRef=new Date();
   agRender();
+  }catch(e){
+    console.error('[initAgenda ERROR]',e);
+    document.getElementById('ag-calendario').innerHTML=
+      `<div class="no-datos-agenda"><div class="ei">⚠️</div><p>Error al cargar agenda: ${e.message}</p></div>`;
+  }
 }
 
 function agCambiarModo(){
