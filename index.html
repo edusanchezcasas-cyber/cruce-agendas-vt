@@ -3169,8 +3169,12 @@ function rsRenderParalegal(){
     });
   }
   if(filtro) props=props.filter(p=>p.estado===filtro);
-  // Ordenar por fecha de propuesta (más reciente primero)
-  props.sort((a,b)=>new Date(b.fechaProp||0)-new Date(a.fechaProp||0));
+  // Ordenar: primero por fecha de diligencia (más próxima primero), luego por hora
+  props.sort((a,b)=>{
+    const fa=toISO(a.fecha)||'9999',fb=toISO(b.fecha)||'9999';
+    if(fa!==fb)return fa.localeCompare(fb);
+    return (a.hora||'').localeCompare(b.hora||'');
+  });
   const tabla=document.getElementById('rs-tabla');
   if(!props.length){
     tabla.innerHTML=`<div class="rs-empty"><div class="ei">📋</div><p>No hay reasignaciones ${filtro?'con ese estado':''} registradas.</p></div>`;
@@ -3201,12 +3205,18 @@ function rsRenderParalegal(){
     else
       accion=`<span class="na" style="font-size:11px">—</span>`;
 
-    html+=`<tr style="background:${bg}${p.estado==='ejecutada'?';opacity:.75':''}">
+    const hoy=toISO(new Date());
+    const manana=toISO(new Date(Date.now()+86400000));
+    const fDilig=toISO(p.fecha);
+    const urgencia=fDilig===hoy?'🔴 HOY':fDilig===manana?'🟡 Mañana':'';
+
+    html+=`<tr style="background:${bg}${p.estado==='ejecutada'?';opacity:.75':''}${fDilig===hoy?';border-left:3px solid var(--red)':''}">
       <td><span class="rs-badge ${badgeCls}">${badgeLbl}</span></td>
       <td><span class="tid">#${p.tid}</span></td>
       <td style="font-size:11.5px">${esc(p.cliente||'')}</td>
       <td style="min-width:180px;white-space:normal;word-break:break-word;font-size:11.5px">${esc(p.tarea||'')}</td>
-      <td style="white-space:nowrap">${p.fecha||''}</td><td>${p.hora||''}</td>
+      <td style="white-space:nowrap;font-weight:${fDilig<=hoy?'700':'400'};color:${fDilig===hoy?'var(--red)':fDilig===manana?'var(--amber)':'inherit'}">${p.fecha||''}${urgencia?`<br><span style="font-size:9.5px">${urgencia}</span>`:''}</td>
+      <td style="font-weight:600">${p.hora||''}</td>
       <td style="font-size:11.5px;color:var(--red)">${esc(p.respActual||'')}</td>
       <td style="font-weight:700;color:var(--green)">${esc(p.nuevoResp||'')}${p.nuevoResp2?`<br><span style="font-size:10px;color:var(--muted)">${esc(p.nuevoResp2)}</span>`:''}</td>
       <td><div class="rs-motivo" style="max-width:180px">${esc(p.motivo||'')}</div></td>
@@ -3721,7 +3731,22 @@ function renderDia(fecha){
 
 // ── MODAL EVENTO ──────────────────────────────────────────────
 function abrirEvento(tid){
-  const ev=agEventos.find(e=>e.tid===tid);
+  // Buscar primero en agEventos; si no, buscar directamente en mbRows (caso comparativo)
+  let ev=agEventos.find(e=>e.tid===tid);
+  if(!ev&&mbRows){
+    const r=mbRows.find(r=>String(r[C.tid]||'').trim()===String(tid).trim());
+    if(r){
+      ev={
+        tid:String(r[C.tid]||'').trim(),
+        fecha:nFec(r[C.fecha]),hora:nHor(r[C.hora]),
+        cliente:String(r[C.cli]||''),tarea:String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim(),
+        exp:String(r[C.exp]||''),estado:String(r[C.estado]||''),
+        sup:String(r[C.sup]||''),
+        resp:String(r[C.resp]||''),resp2:String(r[C.resp2]||''),
+        nota:'',raw:r
+      };
+    }
+  }
   if(!ev)return;
   agEvActual=ev;
 
@@ -3730,7 +3755,7 @@ function abrirEvento(tid){
   document.getElementById('ev-sup-badge').textContent='Sup: '+ev.sup;
   document.getElementById('ev-titulo').textContent=ev.tarea;
   document.getElementById('ev-meta').textContent=
-    nFec(ev.raw[C.fecha])+' · '+ev.hora+' · #'+ev.tid;
+    ev.fecha+' · '+ev.hora+' · #'+ev.tid;
   document.getElementById('ev-cliente').textContent=ev.cliente;
   document.getElementById('ev-exp').textContent=ev.exp;
   document.getElementById('ev-tarea').textContent=ev.tarea;
@@ -3738,8 +3763,12 @@ function abrirEvento(tid){
   document.getElementById('ev-resp-actual').textContent=
     ev.resp+(ev.resp2&&ev.resp2!=='-'?' / '+ev.resp2:'');
   document.getElementById('ev-nota').value=ev.nota||'';
-  document.getElementById('ev-nuevo-resp').value=ev.resp||'';
-  document.getElementById('ev-nuevo-resp2').value=ev.resp2||'';
+
+  // Pre-cargar con propuesta previa si existe
+  const propPrev=rsGetAll().find(p=>String(p.tid).trim()===String(tid).trim()&&p.estado!=='ejecutada');
+  document.getElementById('ev-nuevo-resp').value=propPrev?(propPrev.nuevoResp||''):'';
+  document.getElementById('ev-nuevo-resp2').value=propPrev?(propPrev.nuevoResp2||''):'';
+
   document.getElementById('reasig-wrap').style.display='none';
   document.getElementById('btn-reasig').textContent='✏ Reasignar';
   document.getElementById('evModal').classList.add('open');
@@ -3766,15 +3795,48 @@ function guardarEvento(){
   const nota=document.getElementById('ev-nota').value;
   const reasig=document.getElementById('reasig-wrap').style.display==='block';
 
+  // Guardar nota local
   if(!agEdits[tid])agEdits[tid]={};
+  agEdits[tid].nota=nota;
+
+  // Si hay reasignación, crear/actualizar propuesta en sistema de Reasignaciones
   if(reasig&&nuevoResp){
     agEdits[tid].resp=nuevoResp;
     agEdits[tid].resp2=nuevoResp2;
-  }
-  agEdits[tid].nota=nota;
 
-  cerrarEvModal();
-  agRender();
+    const ev=agEvActual;
+    const arr=rsGetAll().filter(p=>String(p.tid).trim()!==String(tid).trim()||p.estado==='ejecutada');
+    arr.push({
+      id:'rs_'+Date.now(),
+      tid,
+      cliente:ev.cliente||'',
+      tarea:ev.tarea||'',
+      fecha:ev.fecha||'',
+      hora:ev.hora||'',
+      respActual:ev.resp+(ev.resp2&&ev.resp2!=='-'?' / '+ev.resp2:''),
+      nuevoResp,
+      nuevoResp2,
+      motivo:nota||'Reasignación desde Agenda',
+      fechaProp:new Date().toLocaleString('es-PE'),
+      estado:'propuesta',
+      notaCID:'',revisadoPor:'',fechaRevision:'',fechaEjec:''
+    });
+    rsSave(arr);
+
+    cerrarEvModal();
+    agRender();
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:9999;display:flex;align-items:center;justify-content:center';
+    overlay.innerHTML=`<div style="background:#fff;border-radius:12px;padding:22px 26px;max-width:300px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);font-family:DM Sans,sans-serif;text-align:center">
+      <div style="font-size:28px;margin-bottom:10px">✅</div>
+      <div style="font-size:14px;font-weight:700;color:#1F3864">Propuesta de reasignación enviada</div>
+    </div>`;
+    document.body.appendChild(overlay);
+    setTimeout(()=>{if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},2000);
+  } else {
+    cerrarEvModal();
+    agRender();
+  }
 }
 
 // ── EXPORTAR AGENDA PERSONAL ──────────────────────────────────
