@@ -231,7 +231,8 @@ td{padding:7px 11px;vertical-align:middle}
 .rs-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:600px}
 .rs-prop-btn{background:var(--warn-bg);color:var(--amber);border:1px solid var(--amber);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .14s}
 .rs-prop-btn:hover{background:var(--amber);color:#fff}
-/* Filtros de columna en thead */
+/* Indicador presencial en tabla reasignaciones */
+.rs-presencial-badge{display:inline-flex;align-items:center;gap:3px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:4px;padding:1px 6px;font-size:9.5px;font-weight:700;white-space:nowrap}
 .th-filter{background:var(--navy2);padding:4px 6px}
 .th-filter input{width:100%;border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:3px 6px;font-size:10.5px;font-family:inherit;background:rgba(255,255,255,.08);color:#fff;outline:none}
 .th-filter input::placeholder{color:rgba(255,255,255,.35)}
@@ -356,6 +357,34 @@ td{padding:7px 11px;vertical-align:middle}
 .ev-tag{display:inline-flex;align-items:center;gap:4px;border-radius:10px;padding:3px 9px;font-size:10.5px;font-weight:600}
 .no-datos-agenda{text-align:center;padding:60px;color:var(--muted)}
 .no-datos-agenda .ei{font-size:48px;margin-bottom:14px}
+/* ── COMPARATIVO DE EQUIPO ── */
+.cmp-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px}
+.cmp-toggle{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.cmp-vbtn{padding:5px 14px;font-size:12px;font-family:inherit;border:none;background:var(--bg);color:var(--muted);cursor:pointer;transition:all .15s}
+.cmp-vbtn.active{background:var(--navy);color:#fff;font-weight:600}
+.cmp-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);background:var(--card)}
+.cmp-table{border-collapse:collapse;min-width:100%;font-size:11.5px}
+.cmp-table th{background:var(--navy);color:#fff;padding:10px 12px;text-align:center;white-space:nowrap;font-size:11px;font-weight:700;position:sticky;top:0;z-index:10}
+.cmp-table th.cmp-hora-hdr{width:64px;min-width:64px;background:var(--navy2);font-size:10px;letter-spacing:.5px}
+.cmp-table td{padding:0;vertical-align:top;border:1px solid var(--border);min-width:160px;height:52px}
+.cmp-table td.cmp-hora{background:var(--bg);color:var(--muted);font-size:10.5px;font-weight:700;text-align:center;padding:4px 6px;width:64px;min-width:64px;vertical-align:middle;border-right:2px solid var(--border)}
+.cmp-table td.cmp-libre{background:#F0FFF4}
+.cmp-table td.cmp-ocupado{background:#FFF8F0;padding:4px 6px}
+.cmp-table td.cmp-conflicto{background:#FFF0F0;padding:4px 6px}
+.cmp-evento{border-radius:5px;padding:3px 7px;font-size:10.5px;line-height:1.35;margin-bottom:2px;cursor:pointer;transition:filter .1s}
+.cmp-evento:hover{filter:brightness(.92)}
+.cmp-evento-hora{font-weight:700;font-size:10px;color:rgba(0,0,0,.45);margin-bottom:1px}
+.cmp-evento-tarea{font-weight:600;color:var(--navy)}
+.cmp-evento-cli{color:var(--muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.cmp-libre-tag{text-align:center;padding:16px 4px;color:#22C55E;font-size:10px;font-weight:700;opacity:.6}
+.cmp-dia-hdr{font-size:11px;font-weight:700;text-align:center;padding:6px 12px;background:var(--navy);color:#fff;letter-spacing:.3px}
+.cmp-hoy-col{background:rgba(201,168,76,.08)!important}
+.cmp-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
+.cmp-leg-item{display:flex;align-items:center;gap:5px}
+.cmp-leg-dot{width:12px;height:12px;border-radius:3px}
+/* Aviso sin equipo */
+.cmp-aviso{text-align:center;padding:60px 20px;color:var(--muted)}
+.cmp-aviso .ei{font-size:44px;margin-bottom:12px}
 /* BI panel */
 .bi-tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
 .bi-tl-item:last-child{border-bottom:none}
@@ -702,18 +731,22 @@ td{padding:7px 11px;vertical-align:middle}
 <div id="panel-agenda" class="panel">
 
   <div class="ag-toolbar">
-    <!-- Modo -->
-    <div class="ag-mode">
-      <label>Modo:</label>
-      <select id="ag-modo" onchange="agCambiarModo()">
-        <option value="cid">👥 Ver por abogado (CID)</option>
-        <option value="personal">👤 Mi agenda</option>
+    <div class="ag-mode" id="ag-equipo-wrap">
+      <label>Equipo:</label>
+      <select id="ag-equipo" onchange="agEquipoChange()" style="min-width:160px">
+        <option value="">— todos —</option>
+        <option>Elyana Arias</option>
+        <option>Solanch Estrella</option>
+        <option>Samuel Paz</option>
+        <option>Carlos Morales</option>
+        <option>Cynthia Lagos</option>
+        <option>Katia Jacinto</option>
       </select>
     </div>
-    <div class="ag-mode">
+    <div class="ag-mode" id="ag-abogado-wrap">
       <label>Abogado:</label>
       <select id="ag-abogado" onchange="agRender()" style="min-width:180px">
-        <option value="">— seleccionar —</option>
+        <option value="">— todos —</option>
       </select>
     </div>
     <div class="ag-mode" id="ag-yo-wrap" style="display:none">
@@ -736,11 +769,14 @@ td{padding:7px 11px;vertical-align:middle}
       <button onclick="agHoy()" style="font-size:11px;padding:5px 10px">Hoy</button>
     </div>
     <!-- Acciones -->
-    <button class="btn btn-out btn-sm" onclick="agExportar()" style="margin-left:auto">⬇ Exportar agenda</button>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <button id="btn-cmp" class="btn btn-out btn-sm" onclick="cmpToggle()">📊 Comparativo equipo</button>
+      <button class="btn btn-out btn-sm" onclick="agExportar()">⬇ Exportar agenda</button>
+    </div>
   </div>
 
   <!-- Leyenda supervisores clicables -->
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;align-items:center">
+  <div class="ag-sup-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;align-items:center">
     <span style="color:var(--muted);font-weight:600;align-self:center">Supervisor:</span>
     <span class="ev-tag sup-elyana" id="ag-sup-elyana" onclick="agFiltrarSup('Elyana Arias')" style="cursor:pointer;user-select:none;transition:all .15s">Elyana Arias</span>
     <span class="ev-tag sup-solanch" id="ag-sup-solanch" onclick="agFiltrarSup('Solanch Estrella')" style="cursor:pointer;user-select:none;transition:all .15s">Solanch Estrella</span>
@@ -751,8 +787,40 @@ td{padding:7px 11px;vertical-align:middle}
     <span id="ag-sup-clear" onclick="agFiltrarSup('')" style="display:none;cursor:pointer;font-size:10.5px;color:var(--muted);padding:3px 8px;border:1px solid var(--border);border-radius:20px;transition:all .15s" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">✕ Quitar filtro</span>
   </div>
 
-  <!-- Contenedor del calendario -->
-  <div id="ag-calendario"></div>
+  <!-- Calendario normal -->
+  <div id="ag-calendario-wrap">
+    <div id="ag-calendario"></div>
+  </div>
+
+  <!-- Comparativo de equipo -->
+  <div id="ag-comparativo-wrap" style="display:none">
+    <div class="cmp-toolbar">
+      <div class="cmp-toggle">
+        <button class="cmp-vbtn active" id="cmp-btn-dia" onclick="cmpVista('dia')">Día</button>
+        <button class="cmp-vbtn" id="cmp-btn-sem" onclick="cmpVista('sem')">Semana</button>
+      </div>
+      <!-- Selector de fecha -->
+      <div style="display:flex;align-items:center;gap:6px;margin-left:4px">
+        <input type="date" id="cmp-fecha-input" onchange="cmpSeleccionarFecha(this.value)"
+          style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit;color:var(--text);background:var(--bg);cursor:pointer">
+        <button onclick="cmpHoy()" style="border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;font-family:inherit;background:var(--bg);cursor:pointer;color:var(--muted)">Hoy</button>
+      </div>
+      <!-- Navegación día a día / semana a semana -->
+      <div style="display:flex;align-items:center;gap:4px">
+        <button onclick="cmpNavegar(-1)" style="border:1px solid var(--border);border-radius:6px;width:28px;height:28px;background:var(--bg);cursor:pointer;font-size:14px">‹</button>
+        <span id="cmp-titulo" style="font-size:12.5px;font-weight:600;color:var(--navy);min-width:200px;text-align:center">—</span>
+        <button onclick="cmpNavegar(1)" style="border:1px solid var(--border);border-radius:6px;width:28px;height:28px;background:var(--bg);cursor:pointer;font-size:14px">›</button>
+      </div>
+      <div class="cmp-legend">
+        <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#F0FFF4;border:1px solid #22C55E"></div> Libre</div>
+        <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#FFF8F0;border:1px solid #F97316"></div> Ocupado</div>
+        <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#FFF0F0;border:1px solid #EF4444"></div> Conflicto (2+ diligencias)</div>
+      </div>
+    </div>
+    <div class="cmp-wrap">
+      <div id="cmp-grid"></div>
+    </div>
+  </div>
 
 </div>
 
@@ -991,11 +1059,13 @@ const C={tid:'tareasid',fecha:'FECHA',hora:'HORA',cli:'CLIENTE',tarea:'TAREA',
          respProc:'RESPONSABLE DEL PROCESO',
          org:'ORGANO JURISDICCIONAL',
          via:'VIA PROCESAL',
-         contra:'CONTRAPARTE'};
+         contra:'CONTRAPARTE',
+         tipoAud:'TIPO DE AUDIENCIA'};
 
 // Tareas que NO son diligencias judiciales — se excluyen de Agenda y Reasignaciones
 const TAREAS_EXCLUIDAS=/presentaci[oó]n\s+de\s+demanda|presenta\s+demanda|contest[ao]\s+demanda|contestaci[oó]n\s+de\s+demanda|contesta\s+la\s+demanda/i;
 const LECTURA_SENTENCIA=/lectura\s+de\s+sentencia/i;
+const PRESENCIAL_ORG=/juzgado|sala\s+laboral|sala\s+suprema|tribunal|corte/i;
 function esDiligenciaExcluida(r){
   const t=String(r[C.tarea]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   return TAREAS_EXCLUIDAS.test(t);
@@ -1003,6 +1073,13 @@ function esDiligenciaExcluida(r){
 function esLecturaSentencia(r){
   const t=String(r[C.tarea]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   return LECTURA_SENTENCIA.test(t);
+}
+function esPresencial(r){
+  const tipo=String(r[C.tipoAud]||'').trim().toUpperCase();
+  if(tipo) return tipo.includes('PRESENCIAL');
+  // fallback por órgano si no tiene la columna
+  const org=String(r[C.org]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  return PRESENCIAL_ORG.test(org);
 }
 function detectCols(){
   if(!mbRows||!mbRows.length)return;
@@ -1040,6 +1117,7 @@ function detectCols(){
   C.org     =mejor(['ORGANO JURISDICCIONAL','ÓRGANO JURISDICCIONAL','ORGANO JURISD.','ORGANO JURISD','JUZGADO']);
   C.via     =mejor(['VIA PROCESAL','VÍA PROCESAL','TIPO DE PROCESO','VIA']);
   C.contra  =mejor(['CONTRAPARTE','DEMANDANTE','PARTE CONTRARIA','TRABAJADOR']);
+  C.tipoAud =mejor(['TIPO DE AUDIENCIA','TIPO AUDIENCIA','MODALIDAD','TIPO DE DILIGENCIA']);
   // Diagnóstico: ver qué columnas se detectaron
   console.log('[CID] detectCols → resp:', JSON.stringify(C.resp), '| resp2:', JSON.stringify(C.resp2));
   console.log('[CID] Columnas con "responsable":', keys.filter(k=>norm(k).includes('responsable')));
@@ -1248,7 +1326,22 @@ function nHor(v){
   }
   return s.slice(0,5);
 }
-function toISO(s){if(!s||s.length<10)return'';const p=s.split('/');return p.length===3?p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0'):''}
+function toISO(s){
+  if(!s)return'';
+  if(s instanceof Date){
+    if(isNaN(s))return'';
+    return s.getFullYear()+'-'+String(s.getMonth()+1).padStart(2,'0')+'-'+String(s.getDate()).padStart(2,'0');
+  }
+  const str=String(s).trim();
+  if(str.length<8)return'';
+  const p=str.split('/');
+  if(p.length===3){
+    const y=p[2].length===2?'20'+p[2]:p[2];
+    return y+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+  }
+  if(str.includes('-')&&str.length>=10)return str.substring(0,10);
+  return'';
+}
 
 // ═══════════════════════════════════════════════════
 // DICCIONARIO DE INICIALES ↔ NOMBRES (fijo V&T)
@@ -2713,7 +2806,7 @@ function rsRenderAbogado(){
           <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
           <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
           <td style="padding:7px 10px;font-size:11px;max-width:180px;white-space:normal;word-break:break-word;color:#6B21A8;font-weight:600">${esc(tareaV)}</td>
-          <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}</td>
+          <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}${esPresencial(r)?'<br><span class="rs-presencial-badge">📍 Presencial</span>':''}</td>
           <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
           <td style="padding:7px 10px;font-weight:600;color:#6B21A8;font-size:11.5px">${esc(respV)}${resp2v&&resp2v!=='-'?`<br><span style="font-size:10px;color:var(--muted)">${esc(resp2v)}</span>`:''}</td>
           <td style="padding:7px 10px">${estadoHtml}</td>
@@ -2771,7 +2864,7 @@ function rsRenderAbogado(){
         <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
         <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
         <td style="padding:7px 10px;font-size:11px;max-width:200px;white-space:normal;word-break:break-word">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
-        <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}</td>
+        <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}${esPresencial(r)?'<br><span class="rs-presencial-badge">📍 Presencial</span>':''}</td>
         <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
         <td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">${respDisplay}</td>
         <td style="padding:7px 10px">${estadoHtml}</td>
@@ -2902,7 +2995,7 @@ function rsRenderAbogado(){
         <td style="font-size:11.5px">${esc(r[C.cli]||'')}</td>
         <td style="font-size:11px">${esc(rContra)||'<span class="na">—</span>'}</td>
         <td style="font-size:11px"><span class="pill px" style="white-space:normal">${esc(rVia)||'—'}</span></td>
-        <td style="font-size:11px">${esc(rOrg)||'<span class="na">—</span>'}</td>
+        <td style="font-size:11px">${esc(rOrg)||'<span class="na">—</span>'}${esPresencial(r)?'<br><span class="rs-presencial-badge">📍 Presencial</span>':''}</td>
         <td style="min-width:220px;max-width:320px;white-space:normal;word-break:break-word;font-size:11.5px;line-height:1.4">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
         <td style="font-size:11.5px;color:var(--navy)">${esc(rProc)||'<span class="na">—</span>'}</td>
         <td style="font-weight:600;color:var(--navy);font-size:11.5px">${esc(resp)}${resp2v&&resp2v!=='-'?`<br><span style="font-size:10px;color:var(--muted)">${esc(resp2v)}</span>`:''}</td>
@@ -3044,7 +3137,7 @@ function rsRenderLecturas(){
       <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
       <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
       <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
-      <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}</td>
+      <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}${esPresencial(r)?'<br><span class="rs-presencial-badge">📍 Presencial</span>':''}</td>
       <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
       <td style="padding:7px 10px;font-weight:600;color:#6B21A8;font-size:11.5px">${esc(respV)}${resp2v&&resp2v!=='-'?`<br><span style="font-size:10px;color:var(--muted)">${esc(resp2v)}</span>`:''}</td>
       <td style="padding:7px 10px">${estadoHtml}</td>
@@ -3276,6 +3369,11 @@ let agFiltroSup='';          // supervisor seleccionado para filtrar
 
 function agFiltrarSup(sup){
   agFiltroSup=agFiltroSup===sup?'':sup;
+  // Sincronizar con selector de equipo
+  const selEq=document.getElementById('ag-equipo');
+  if(selEq) selEq.value=agFiltroSup;
+  // Poblar abogados del equipo
+  agEquipoChange(false);
   // Resaltar píldora activa
   const slugs={
     'Elyana Arias':'elyana','Solanch Estrella':'solanch','Samuel Paz':'samuel',
@@ -3320,34 +3418,40 @@ function initAgenda(){
     return;
   }
 
-  // Cargar nombres únicos de responsables
+  // Poblar selects de responsable en modal evento (todos los nombres)
   const nombres=new Set();
   mbRows.forEach(r=>{
-    if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]));
-    if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]));
+    if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]).trim());
+    if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]).trim());
   });
   const sorted=[...nombres].sort();
-
-  const selAb=document.getElementById('ag-abogado');
   const selYo=document.getElementById('ag-yo');
   const selNR=document.getElementById('ev-nuevo-resp');
   const selNR2=document.getElementById('ev-nuevo-resp2');
-
-  selAb.innerHTML='<option value="">— todos —</option>';
   selYo.innerHTML='<option value="">— mi nombre —</option>';
   selNR.innerHTML='<option value="">— seleccionar —</option>';
   selNR2.innerHTML='<option value="">— ninguno —</option>';
-
   sorted.forEach(n=>{
-    selAb.innerHTML+=`<option>${n}</option>`;
     selYo.innerHTML+=`<option>${n}</option>`;
     selNR.innerHTML+=`<option>${n}</option>`;
     selNR2.innerHTML+=`<option>${n}</option>`;
   });
 
+  // Abogado select inicia con todos (sin filtro de equipo)
+  const selAb=document.getElementById('ag-abogado');
+  selAb.innerHTML='<option value="">— todos —</option>';
+  sorted.forEach(n=>{ selAb.innerHTML+=`<option>${n}</option>`; });
+
   // Recuperar preferencia guardada
   const guardado=localStorage.getItem('vt_ag_yo');
   if(guardado){selYo.value=guardado;}
+
+  // Restaurar equipo si había uno seleccionado
+  const equipoGuardado=localStorage.getItem('vt_ag_equipo');
+  if(equipoGuardado){
+    document.getElementById('ag-equipo').value=equipoGuardado;
+    agEquipoChange(false);
+  }
 
   agFechaRef=new Date();
   agRender();
@@ -3358,13 +3462,62 @@ function initAgenda(){
   }
 }
 
+function agEquipoChange(doRender=true){
+  const equipo=document.getElementById('ag-equipo').value;
+  const selAb=document.getElementById('ag-abogado');
+  localStorage.setItem('vt_ag_equipo', equipo);
+
+  // Poblar abogados del equipo seleccionado
+  if(equipo&&mbRows&&mbRows.length){
+    const nombres=new Set();
+    mbRows.filter(r=>String(r[C.sup]||'').includes(equipo)&&!esDiligenciaExcluida(r))
+      .forEach(r=>{
+        if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]).trim());
+        if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]).trim());
+      });
+    selAb.innerHTML='<option value="">— todos —</option>'+
+      [...nombres].sort().map(n=>`<option>${n}</option>`).join('');
+  } else {
+    // Sin equipo — mostrar todos
+    const nombres=new Set();
+    if(mbRows) mbRows.forEach(r=>{
+      if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]).trim());
+      if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]).trim());
+    });
+    selAb.innerHTML='<option value="">— todos —</option>'+
+      [...nombres].sort().map(n=>`<option>${n}</option>`).join('');
+  }
+  selAb.value='';
+
+  // Sincronizar con píldoras de supervisor
+  const slugs={
+    'Elyana Arias':'elyana','Solanch Estrella':'solanch','Samuel Paz':'samuel',
+    'Carlos Morales':'carlos','Cynthia Lagos':'cynthia','Katia Jacinto':'katia'
+  };
+  // Actualizar agFiltroSup
+  agFiltroSup=equipo;
+  Object.entries(slugs).forEach(([nombre,slug])=>{
+    const el=document.getElementById('ag-sup-'+slug);
+    if(!el)return;
+    el.style.opacity=equipo&&equipo!==nombre?'0.35':'1';
+    el.style.fontWeight=equipo===nombre?'700':'600';
+    el.style.transform=equipo===nombre?'scale(1.05)':'scale(1)';
+  });
+  const clearBtn=document.getElementById('ag-sup-clear');
+  if(clearBtn) clearBtn.style.display=equipo?'inline-flex':'none';
+
+  if(doRender){
+    agRender();
+    if(cmpActivo) cmpRender();
+  }
+}
+
 function agCambiarModo(){
-  const modo=document.getElementById('ag-modo').value;
   document.getElementById('ag-yo-wrap').style.display=modo==='personal'?'flex':'none';
-  document.getElementById('ag-abogado').parentElement.style.display=modo==='personal'?'none':'flex';
+  document.getElementById('ag-equipo-wrap').style.display=modo==='personal'?'none':'flex';
+  document.getElementById('ag-abogado-wrap').style.display=modo==='personal'?'none':'flex';
   if(modo==='personal'){
-    const yo=document.getElementById('ag-yo').value;
-    agPersona=yo;
+    agPersona=document.getElementById('ag-yo').value;
   }else{
     agPersona=document.getElementById('ag-abogado').value;
   }
@@ -3431,10 +3584,7 @@ function agNavegar(dir){
 function agHoy(){agFechaRef=new Date();agRender();}
 
 function agRender(){
-  const modo=document.getElementById('ag-modo').value;
-  agPersona=modo==='personal'
-    ?document.getElementById('ag-yo').value
-    :document.getElementById('ag-abogado').value;
+  agPersona=document.getElementById('ag-abogado')?.value||'';
 
   agEventos=agGetEventos(agPersona);
   const titulo=document.getElementById('ag-titulo');
@@ -3656,6 +3806,197 @@ document.addEventListener('click',e=>{
 
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ════════════════════════════════════════════════════════════
+// COMPARATIVO DE EQUIPO
+// ════════════════════════════════════════════════════════════
+let cmpVis='dia', cmpFecha=new Date(), cmpActivo=false;
+const CMP_HORAS=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'];
+const CMP_COLS=['#EFF6FF','#F0FDF4','#FFF7ED','#FDF4FF','#FEFCE8','#F0F9FF','#FFF1F2','#F8FAFC','#ECFDF5','#FEF9C3'];
+const CMP_BORD=['#3B82F6','#22C55E','#F97316','#A855F7','#EAB308','#0EA5E9','#EF4444','#64748B','#10B981','#CA8A04'];
+
+function cmpToggle(){
+  cmpActivo=!cmpActivo;
+  document.getElementById('ag-calendario-wrap').style.display=cmpActivo?'none':'block';
+  document.getElementById('ag-comparativo-wrap').style.display=cmpActivo?'block':'none';
+  // Ocultar en comparativo: abogado, navegación ‹›, vistas, píldoras supervisor
+  document.getElementById('ag-abogado-wrap').style.display=cmpActivo?'none':'flex';
+  document.querySelectorAll('.ag-nav,.ag-view-btns').forEach(el=>el.style.display=cmpActivo?'none':'');
+  const supBar=document.querySelector('.ag-sup-bar');
+  if(supBar) supBar.style.display=cmpActivo?'none':'flex';
+  const btn=document.getElementById('btn-cmp');
+  if(btn){
+    btn.textContent=cmpActivo?'\u2715 Cerrar comparativo':'\ud83d\udcca Comparativo equipo';
+    btn.classList.toggle('btn-navy',cmpActivo);
+    btn.classList.toggle('btn-out',!cmpActivo);
+  }
+  if(cmpActivo){cmpFecha=new Date();cmpRender();}
+}
+function cmpVista(v){
+  cmpVis=v;
+  document.getElementById('cmp-btn-dia').classList.toggle('active',v==='dia');
+  document.getElementById('cmp-btn-sem').classList.toggle('active',v==='sem');
+  cmpRender();
+}
+function cmpNavegar(d){
+  cmpFecha=new Date(cmpFecha.getTime()+d*(cmpVis==='dia'?86400000:7*86400000));
+  cmpRender();
+}
+function cmpHoy(){
+  cmpFecha=new Date();
+  cmpRender();
+}
+function cmpSeleccionarFecha(val){
+  if(!val)return;
+  const p=val.split('-');
+  cmpFecha=new Date(+p[0],+p[1]-1,+p[2]);
+  cmpRender();
+}
+
+function cmpEvHtml(ev,ai){
+  const bg=CMP_COLS[ai%CMP_COLS.length];
+  const bd=CMP_BORD[ai%CMP_BORD.length];
+  const tarea=esc(ev.tarea.length>38?ev.tarea.substring(0,38)+'\u2026':ev.tarea);
+  const cli=esc(ev.cli);
+  const tid=ev.tid;
+  return '<div class="cmp-evento" style="background:'+bg+';border-left:3px solid '+bd+'" onclick="abrirEvento(\''+tid+'\')">'
+       + '<div class="cmp-evento-hora">'+ev.hora+'</div>'
+       + '<div class="cmp-evento-tarea">'+tarea+'</div>'
+       + '<div class="cmp-evento-cli">'+cli+'</div></div>';
+}
+
+function cmpSemana(fecha){
+  const l=new Date(fecha);
+  const dow=l.getDay();
+  l.setDate(l.getDate()-(dow===0?6:dow-1));
+  return Array.from({length:5},(_,i)=>new Date(l.getTime()+i*86400000));
+}
+
+function cmpRender(){
+  const grid=document.getElementById('cmp-grid');
+  const equipo=document.getElementById('ag-equipo')?.value||agFiltroSup||'';
+  if(!mbRows||!mbRows.length){
+    grid.innerHTML='<div class="cmp-aviso"><div class="ei">\ud83d\udcca</div><p>Carga el reporte MyBig primero.</p></div>';
+    return;
+  }
+  if(!equipo){
+    grid.innerHTML='<div class="cmp-aviso"><div class="ei">\ud83d\udc65</div><p>Selecciona un <strong>equipo</strong> arriba para ver el comparativo.</p></div>';
+    return;
+  }
+  const supNorm=equipo.toLowerCase();
+  const abogadosSet=new Set();
+  mbRows.filter(r=>String(r[C.sup]||'').toLowerCase().includes(supNorm)&&!esDiligenciaExcluida(r)&&!esLecturaSentencia(r))
+    .forEach(r=>{
+      const r1=String(r[C.resp]||'').trim(),r2=String(r[C.resp2]||'').trim();
+      if(r1&&r1!=='-'&&!r1.toLowerCase().includes(supNorm))abogadosSet.add(r1);
+      if(r2&&r2!=='-'&&!r2.toLowerCase().includes(supNorm))abogadosSet.add(r2);
+    });
+  const abogados=[...abogadosSet].sort();
+  if(!abogados.length){
+    grid.innerHTML='<div class="cmp-aviso"><div class="ei">\ud83d\udced</div><p>Sin diligencias para este equipo en el rango cargado.</p></div>';
+    return;
+  }
+  const dias=cmpVis==='dia'?[new Date(cmpFecha)]:cmpSemana(cmpFecha);
+  const hoy=toISO(new Date());
+  const tit=document.getElementById('cmp-titulo');
+  const inp=document.getElementById('cmp-fecha-input');
+  // Sincronizar input con la fecha actual del comparativo
+  if(inp) inp.value=toISO(cmpFecha);
+  if(tit){
+    if(cmpVis==='dia')
+      tit.textContent=cmpFecha.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'});
+    else{
+      const l=dias[0],v=dias[dias.length-1];
+      tit.textContent=l.getDate()+' \u2013 '+v.getDate()+' de '+v.toLocaleDateString('es-PE',{month:'long',year:'numeric'});
+    }
+  }
+  // Indexar eventos [abogado][fechaISO][horaBase]=[eventos]
+  const idx={};
+  abogados.forEach(a=>{idx[a]={};});
+  mbRows.filter(r=>String(r[C.sup]||'').toLowerCase().includes(supNorm)&&!esDiligenciaExcluida(r)&&!esLecturaSentencia(r))
+    .forEach(r=>{
+      const fi=toISO(nFec(r[C.fecha]));if(!fi)return;
+      const hora=nHor(r[C.hora]).substring(0,5);
+      const hBase=hora.substring(0,2)+':00';
+      const ev={tid:String(r[C.tid]||'').trim(),hora,tarea:String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim(),cli:String(r[C.cli]||'').trim()};
+      [String(r[C.resp]||'').trim(),String(r[C.resp2]||'').trim()].forEach(resp=>{
+        if(!resp||resp==='-'||resp.toLowerCase().includes(supNorm)||!idx[resp])return;
+        if(!idx[resp][fi])idx[resp][fi]={};
+        if(!idx[resp][fi][hBase])idx[resp][fi][hBase]=[];
+        idx[resp][fi][hBase].push(ev);
+      });
+    });
+
+  // ── VISTA DÍA ─────────────────────────────────────────────
+  if(cmpVis==='dia'){
+    const fi=toISO(cmpFecha);
+    const esHoy=fi===hoy;
+    let h='<table class="cmp-table"><thead><tr><th class="cmp-hora-hdr">Hora</th>';
+    abogados.forEach((a,ai)=>{
+      const tot=Object.values(idx[a][fi]||{}).reduce((s,e)=>s+e.length,0);
+      const sub=tot?(tot+' diligencia'+(tot!==1?'s':'')+' hoy'):'\u2713 libre hoy';
+      h+='<th style="background:'+CMP_BORD[ai%CMP_BORD.length]+';min-width:165px">'+esc(a)
+        +'<div style="font-size:9px;font-weight:400;opacity:.8;margin-top:2px">'+sub+'</div></th>';
+    });
+    h+='</tr></thead><tbody>';
+    CMP_HORAS.forEach(hora=>{
+      h+='<tr><td class="cmp-hora'+(esHoy?' cmp-hoy-col':'')+'">'+hora+'</td>';
+      abogados.forEach((a,ai)=>{
+        const evs=(idx[a][fi]||{})[hora]||[];
+        if(!evs.length){
+          h+='<td class="cmp-libre"><div class="cmp-libre-tag">\u2713</div></td>';
+        } else {
+          h+='<td class="'+(evs.length>1?'cmp-conflicto':'cmp-ocupado')+'">';
+          evs.forEach(ev=>{h+=cmpEvHtml(ev,ai);});
+          h+='</td>';
+        }
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table>';
+    grid.innerHTML=h;
+  }
+  // ── VISTA SEMANA ──────────────────────────────────────────
+  else{
+    const DE=['Dom','Lun','Mar','Mi\xe9','Jue','Vie','S\xe1b'];
+    const ME=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    let h='<table class="cmp-table"><thead><tr>'
+        +'<th class="cmp-hora-hdr" rowspan="2" style="vertical-align:middle">Abogado</th>';
+    dias.forEach(d=>{
+      const fi=toISO(d);
+      h+='<th colspan="'+CMP_HORAS.length+'" style="'+(fi===hoy?'background:#B45309;':'')+'">'
+        +DE[d.getDay()]+' '+d.getDate()+'/'+ME[d.getMonth()]+'</th>';
+    });
+    h+='</tr><tr>';
+    dias.forEach(()=>CMP_HORAS.forEach(hr=>{
+      h+='<th style="background:var(--navy2);font-size:9px;font-weight:500;min-width:46px;padding:3px 1px">'+hr.substring(0,5)+'</th>';
+    }));
+    h+='</tr></thead><tbody>';
+    abogados.forEach((a,ai)=>{
+      const tot=dias.reduce((s,d)=>s+Object.values(idx[a][toISO(d)]||{}).reduce((ss,e)=>ss+e.length,0),0);
+      h+='<tr><td class="cmp-hora" style="background:'+CMP_COLS[ai%CMP_COLS.length]+';border-left:3px solid '+CMP_BORD[ai%CMP_BORD.length]+';white-space:normal;text-align:left;padding:6px 8px">'
+        +'<div style="font-weight:700;color:var(--navy);font-size:11px">'+esc(a)+'</div>'
+        +'<div style="font-size:9.5px;color:var(--muted)">'+tot+' dilig.</div></td>';
+      dias.forEach(d=>{
+        const fi=toISO(d);const esHoy=fi===hoy;
+        CMP_HORAS.forEach(hr=>{
+          const evs=(idx[a][fi]||{})[hr]||[];
+          if(!evs.length){
+            h+='<td class="cmp-libre'+(esHoy?' cmp-hoy-col':'')+'"></td>';
+          } else {
+            const tip=esc(evs.map(e=>e.hora+' '+e.tarea).join('\n'));
+            const label=(evs.length>1?'\u26a0 '+evs.length:'\u25cf')+' '+esc(evs[0].tarea.substring(0,16))+(evs[0].tarea.length>16?'\u2026':'');
+            h+='<td class="'+(evs.length>1?'cmp-conflicto':'cmp-ocupado')+(esHoy?' cmp-hoy-col':'')+'" title="'+tip+'" onclick="abrirEvento(\''+evs[0].tid+'\')">'
+              +'<div style="font-size:9px;font-weight:700;color:'+CMP_BORD[ai%CMP_BORD.length]+';padding:2px 3px;cursor:pointer">'+label+'</div></td>';
+          }
+        });
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table>';
+    grid.innerHTML=h;
+  }
+}
 
 // ══════════════════════════════════════════════════════
 // BI · REASIGNACIONES
