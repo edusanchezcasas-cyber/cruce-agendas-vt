@@ -12,7 +12,7 @@
   --gold:#C9A84C;--red:#C0392B;--green:#1A7A4A;
   --amber:#D4730A;--purple:#6B3FA0;--blue:#1549A0;
   --bg:#F4F6FA;--card:#fff;--border:#D8DEE9;
-  --text:#1a2540;--muted:#6B7A99;
+  --text:#1a2540;--muted:#6B7A99;--light:#94a3b8;
   --ok-bg:#E8F5EE;--err-bg:#FDECEA;--warn-bg:#FEF3E2;--info-bg:#F0EBF8;--mb-bg:#EBF4FF;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -26,7 +26,7 @@ header{background:var(--navy);color:#fff;padding:0 32px;display:flex;align-items
 .ls{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase}
 .ht{font-family:'DM Serif Display',serif;font-size:17px;opacity:.9}
 .hp{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 11px;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.6px;text-transform:uppercase}
-/* ─ NAV TABS (top level) ─ */
+/* ─ NAV TABS ─ */
 .main-nav{background:var(--navy2);display:flex;gap:0}
 .mnav{padding:10px 22px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border:none;background:transparent;font-family:inherit;border-bottom:3px solid transparent;transition:all .15s}
 .mnav:hover{color:rgba(255,255,255,.85)}
@@ -129,7 +129,9 @@ td{padding:7px 11px;vertical-align:middle}
 .pr{background:var(--err-bg);color:var(--red)}.pg{background:var(--ok-bg);color:var(--green)}
 .pa{background:var(--warn-bg);color:var(--amber)}.pb{background:var(--mb-bg);color:var(--blue)}
 .pp{background:var(--info-bg);color:var(--purple)}.px{background:var(--border);color:var(--muted)}
-.tid{font-family:monospace;font-size:10.5px;background:#EEF2FA;padding:2px 5px;border-radius:4px;color:var(--navy)}
+.tid{font-family:monospace;font-size:10.5px;background:#EEF2FA;padding:2px 5px;border-radius:4px;color:var(--navy);font-weight:600}
+a.tid{text-decoration:none;cursor:pointer}
+a.tid:hover{background:#DBEAFE;color:var(--blue)}
 .dv{background:#FFF3CD;font-weight:700;color:#7A4E00;border-radius:3px;padding:1px 4px}
 .trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;display:block}
 .asunto-cell{max-width:340px}
@@ -328,6 +330,7 @@ td{padding:7px 11px;vertical-align:middle}
 .cal-ev-dia{border-radius:5px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;transition:filter .1s;display:inline-flex;align-items:center;gap:6px}
 .cal-ev-dia:hover{filter:brightness(.9)}
 /* Colores por supervisor */
+/* Colores supervisor */
 .sup-elyana{background:#DBEAFE;color:#1549A0;border-left:3px solid #1549A0}
 .sup-solanch{background:#EDE9FE;color:#5B21B6;border-left:3px solid #7C3AED}
 .sup-samuel{background:#D1FAE5;color:#065F46;border-left:3px solid #059669}
@@ -1867,7 +1870,7 @@ function renderSimple(wrap,rows,t){
       const mRespDisplay=(r.mb[C.resp]||'')+(mResp2&&mResp2!=='-'&&mResp2!==''?`<br><span style="font-size:10px;color:var(--muted)">${mResp2}</span>`:'');
 
       return`<tr style="background:#F5FFF8">
-        <td><span class="tid">#${r.tid}</span></td>
+        <td><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${r.tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${r.tid}</a></td>
         <td class="asunto-cell">
           <span class="trunc" onclick="toggleAsunto(this)" title="Clic para expandir">${esc(asuntoCorto)||'<span class="na">—</span>'}</span>
           <span class="asunto-expanded">${esc(asuntoFull)}</span>
@@ -2146,7 +2149,7 @@ function renderIncoStatic(inco,checks,cruceId,filtro){
           <div class="chk-info">${checked?checked.ts.split(',')[0]:''}</div>
         </div>
       </td>
-      <td>${pill}</td><td><span class="tid">#${r.tid}</span></td>
+      <td>${pill}</td><td><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${r.tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${r.tid}</a></td>
       <td>${r.oFec?`<span${fd?' class="dv"':''}>${r.oFec}</span>`:'<span class="na">—</span>'}</td>
       <td>${r.oHor?`<span${hd?' class="dv"':''}>${r.oHor}</span>`:'<span class="na">—</span>'}</td>
       <td style="font-weight:700;color:var(--navy)">${r.oInics||'—'}</td>
@@ -2654,7 +2657,7 @@ function rsRenderAbogado(){
   const hayFiltroCol=COL_KEYS.some(k=>ssSelected[k]);
 
   const todas=rsGetAll();
-  let dilig=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&!esDiligenciaExcluida(r));
+  let dilig=mbRows.filter(r=>String(r[C.sup]||'').includes(sup)&&!esDiligenciaExcluida(r)&&!esLecturaSentencia(r));
 
   // Aplicar filtros de barra (excepto resp. diligencia que activa vista detalle)
   if(fProc)  dilig=dilig.filter(r=>String(r[C.respProc]||'').trim()===fProc);
@@ -2800,7 +2803,7 @@ function rsRenderAbogado(){
         const resp2v=String(r[C.resp2]||'').trim();
         const tareaV=String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim();
         html+=`<tr style="background:rgba(168,85,247,.04);border-bottom:1px solid rgba(168,85,247,.15)">
-          <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
+          <td style="padding:7px 10px"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
           <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
           <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
           <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
@@ -2858,7 +2861,7 @@ function rsRenderAbogado(){
       const resp2v=String(r[C.resp2]||'').trim();
       const respDisplay=respV+(resp2v&&resp2v!=='-'&&resp2v!==respV?`<br><span style="font-size:10px;color:var(--muted);font-weight:400">${esc(resp2v)}</span>`:'');
       html+=`<tr style="background:#FAFBFC;border-bottom:1px solid var(--border)">
-        <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
+        <td style="padding:7px 10px"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
         <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
         <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
         <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
@@ -2988,7 +2991,7 @@ function rsRenderAbogado(){
       const resp2v=String(r[C.resp2]||'').trim();
 
       html+=`<tr style="background:#FAFBFC">
-        <td><span class="tid">#${tid||'—'}</span></td>
+        <td><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
         <td style="white-space:nowrap">${nFec(r[C.fecha])}</td>
         <td>${nHor(r[C.hora])}</td>
         <td style="font-family:monospace;font-size:10.5px">${esc(rExp)||'<span class="na">—</span>'}</td>
@@ -3132,7 +3135,7 @@ function rsRenderLecturas(){
     const respV =String(r[C.resp]||'').trim();
     const resp2v=String(r[C.resp2]||'').trim();
     html+=`<tr style="background:rgba(168,85,247,.04);border-bottom:1px solid rgba(168,85,247,.15)">
-      <td style="padding:7px 10px"><span class="tid">#${tid||'—'}</span></td>
+      <td style="padding:7px 10px"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
       <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
       <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
       <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
@@ -3210,12 +3213,12 @@ function rsRenderParalegal(){
     const fDilig=toISO(p.fecha);
     const urgencia=fDilig===hoy?'🔴 HOY':fDilig===manana?'🟡 Mañana':'';
 
-    html+=`<tr style="background:${bg}${p.estado==='ejecutada'?';opacity:.75':''}${fDilig===hoy?';border-left:3px solid var(--red)':''}">
+    html+=`<tr style="background:${bg}${p.estado==='ejecutada'?';opacity:.75':''}${fDilig===hoy?';border-left:3px solid var(--navy)':''}">
       <td><span class="rs-badge ${badgeCls}">${badgeLbl}</span></td>
-      <td><span class="tid">#${p.tid}</span></td>
+      <td><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${p.tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${p.tid}</a></td>
       <td style="font-size:11.5px">${esc(p.cliente||'')}</td>
       <td style="min-width:180px;white-space:normal;word-break:break-word;font-size:11.5px">${esc(p.tarea||'')}</td>
-      <td style="white-space:nowrap;font-weight:${fDilig<=hoy?'700':'400'};color:${fDilig===hoy?'var(--red)':fDilig===manana?'var(--amber)':'inherit'}">${p.fecha||''}${urgencia?`<br><span style="font-size:9.5px">${urgencia}</span>`:''}</td>
+      <td style="white-space:nowrap;font-weight:${fDilig<=hoy?'700':'400'};color:${fDilig===hoy?'var(--navy)':fDilig===manana?'var(--gold)':'inherit'}">${p.fecha||''}${urgencia?`<br><span style="font-size:9.5px;background:${fDilig===hoy?'var(--navy)':'#C9A84C'};color:#fff;padding:1px 6px;border-radius:3px">${urgencia}</span>`:''}</td>
       <td style="font-weight:600">${p.hora||''}</td>
       <td style="font-size:11.5px;color:var(--red)">${esc(p.respActual||'')}</td>
       <td style="font-weight:700;color:var(--green)">${esc(p.nuevoResp||'')}${p.nuevoResp2?`<br><span style="font-size:10px;color:var(--muted)">${esc(p.nuevoResp2)}</span>`:''}</td>
