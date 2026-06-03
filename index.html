@@ -1079,10 +1079,7 @@ function esLecturaSentencia(r){
 }
 function esPresencial(r){
   const tipo=String(r[C.tipoAud]||'').trim().toUpperCase();
-  if(tipo) return tipo.includes('PRESENCIAL');
-  // fallback por órgano si no tiene la columna
-  const org=String(r[C.org]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  return PRESENCIAL_ORG.test(org);
+  return tipo==='PRESENCIAL';
 }
 function detectCols(){
   if(!mbRows||!mbRows.length)return;
@@ -1120,9 +1117,9 @@ function detectCols(){
   C.org     =mejor(['ORGANO JURISDICCIONAL','ÓRGANO JURISDICCIONAL','ORGANO JURISD.','ORGANO JURISD','JUZGADO']);
   C.via     =mejor(['VIA PROCESAL','VÍA PROCESAL','TIPO DE PROCESO','VIA']);
   C.contra  =mejor(['CONTRAPARTE','DEMANDANTE','PARTE CONTRARIA','TRABAJADOR']);
-  C.tipoAud =mejor(['TIPO DE AUDIENCIA','TIPO AUDIENCIA','MODALIDAD','TIPO DE DILIGENCIA']);
+  C.tipoAud =mejor(['TIPO DE AUDIENCIA (VIRTUAL/PRESENCIAL)','TIPO DE AUDIENCIA','TIPO AUDIENCIA','MODALIDAD AUDIENCIA','MODALIDAD','VIRTUAL/PRESENCIAL']);
   // Diagnóstico: ver qué columnas se detectaron
-  console.log('[CID] detectCols → resp:', JSON.stringify(C.resp), '| resp2:', JSON.stringify(C.resp2));
+  console.log('[CID] detectCols → resp:', JSON.stringify(C.resp), '| resp2:', JSON.stringify(C.resp2), '| tipoAud:', JSON.stringify(C.tipoAud), '| fecha:', JSON.stringify(C.fecha), '| hora:', JSON.stringify(C.hora));
   console.log('[CID] Columnas con "responsable":', keys.filter(k=>norm(k).includes('responsable')));
 }
 
