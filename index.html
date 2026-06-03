@@ -388,6 +388,35 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
 /* Aviso sin equipo */
 .cmp-aviso{text-align:center;padding:60px 20px;color:var(--muted)}
 .cmp-aviso .ei{font-size:44px;margin-bottom:12px}
+/* ── SELECCIÓN MASIVA ── */
+.bulk-bar{position:sticky;bottom:0;z-index:50;background:var(--navy);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-radius:10px 10px 0 0;box-shadow:0 -4px 18px rgba(31,56,100,.25);transition:all .2s}
+.bulk-bar.hidden{display:none}
+.bulk-count{font-size:13px;font-weight:700;white-space:nowrap}
+.bulk-sep{width:1px;height:22px;background:rgba(255,255,255,.2)}
+.bulk-sel{border:1.5px solid rgba(255,255,255,.4);border-radius:6px;padding:5px 10px;font-size:12px;font-family:inherit;background:rgba(255,255,255,.08);color:#fff;min-width:200px}
+.bulk-sel option{color:var(--text);background:#fff}
+.chk-row{width:16px;height:16px;cursor:pointer;accent-color:var(--navy);flex-shrink:0}
+/* ── VACACIONES ── */
+.vac-modal{background:var(--card);border-radius:12px;padding:24px 28px;max-width:560px;width:94%;max-height:82vh;overflow-y:auto;position:relative}
+.vac-modal h3{font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);margin-bottom:4px}
+.vac-fld{margin-bottom:11px}
+.vac-fld label{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.vac-fld select,.vac-fld input{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit;color:var(--text);background:var(--bg)}
+.vac-list{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.vac-item{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:9px 13px;font-size:12px}
+.vac-item-info{flex:1}
+.vac-item-name{font-weight:700;color:var(--navy);font-size:12.5px}
+.vac-item-rng{color:var(--muted);font-size:11px;margin-top:1px}
+.vac-badge{display:inline-flex;align-items:center;gap:3px;background:#FEF3E2;color:#D4730A;border:1px solid #F6A623;border-radius:9px;padding:2px 7px;font-size:9.5px;font-weight:700;white-space:nowrap}
+.vac-warn{background:#FFF3CD;border:1px solid #FFC107;border-radius:5px;padding:6px 10px;font-size:11.5px;color:#856404;margin-top:4px}
+/* ── CROSS-TEAM MODAL ── */
+.ct-modal{background:var(--card);border-radius:12px;padding:24px 28px;max-width:440px;width:92%;position:relative}
+.ct-modal h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--amber);margin-bottom:6px}
+.ct-info{background:var(--warn-bg);border:1px solid var(--amber);border-radius:7px;padding:12px 14px;font-size:12px;line-height:1.7;margin-bottom:16px}
+.ct-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(201,168,76,.2);color:#7A4E00;border:1px solid var(--amber);border-radius:9px;padding:2px 8px;font-size:10px;font-weight:700}
+/* ── SOCIO VIEW ── */
+.socio-bar{background:linear-gradient(135deg,var(--navy) 0%,#2a4a8a 100%);color:#fff;padding:10px 18px;border-radius:10px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.socio-badge{background:var(--gold);color:var(--navy);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:.5px}
 /* BI panel */
 .bi-tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
 .bi-tl-item:last-child{border-bottom:none}
@@ -419,6 +448,7 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
   <button class="mnav" onclick="showPanel('agenda')">📅 Agenda</button>
   <button class="mnav" onclick="showPanel('reasig')">🔄 Reasignaciones</button>
   <button class="mnav" onclick="showPanel('control')">📋 Panel de Control</button>
+  <button class="mnav" onclick="showPanel('vacaciones')">🏖 Vacaciones</button>
 </div>
 
 <main>
@@ -677,6 +707,18 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
   <!-- Tabla -->
   <div class="rs-table-wrap" id="rs-tabla"></div>
 
+  <!-- Barra de selección masiva (sticky bottom) -->
+  <div class="bulk-bar hidden" id="bulk-bar">
+    <span class="bulk-count" id="bulk-count-lbl">0 seleccionadas</span>
+    <div class="bulk-sep"></div>
+    <span style="font-size:12px;color:rgba(255,255,255,.7)">Reasignar a:</span>
+    <select class="bulk-sel" id="bulk-bar-resp">
+      <option value="">— nuevo responsable —</option>
+    </select>
+    <button class="btn btn-gold btn-sm" onclick="bulkAbrirModal()">📨 Proponer masivo</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="bulkDeselAll()">✕ Deseleccionar</button>
+  </div>
+
   <!-- Píldora: Lecturas de Sentencia (renderizado inline en rsRenderAbogado) -->
   <div id="rs-lectura-pill" style="display:none"></div>
 
@@ -773,6 +815,7 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
     </div>
     <!-- Acciones -->
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <button id="btn-socio" class="btn btn-out btn-sm" onclick="socioToggle()" title="Vista sin restricción de equipo — ve todas las agendas">👁 Vista Socio</button>
       <button id="btn-cmp" class="btn btn-out btn-sm" onclick="cmpToggle()">📊 Comparativo equipo</button>
       <button class="btn btn-out btn-sm" onclick="agExportar()">⬇ Exportar agenda</button>
     </div>
@@ -818,6 +861,8 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
         <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#F0FFF4;border:1px solid #22C55E"></div> Libre</div>
         <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#FFF8F0;border:1px solid #F97316"></div> Ocupado</div>
         <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#FFF0F0;border:1px solid #EF4444"></div> Conflicto (2+ diligencias)</div>
+        <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#FDECEA;border:1px solid #C0392B"></div> 🔴 Sin cobertura (vac.)</div>
+        <div class="cmp-leg-item"><div class="cmp-leg-dot" style="background:#FFF8E1;border:1px solid #F59E0B"></div> 🟡 Vac. parcial</div>
       </div>
     </div>
     <div class="cmp-wrap">
@@ -1048,6 +1093,123 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
   </div>
 </div>
 
+<!-- ══ PANEL: VACACIONES ══════════════════════════════════════ -->
+<div id="panel-vacaciones" class="panel">
+  <div class="ctrl-head">
+    <h3>🏖 Registro de Vacaciones</h3>
+    <div class="ctrl-toolbar">
+      <button class="btn btn-navy btn-sm" onclick="vacAbrirModal()">+ Agregar vacaciones</button>
+      <button class="btn btn-out btn-sm" onclick="vacExportar()">⬇ Exportar</button>
+    </div>
+  </div>
+
+  <div style="background:var(--info-bg);border:1px solid var(--purple);border-radius:9px;padding:12px 18px;margin-bottom:18px;font-size:12px;color:var(--purple)">
+    <b>¿Para qué sirve?</b> Registra los períodos de ausencia de cada abogado. En las vistas de <strong>Agenda</strong> y <strong>Reasignaciones</strong> aparecerá una advertencia 🏖 cuando una diligencia esté asignada a alguien que estará de vacaciones ese día, y al intentar reasignarle una tarea dentro del rango se mostrará un aviso.
+  </div>
+
+  <!-- Filtro por abogado -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 16px;display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
+    <div class="fg"><label>Filtrar por abogado</label>
+      <select id="vac-f-abogado" onchange="vacRender()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit;min-width:200px">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="fg"><label>Solo activas hoy</label>
+      <select id="vac-f-activa" onchange="vacRender()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit">
+        <option value="">Todas</option>
+        <option value="1">Solo activas hoy</option>
+        <option value="future">Futuras</option>
+      </select>
+    </div>
+    <button class="fclear" onclick="vacLimpiarFiltros()" style="align-self:flex-end">Limpiar</button>
+  </div>
+
+  <!-- Lista de vacaciones -->
+  <div id="vac-lista" class="vac-list"></div>
+  <div id="vac-empty" style="text-align:center;padding:48px;color:var(--muted);display:none">
+    <div style="font-size:36px;margin-bottom:10px">🏖</div>
+    <p>No hay períodos de vacaciones registrados.<br>Usa el botón <strong>+ Agregar vacaciones</strong> para comenzar.</p>
+  </div>
+</div>
+
+<!-- Modal agregar/editar vacaciones -->
+<div class="modal-overlay" id="vacModal">
+  <div class="vac-modal">
+    <button class="modal-close" onclick="vacCerrarModal()">✕</button>
+    <h3 id="vac-modal-titulo">🏖 Registrar vacaciones</h3>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:16px">Registra el período de ausencia. Las diligencias asignadas durante ese rango mostrarán una advertencia.</p>
+    <input type="hidden" id="vac-edit-id"/>
+    <div class="vac-fld">
+      <label>Abogado</label>
+      <select id="vac-abogado">
+        <option value="">— seleccionar —</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="vac-fld">
+        <label>Fecha inicio</label>
+        <input type="date" id="vac-inicio"/>
+      </div>
+      <div class="vac-fld">
+        <label>Fecha fin</label>
+        <input type="date" id="vac-fin"/>
+      </div>
+    </div>
+    <div class="vac-fld">
+      <label>Observación (opcional)</label>
+      <input type="text" id="vac-obs" placeholder="Ej: vacaciones anuales, licencia médica…"/>
+    </div>
+    <div id="vac-modal-warn" class="vac-warn" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-navy btn-sm" onclick="vacGuardar()">💾 Guardar</button>
+      <button class="btn btn-out btn-sm" onclick="vacCerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal cross-team -->
+<div class="modal-overlay" id="ctModal">
+  <div class="ct-modal">
+    <button class="modal-close" onclick="ctCerrar()">✕</button>
+    <h3>⚠ Reasignación fuera del equipo</h3>
+    <div class="ct-info" id="ct-info-text"></div>
+    <div class="vac-fld">
+      <label>Motivo de la reasignación (requerido)</label>
+      <textarea id="ct-motivo" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit;min-height:60px;background:var(--bg);resize:vertical" placeholder="Indica el motivo de reasignar a alguien de otro equipo…"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn btn-sm" style="background:var(--amber);color:#fff;border:none" onclick="ctConfirmar()">📨 Enviar igualmente</button>
+      <button class="btn btn-out btn-sm" onclick="ctCerrar()">Cancelar</button>
+    </div>
+    <div style="font-size:10.5px;color:var(--muted);margin-top:10px">La propuesta quedará marcada como <span class="ct-badge">🔀 Cross-team</span> visible en Vista Paralegal.</div>
+  </div>
+</div>
+
+<!-- Modal reasignación masiva -->
+<div class="modal-overlay" id="bulkModal">
+  <div style="background:var(--card);border-radius:12px;padding:24px 28px;max-width:480px;width:92%;position:relative">
+    <button class="modal-close" onclick="bulkCerrar()">✕</button>
+    <h3 style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);margin-bottom:6px">📋 Reasignación masiva</h3>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:16px" id="bulk-modal-sub"></p>
+    <div class="rs-fld">
+      <label>Nuevo responsable</label>
+      <select id="bulk-nuevo-resp" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit"><option value="">— seleccionar —</option></select>
+    </div>
+    <div class="rs-fld">
+      <label>Nuevo responsable II (opcional)</label>
+      <select id="bulk-nuevo-resp2" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit"><option value="">— ninguno —</option></select>
+    </div>
+    <div class="rs-fld">
+      <label>Motivo</label>
+      <textarea id="bulk-motivo" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12.5px;font-family:inherit;min-height:60px;background:var(--bg);resize:vertical" placeholder="Motivo de la reasignación masiva…"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-navy btn-sm" onclick="bulkConfirmar()">📨 Enviar propuestas</button>
+      <button class="btn btn-out btn-sm" onclick="bulkCerrar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <script>
@@ -1195,6 +1357,8 @@ function showPanel(id){
     p.classList.remove('active');
     p.style.display='none';
   });
+  // Cerrar vista socio si se cambia de panel
+  if(socioActivo&&id!=='agenda'){socioActivo=false;const btn=document.getElementById('btn-socio');if(btn){btn.textContent='👁 Vista Socio';btn.classList.remove('btn-navy');btn.classList.add('btn-out');}}
   const panel=document.getElementById('panel-'+id);
   if(panel){
     panel.style.display='block';
@@ -1207,6 +1371,7 @@ function showPanel(id){
   if(id==='agenda')initAgenda();
   if(id==='reasig')initReasig();
   if(id==='bi')biCargar();
+  if(id==='vacaciones')initVacaciones();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1345,20 +1510,63 @@ function toISO(s){
 
 // ═══════════════════════════════════════════════════
 // DICCIONARIO DE INICIALES ↔ NOMBRES (fijo V&T)
+// Fuente de verdad: lista oficial de abogados
 // ═══════════════════════════════════════════════════
 const DICT_INICS={
   AZB:'Alessandra Zegarra', AHG:'Alfonso Higa',     AHR:'Andres Herles',
   ATG:'Arturo Trelles',     CCB:'Carlos Ciriaco',   CMP:'Carlos Morales',
-  CLG:'Cynthia Lagos',      DTT:'Daniela Torres',   DTM:'Daniela Torres',
+  CLG:'Cynthia Lagos',      DTM:'Daniela Torres',   DTT:'Daniela Torres',
   EMV:'Eduardo Mercado',    EAB:'Elyana Arias',      HLJ:'Henrry Lopez',
   IGV:'Ivan Gonzalez',      JAS:'Jimena Alcorta',    JBA:'Jose Bacalla',
   KJM:'Katia Jacinto',      LVR:'Luis Vinatea',      MAS:'Magaly Alarcon',
   MGE:'Maria Grazzia Espinoza', MAV:'Mariel Abad',   MFM:'Melissa Flores',
   MSN:'Milagritos Sueyoshi', NVF:'Nuria Vega',       RMR:'Roberto Matallana',
-  RZA:'Rodrigo Zavala',     SPE:'Samuel Paz',        SCC:'Sandra Carrión',
+  RZA:'Rodrigo Zavala',     SPE:'Samuel Paz',        SCC:'Sandra Carrion',
   STV:'Sergio Tejada',      SMO:'Silvia Maldonado',  KYS:'Sofia Yomond',
-  SAS:'Sol Aragon',         SER:'Solanch Estrella'
+  SAS:'Sol Aragon',         SER:'Solanch Estrella',  GCH:'Gabriela Chanco'
 };
+
+// ── Normalización de nombres ──────────────────────────────────
+// strip: quita tildes y pasa a minúsculas para comparación
+const _strip=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+
+// Nombres canónicos del diccionario indexados por forma sin tilde
+const _CANON={};
+Object.values(DICT_INICS).forEach(nom=>{
+  const k=_strip(nom);
+  if(!_CANON[k]) _CANON[k]=nom; // guardar la forma oficial
+});
+
+// normNombre: dado un string del reporte (puede tener tildes, sin tildes,
+// combinaciones con ; o /) → devuelve array de nombres canónicos
+function normNombres(raw){
+  if(!raw)return[];
+  // Separar por ; / , (separadores de multi-responsable en algunos reportes)
+  const partes=String(raw).split(/[;,\/]+/).map(s=>s.trim()).filter(Boolean);
+  return partes.map(p=>{
+    const k=_strip(p);
+    // Buscar match exacto en diccionario
+    if(_CANON[k]) return _CANON[k];
+    // Buscar si algún nombre canónico está contenido o viceversa
+    for(const [ck,cn] of Object.entries(_CANON)){
+      if(k===ck||k.startsWith(ck)||ck.startsWith(k)) return cn;
+    }
+    // Sin match → capitalizar correctamente y devolver tal cual
+    return p.replace(/\b\w/g,c=>c.toUpperCase());
+  }).filter((v,i,a)=>a.indexOf(v)===i); // deduplicar
+}
+
+// Versión singular: un campo → un nombre canónico
+function normNombre(raw){
+  const arr=normNombres(raw);
+  return arr[0]||String(raw||'').trim();
+}
+
+// Añadir nombres al Set ya normalizados
+function addNombres(set,raw){
+  normNombres(raw).forEach(n=>{if(n&&n!=='-')set.add(n);});
+}
+
 // Inverso: nombre completo → código (normalizado a minúsculas sin tilde para match flexible)
 const DICT_NOMBRE={};
 Object.entries(DICT_INICS).forEach(([cod,nom])=>{
@@ -2484,8 +2692,8 @@ function rsCargarMB(input){
 function rsPoblarSelects(){
   const nombres=new Set();
   mbRows.forEach(r=>{
-    if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]));
-    if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]));
+    addNombres(nombres,r[C.resp]);
+    addNombres(nombres,r[C.resp2]);
   });
   const sorted=[...nombres].sort();
   ['rs-nuevo-resp','rs-nuevo-resp2'].forEach(id=>{
@@ -2523,8 +2731,8 @@ function rsEquipoChange(){
   // Resp. diligencia (resp + resp2)
   const diligNombres=new Set();
   equipo.forEach(r=>{
-    if(r[C.resp]&&r[C.resp]!=='-')diligNombres.add(String(r[C.resp]).trim());
-    if(r[C.resp2]&&r[C.resp2]!=='-')diligNombres.add(String(r[C.resp2]).trim());
+    addNombres(diligNombres,r[C.resp]);
+    addNombres(diligNombres,r[C.resp2]);
   });
   document.getElementById('rs-abogado-filtro').innerHTML=
     '<option value="">Todos</option>'+[...diligNombres].sort().map(n=>`<option>${n}</option>`).join('');
@@ -2817,12 +3025,18 @@ function rsRenderAbogado(){
     }
 
     html+=`<div style="margin-top:18px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
         <span>Todas las diligencias — ordenadas por fecha · <strong>${diligSR.length}</strong> de ${dilig.length}</span>
-        ${Object.keys(ssOpts).some(k=>k.startsWith('sr-')&&ssSelected[k])?`<button class="fclear" onclick="srLimpiarFiltros()" style="font-size:10.5px">Limpiar filtros</button>`:''}
+        <div style="display:flex;align-items:center;gap:10px">
+          ${Object.keys(ssOpts).some(k=>k.startsWith('sr-')&&ssSelected[k])?`<button class="fclear" onclick="srLimpiarFiltros()" style="font-size:10.5px">Limpiar filtros</button>`:''}
+          <label style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer">
+            <input type="checkbox" id="chk-all-sr" onchange="bulkToggleAll(this.checked)" style="accent-color:var(--navy)"> Seleccionar todo
+          </label>
+        </div>
       </div>
       <table style="min-width:1200px;border-collapse:collapse;font-size:12px"><thead>
       <tr>
+        <th class="th-std" style="width:32px"><input type="checkbox" onchange="bulkToggleAll(this.checked)" style="accent-color:#fff;width:14px;height:14px"></th>
         <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
         <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
         <th class="th-std">Tarea</th><th class="th-std">Órgano Jurisd.</th>
@@ -2830,6 +3044,7 @@ function rsRenderAbogado(){
         <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
       </tr>
       <tr>
+        <th class="th-filter"></th>
         <th class="th-filter"></th><th class="th-filter"></th><th class="th-filter"></th>
         <th class="th-filter">${srCC('sr-exp','Exp...')}</th>
         <th class="th-filter">${srCC('sr-cli','Cliente...')}</th>
@@ -2850,16 +3065,22 @@ function rsRenderAbogado(){
       if(prop){
         const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
         const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
-        estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>${prop.nuevoResp?`<div class="rs-motivo">${esc(prop.nuevoResp)}</div>`:""}`;
+        estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span>${prop.nuevoResp?`<div class="rs-motivo">${esc(prop.nuevoResp)}</div>`:''}`;
+        if(prop.crossTeam) estadoHtml+=`<div style="margin-top:2px"><span class="ct-badge">🔀 Cross-team</span></div>`;
         const elimBtn=prop.estado!=='ejecutada'?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px;margin-top:3px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
         accionHtml=`<div style="display:flex;flex-direction:column;gap:2px"><button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">↩ Modificar</button>${elimBtn}</div>`;
       }
       const respV =String(r[C.resp]||'').trim();
       const resp2v=String(r[C.resp2]||'').trim();
+      const fISO=toISO(nFec(r[C.fecha]));
+      const vacNivel=nivelVacaciones(respV,resp2v,fISO);
+      const vacDia=vacNivel!=='none';
       const respDisplay=respV+(resp2v&&resp2v!=='-'&&resp2v!==respV?`<br><span style="font-size:10px;color:var(--muted);font-weight:400">${esc(resp2v)}</span>`:'');
-      html+=`<tr style="background:#FAFBFC;border-bottom:1px solid var(--border)">
+      const isSelected=bulkSeleccion.has(tid);
+      html+=`<tr style="background:${vacNivel==='total'?'#FDECEA':vacNivel==='parcial'?'#FFF8E1':'#FAFBFC'};border-bottom:1px solid var(--border)${vacNivel==='total'?';border-left:3px solid #C0392B':vacNivel==='parcial'?';border-left:3px solid #F59E0B':''}${isSelected?';outline:2px solid var(--navy);outline-offset:-2px':''}">
+        <td style="text-align:center;padding:6px 8px"><input type="checkbox" class="chk-row" data-tid="${tid}" ${isSelected?'checked':''} onchange="bulkToggle('${tid}',this.checked)" style="accent-color:var(--navy);width:14px;height:14px"></td>
         <td style="padding:7px 10px"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
-        <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}</td>
+        <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}${vacDia?`<br>${VAC_BADGE[vacNivel]}`:''}</td>
         <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
         <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
         <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
@@ -2911,7 +3132,7 @@ function rsRenderAbogado(){
     grupos[resp].push(r);
   });
 
-  const NCOLS=13;
+  const NCOLS=14;
   const fcCC=(key,ph)=>`<div class="ss-wrap ss-mini" id="ss-${key}" style="width:100%">
     <input type="text" class="ss-input" id="ss-${key}-input" placeholder="${ph}" autocomplete="off" spellcheck="false"
       oninput="ssFilter('${key}')" onfocus="ssOpen('${key}')" onblur="ssBlur('${key}')">
@@ -2920,13 +3141,17 @@ function rsRenderAbogado(){
   </div>`;
 
   // Botón volver al resumen
-  const volverBtn=`<div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--card)">
+  const volverBtn=`<div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--card);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <button class="btn btn-out btn-sm" onclick="rsVolverResumen()">← Volver al resumen</button>
-    <span style="font-size:12px;color:var(--muted);margin-left:10px">${dilig.length} diligencia${dilig.length!==1?'s':''} encontradas</span>
+    <span style="font-size:12px;color:var(--muted)">${dilig.length} diligencia${dilig.length!==1?'s':''} encontradas</span>
+    <label style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer;margin-left:auto">
+      <input type="checkbox" id="chk-all-rs" onchange="bulkToggleAll(this.checked)" style="accent-color:var(--navy)"> Seleccionar todo
+    </label>
   </div>`;
 
   let html=volverBtn+`<table style="min-width:1200px"><thead>
   <tr>
+    <th class="th-std" style="width:32px"><input type="checkbox" id="chk-all-hdr" onchange="bulkToggleAll(this.checked)" style="accent-color:#fff;width:14px;height:14px"></th>
     <th class="th-std">ID</th>
     <th class="th-std">Fecha</th>
     <th class="th-std">Hora</th>
@@ -2945,6 +3170,7 @@ function rsRenderAbogado(){
     <th class="th-filter"></th>
     <th class="th-filter"></th>
     <th class="th-filter"></th>
+    <th class="th-filter"></th>
     <th class="th-filter">${fcCC('col-exp','Exp...')}</th>
     <th class="th-filter">${fcCC('col-cli','Cliente...')}</th>
     <th class="th-filter">${fcCC('col-contra','Contraparte...')}</th>
@@ -2959,12 +3185,17 @@ function rsRenderAbogado(){
   </thead><tbody>`;
 
   Object.entries(grupos).sort().forEach(([resp,rows])=>{
+    // Para el cabecero del grupo, verificar si resp tiene vacaciones en alguna fecha del grupo
+    const hayVacGrupo=rows.some(r=>estaDeVacaciones(resp,toISO(nFec(r[C.fecha]))));
     html+=`<tr style="background:var(--navy)"><td colspan="${NCOLS}" style="color:#fff;font-weight:700;font-size:11px;padding:6px 12px">
-      👤 ${esc(resp)} — ${rows.length} diligencia${rows.length!==1?'s':''}
+      👤 ${esc(resp)} — ${rows.length} diligencia${rows.length!==1?'s':''}${hayVacGrupo?` <span style="background:#C0392B;color:#fff;border-radius:9px;padding:1px 7px;font-size:9.5px;margin-left:6px">🔴 De vacaciones</span>`:''}
     </td></tr>`;
     rows.sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha])))).forEach(r=>{
       const tid=String(r[C.tid]||'').trim();
       const prop=todas.find(p=>p.tid===tid&&p.estado!=='rechazada');
+      const fISO=toISO(nFec(r[C.fecha]));
+      const resp2v=String(r[C.resp2]||'').trim();
+      const vacNivel=nivelVacaciones(resp,resp2v,fISO);
 
       let estadoHtml='<span style="font-size:11px;color:var(--muted)">—</span>';
       let accionHtml=`<button class="rs-prop-btn" onclick="rsAbrirModal('${tid}')">✏ Proponer</button>`;
@@ -2972,6 +3203,7 @@ function rsRenderAbogado(){
         const badgeCls=prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':prop.estado==='ejecutada'?'rs-ejec':'rs-rech';
         const badgeLbl={propuesta:'🟡 Pendiente',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[prop.estado]||prop.estado;
         estadoHtml=`<span class="rs-badge ${badgeCls}">${badgeLbl}</span><div class="rs-motivo">${esc(prop.nuevoResp)}</div>`;
+        if(prop.crossTeam) estadoHtml+=`<div style="margin-top:3px"><span class="ct-badge">🔀 Cross-team</span></div>`;
         const elimBtn=prop.estado==='propuesta'
           ?`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;margin-top:4px;font-size:10.5px" onclick="rsEliminarPropuesta('${tid}')">✕ Eliminar</button>`:'';
         accionHtml=`<div style="display:flex;flex-direction:column;gap:3px">
@@ -2985,11 +3217,14 @@ function rsRenderAbogado(){
       const rOrg  =String(r[C.org]||'').trim();
       const rContra=String(r[C.contra]||'').trim();
       const rExp  =String(r[C.exp]||'').trim();
-      const resp2v=String(r[C.resp2]||'').trim();
+      const isSelected=bulkSeleccion.has(tid);
+      const rowBg=vacNivel==='total'?'#FDECEA':vacNivel==='parcial'?'#FFF8E1':'#FAFBFC';
+      const rowBrd=vacNivel==='total'?';border-left:3px solid #C0392B':vacNivel==='parcial'?';border-left:3px solid #F59E0B':'';
 
-      html+=`<tr style="background:#FAFBFC">
+      html+=`<tr style="background:${rowBg}${rowBrd}${isSelected?';outline:2px solid var(--navy);outline-offset:-2px':''}">
+        <td style="text-align:center;padding:6px 8px"><input type="checkbox" class="chk-row" data-tid="${tid}" ${isSelected?'checked':''} onchange="bulkToggle('${tid}',this.checked)" style="accent-color:var(--navy);width:14px;height:14px"></td>
         <td><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
-        <td style="white-space:nowrap">${nFec(r[C.fecha])}</td>
+        <td style="white-space:nowrap">${nFec(r[C.fecha])}${vacNivel!=='none'?`<br>${VAC_BADGE[vacNivel]}`:''}</td>
         <td>${nHor(r[C.hora])}</td>
         <td style="font-family:monospace;font-size:10.5px">${esc(rExp)||'<span class="na">—</span>'}</td>
         <td style="font-size:11.5px">${esc(r[C.cli]||'')}</td>
@@ -3192,6 +3427,7 @@ function rsRenderParalegal(){
     const badgeCls=p.estado==='propuesta'?'rs-pend':p.estado==='confirmada'?'rs-conf':p.estado==='ejecutada'?'rs-ejec':'rs-rech';
     const badgeLbl={propuesta:'🟡 Propuesta',confirmada:'🟢 Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'🔴 Rechazada'}[p.estado]||p.estado;
     const bg=p.estado==='propuesta'?'#FFFBF0':p.estado==='confirmada'?'#F0FAF5':p.estado==='rechazada'?'#FFF5F5':'#EBF4FF';
+    const crossBadge=p.crossTeam?`<div style="margin-top:3px"><span class="ct-badge">🔀 Cross-team</span></div>`:'';
     let accion='';
     if(p.estado==='propuesta')
       accion=`<div style="display:flex;gap:5px;flex-wrap:wrap">
@@ -3211,7 +3447,7 @@ function rsRenderParalegal(){
     const urgencia=fDilig===hoy?'🔴 HOY':fDilig===manana?'🟡 Mañana':'';
 
     html+=`<tr style="background:${bg}${p.estado==='ejecutada'?';opacity:.75':''}${fDilig===hoy?';border-left:3px solid var(--navy)':''}">
-      <td><span class="rs-badge ${badgeCls}">${badgeLbl}</span></td>
+      <td><span class="rs-badge ${badgeCls}">${badgeLbl}</span>${crossBadge}</td>
       <td><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${p.tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${p.tid}</a></td>
       <td style="font-size:11.5px">${esc(p.cliente||'')}</td>
       <td style="min-width:180px;white-space:normal;word-break:break-word;font-size:11.5px">${esc(p.tarea||'')}</td>
@@ -3272,22 +3508,46 @@ function rsGuardarPropuesta(){
   const nuevoResp2=document.getElementById('rs-nuevo-resp2').value.trim();
   const motivo=document.getElementById('rs-motivo-txt').value.trim();
   if(!nuevoResp && !motivo){alert('Ingresa al menos el motivo o el nuevo responsable.');return;}
+
   const r=mbRows&&mbRows.find(r=>String(r[C.tid]||'').trim()===tid.trim());
-  const arr=rsGetAll().filter(p=>String(p.tid).trim()!==tid.trim()||p.estado==='ejecutada');
-  arr.push({
-    id:'rs_'+Date.now(),tid,
-    cliente:r?r[C.cli]||'':'',
-    tarea:r?String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''):'',
-    fecha:r?nFec(r[C.fecha]):'',hora:r?nHor(r[C.hora]):'',
-    respActual:(r?r[C.resp]||'':'')+(r&&r[C.resp2]&&r[C.resp2]!=='-'?' / '+r[C.resp2]:''),
-    nuevoResp,nuevoResp2,motivo,
-    fechaProp:new Date().toLocaleString('es-PE'),
-    estado:'propuesta',notaCID:'',revisadoPor:'',fechaRevision:'',fechaEjec:''
-  });
-  rsSave(arr);
+  const fechaDilig=r?toISO(nFec(r[C.fecha])):'';
+  const sup=document.getElementById('rs-supervisor')?.value||'';
+
+  // Advertencia de vacaciones
+  if(nuevoResp&&fechaDilig){
+    const nvNuevo=nivelVacaciones(nuevoResp,'',fechaDilig);
+    if(nvNuevo==='total'){
+      const vac=getVacacion(nuevoResp,fechaDilig);
+      const ok=confirm(`⚠ ${nuevoResp} estará de vacaciones el ${fechaDilig.split('-').reverse().join('/')}${vac?` (hasta ${vac.fin.split('-').reverse().join('/')})`:''}.\\n\\n¿Confirmas la reasignación de todos modos?`);
+      if(!ok)return;
+    }
+  }
+
+  const _guardar=(motivoCT)=>{
+    const motinoFinal=motivoCT||motivo;
+    const arr=rsGetAll().filter(p=>String(p.tid).trim()!==tid.trim()||p.estado==='ejecutada');
+    arr.push({
+      id:'rs_'+Date.now(),tid,
+      cliente:r?r[C.cli]||'':'',
+      tarea:r?String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''):'',
+      fecha:r?nFec(r[C.fecha]):'',hora:r?nHor(r[C.hora]):'',
+      respActual:(r?r[C.resp]||'':'')+(r&&r[C.resp2]&&r[C.resp2]!=='-'?' / '+r[C.resp2]:''),
+      nuevoResp,nuevoResp2,motivo:motinoFinal,
+      fechaProp:new Date().toLocaleString('es-PE'),
+      estado:'propuesta',
+      crossTeam:motivoCT?true:false,
+      notaCID:'',revisadoPor:'',fechaRevision:'',fechaEjec:''
+    });
+    rsSave(arr);
+    rsModalClose();
+    rsRender();
+    alert(`✔ Propuesta enviada para #${tid}.\nEl CID la revisará y confirmará.`);
+  };
+
+  // Verificar cross-team
   rsModalClose();
-  rsRender();
-  alert(`✔ Propuesta enviada para #${tid}.\nEl CID la revisará y confirmará.`);
+  const esCross=nuevoResp&&validarCrossTeam(nuevoResp, sup, _guardar, motivo);
+  if(!esCross) _guardar(null);
 }
 
 // ── MODAL CID ─────────────────────────────────────────────────
@@ -3431,8 +3691,8 @@ function initAgenda(){
   // Poblar selects de responsable en modal evento (todos los nombres)
   const nombres=new Set();
   mbRows.forEach(r=>{
-    if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]).trim());
-    if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]).trim());
+    addNombres(nombres,r[C.resp]);
+    addNombres(nombres,r[C.resp2]);
   });
   const sorted=[...nombres].sort();
   const selYo=document.getElementById('ag-yo');
@@ -3482,8 +3742,8 @@ function agEquipoChange(doRender=true){
     const nombres=new Set();
     mbRows.filter(r=>String(r[C.sup]||'').includes(equipo)&&!esDiligenciaExcluida(r))
       .forEach(r=>{
-        if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]).trim());
-        if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]).trim());
+        addNombres(nombres,r[C.resp]);
+        addNombres(nombres,r[C.resp2]);
       });
     selAb.innerHTML='<option value="">— todos —</option>'+
       [...nombres].sort().map(n=>`<option>${n}</option>`).join('');
@@ -3491,8 +3751,8 @@ function agEquipoChange(doRender=true){
     // Sin equipo — mostrar todos
     const nombres=new Set();
     if(mbRows) mbRows.forEach(r=>{
-      if(r[C.resp]&&r[C.resp]!=='-')nombres.add(String(r[C.resp]).trim());
-      if(r[C.resp2]&&r[C.resp2]!=='-')nombres.add(String(r[C.resp2]).trim());
+      addNombres(nombres,r[C.resp]);
+      addNombres(nombres,r[C.resp2]);
     });
     selAb.innerHTML='<option value="">— todos —</option>'+
       [...nombres].sort().map(n=>`<option>${n}</option>`).join('');
@@ -3544,16 +3804,26 @@ function agSoy(){
 // ── Obtener eventos para la persona seleccionada ──────────────
 function agGetEventos(persona){
   if(!mbRows)return[];
+  const pNorm=persona?_strip(persona):'';
+  const visto=new Set();
   return mbRows.filter(r=>{
     if(!r[C.fecha])return false;
     if(esDiligenciaExcluida(r))return false;
-    // Filtro por supervisor (píldoras)
     if(agFiltroSup&&!String(r[C.sup]||'').includes(agFiltroSup))return false;
     const edit=agEdits[String(r[C.tid]||'')];
     const resp=edit?edit.resp:(r[C.resp]||'');
     const resp2=edit?edit.resp2:(r[C.resp2]||'');
-    if(!persona)return true;
-    return String(resp).includes(persona)||String(resp2).includes(persona);
+    if(!pNorm)return true; // sin filtro: retorna todos (sin dedup aquí, lo hacemos abajo)
+    return [...normNombres(resp),...normNombres(resp2)].some(n=>_strip(n)===pNorm||_strip(n).includes(pNorm)||pNorm.includes(_strip(n)));
+  }).filter(r=>{
+    // Deduplicar por tid solo cuando NO hay filtro de persona
+    // (con persona específica, un abogado puede estar en resp y resp2 del mismo registro → mostrar 1 vez)
+    // (sin persona, cada registro mbRows es único por sí mismo — dedup evita filas duplicadas del reporte)
+    const tid=String(r[C.tid]||'').trim();
+    if(!tid)return true;
+    if(visto.has(tid))return false;
+    visto.add(tid);
+    return true;
   }).map(r=>{
     const tid=String(r[C.tid]||'');
     const edit=agEdits[tid]||{};
@@ -3566,8 +3836,8 @@ function agGetEventos(persona){
       exp:r[C.exp]||'',
       estado:r[C.estado]||'',
       sup:r[C.sup]||'',
-      resp:edit.resp||r[C.resp]||'',
-      resp2:edit.resp2||r[C.resp2]||'',
+      resp:normNombre(edit.resp||r[C.resp]||''),
+      resp2:normNombre(edit.resp2||r[C.resp2]||''),
       nota:edit.nota||'',
       reasignado:!!edit.resp,
       raw:r
@@ -3714,11 +3984,14 @@ function renderDia(fecha){
       html+=`<div class="cal-dia-fila"><div class="cal-dia-hora">${_p(h)}:00</div><div class="cal-dia-slot">`;
       ev.forEach(e=>{
         const cls=esLecturaSentencia(e.raw)?'ev-lectura':supClase(e.sup);
+        const fISO=isoLocal(fecha);
+        const vacR=nivelVacaciones(e.resp,e.resp2,fISO);
         html+=`<div class="cal-ev-dia ${cls}" onclick="abrirEvento('${e.tid}')">
           <span style="font-weight:700">${e.hora}</span>
           <span>${esc(e.tarea.slice(0,40))}</span>
           <span style="opacity:.7">— ${esc(e.cliente)}</span>
           ${e.reasignado?'<span style="background:#FEF3C7;color:#92400E;border-radius:4px;padding:1px 5px;font-size:9px">Reasignado</span>':''}
+          ${vacR==='total'?'<span style="background:#FDECEA;color:#C0392B;border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700">🔴 Sin cobertura</span>':vacR==='parcial'?'<span style="background:#FFF8E1;color:#92400E;border-radius:4px;padding:1px 5px;font-size:9px">🟡 Vac. parcial</span>':''}
         </div>`;
       });
       html+=`</div></div>`;
@@ -3873,7 +4146,8 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 // COMPARATIVO DE EQUIPO
 // ════════════════════════════════════════════════════════════
 let cmpVis='dia', cmpFecha=new Date(), cmpActivo=false;
-const CMP_HORAS=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'];
+const CMP_HORAS=[];
+for(let h=8;h<=19;h++){CMP_HORAS.push(_p(h)+':00');CMP_HORAS.push(_p(h)+':30');}
 const CMP_COLS=['#EFF6FF','#F0FDF4','#FFF7ED','#FDF4FF','#FEFCE8','#F0F9FF','#FFF1F2','#F8FAFC','#ECFDF5','#FEF9C3'];
 const CMP_BORD=['#3B82F6','#22C55E','#F97316','#A855F7','#EAB308','#0EA5E9','#EF4444','#64748B','#10B981','#CA8A04'];
 
@@ -3898,21 +4172,21 @@ function cmpVista(v){
   cmpVis=v;
   document.getElementById('cmp-btn-dia').classList.toggle('active',v==='dia');
   document.getElementById('cmp-btn-sem').classList.toggle('active',v==='sem');
-  cmpRender();
+  if(socioActivo) socioRender(); else cmpRender();
 }
 function cmpNavegar(d){
   cmpFecha=new Date(cmpFecha.getTime()+d*(cmpVis==='dia'?86400000:7*86400000));
-  cmpRender();
+  if(socioActivo) socioRender(); else cmpRender();
 }
 function cmpHoy(){
   cmpFecha=new Date();
-  cmpRender();
+  if(socioActivo) socioRender(); else cmpRender();
 }
 function cmpSeleccionarFecha(val){
   if(!val)return;
   const p=val.split('-');
   cmpFecha=new Date(+p[0],+p[1]-1,+p[2]);
-  cmpRender();
+  if(socioActivo) socioRender(); else cmpRender();
 }
 
 function cmpEvHtml(ev,ai){
@@ -3946,13 +4220,31 @@ function cmpRender(){
     return;
   }
   const supNorm=equipo.toLowerCase();
-  const abogadosSet=new Set();
+  // Nombres canónicos del supervisor para excluir su propia columna
+  const supNombresCanon=new Set(normNombres(equipo).map(_strip));
+
+  // Construir set de abogados que pertenecen al equipo
+  // Un abogado "pertenece" si aparece como resp o resp2 en al menos una fila donde el supervisor es el equipo
+  // Y además su supervisor habitual también es ese equipo (evita incluir cross-team de otros equipos)
+  const abogadosDelEquipo=new Set();
   mbRows.filter(r=>String(r[C.sup]||'').toLowerCase().includes(supNorm)&&!esDiligenciaExcluida(r)&&!esLecturaSentencia(r))
     .forEach(r=>{
-      const r1=String(r[C.resp]||'').trim(),r2=String(r[C.resp2]||'').trim();
-      if(r1&&r1!=='-'&&!r1.toLowerCase().includes(supNorm))abogadosSet.add(r1);
-      if(r2&&r2!=='-'&&!r2.toLowerCase().includes(supNorm))abogadosSet.add(r2);
+      normNombres(r[C.resp]).forEach(n=>{if(!supNombresCanon.has(_strip(n)))abogadosDelEquipo.add(n);});
+      normNombres(r[C.resp2]).forEach(n=>{if(!supNombresCanon.has(_strip(n)))abogadosDelEquipo.add(n);});
     });
+
+  // Filtrar: solo mantener abogados cuyo supervisor en mbRows sea el equipo seleccionado
+  // (elimina cross-team de otros equipos que aparecen como resp2 en diligencias de este equipo)
+  const abogadosSet=new Set();
+  abogadosDelEquipo.forEach(nombre=>{
+    const kn=_strip(nombre);
+    // Buscar si este abogado tiene al menos una fila con el supervisor correcto
+    const perteneceAlEquipo=mbRows.some(r=>
+      String(r[C.sup]||'').toLowerCase().includes(supNorm)&&
+      (normNombres(r[C.resp]).some(n=>_strip(n)===kn)||normNombres(r[C.resp2]).some(n=>_strip(n)===kn))
+    );
+    if(perteneceAlEquipo) abogadosSet.add(nombre);
+  });
   const abogados=[...abogadosSet].sort();
   if(!abogados.length){
     grid.innerHTML='<div class="cmp-aviso"><div class="ei">\ud83d\udced</div><p>Sin diligencias para este equipo en el rango cargado.</p></div>';
@@ -3972,43 +4264,74 @@ function cmpRender(){
       tit.textContent=l.getDate()+' \u2013 '+v.getDate()+' de '+v.toLocaleDateString('es-PE',{month:'long',year:'numeric'});
     }
   }
-  // Indexar eventos [abogado][fechaISO][horaBase]=[eventos]
+  // Indexar eventos por abogado → fecha → lista de eventos
+  // Cada campo (resp / resp2) se indexa independientemente para no duplicar
   const idx={};
   abogados.forEach(a=>{idx[a]={};});
   mbRows.filter(r=>String(r[C.sup]||'').toLowerCase().includes(supNorm)&&!esDiligenciaExcluida(r)&&!esLecturaSentencia(r))
     .forEach(r=>{
       const fi=toISO(nFec(r[C.fecha]));if(!fi)return;
       const hora=nHor(r[C.hora]).substring(0,5);
-      const hBase=hora.substring(0,2)+':00';
       const ev={tid:String(r[C.tid]||'').trim(),hora,tarea:String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim(),cli:String(r[C.cli]||'').trim()};
-      [String(r[C.resp]||'').trim(),String(r[C.resp2]||'').trim()].forEach(resp=>{
-        if(!resp||resp==='-'||resp.toLowerCase().includes(supNorm)||!idx[resp])return;
-        if(!idx[resp][fi])idx[resp][fi]={};
-        if(!idx[resp][fi][hBase])idx[resp][fi][hBase]=[];
-        idx[resp][fi][hBase].push(ev);
+      // resp → columna del responsable principal
+      const resp1Names=normNombres(r[C.resp]);
+      resp1Names.forEach(resp=>{
+        if(!resp||supNombresCanon.has(_strip(resp))||!idx[resp])return;
+        if(!idx[resp][fi])idx[resp][fi]=[];
+        // Deduplicar por tid
+        if(!idx[resp][fi].some(e=>e.tid===ev.tid))
+          idx[resp][fi].push(ev);
+      });
+      // resp2 → columna del segundo responsable
+      normNombres(r[C.resp2]).forEach(resp2=>{
+        if(!resp2||supNombresCanon.has(_strip(resp2))||!idx[resp2])return;
+        if(!idx[resp2][fi])idx[resp2][fi]=[];
+        // Deduplicar por tid (evita duplicado si resp2 == resp1 o ya fue indexado)
+        if(!idx[resp2][fi].some(e=>e.tid===ev.tid))
+          idx[resp2][fi].push(ev);
       });
     });
+
+  // Filtrar: solo mostrar abogados con al menos un evento en el rango visible
+  const diasISO=dias.map(d=>toISO(d));
+  const abogadosVisibles=abogados.filter(a=>diasISO.some(fi=>(idx[a][fi]||[]).length>0));
+  if(!abogadosVisibles.length){
+    grid.innerHTML='<div class="cmp-aviso"><div class="ei">📅</div><p>Ningún miembro del equipo tiene diligencias en este período.<br><span style="font-size:12px">Navega a otra fecha con las flechas ‹ › o usa el selector de fecha.</span></p></div>';
+    return;
+  }
+
+  // helper: eventos de un abogado en un día para un slot de 30 min
+  function evsBloque(a,fi,slot){
+    const [sh,sm]=slot.split(':').map(Number);
+    return (idx[a][fi]||[]).filter(e=>{
+      const [eh,em]=e.hora.split(':').map(Number);
+      // mismo bloque de 30 min: misma hora y minutos en el mismo rango (0-29 o 30-59)
+      return eh===sh&&(sm===0?em<30:em>=30);
+    });
+  }
 
   // ── VISTA DÍA ─────────────────────────────────────────────
   if(cmpVis==='dia'){
     const fi=toISO(cmpFecha);
     const esHoy=fi===hoy;
     let h='<table class="cmp-table"><thead><tr><th class="cmp-hora-hdr">Hora</th>';
-    abogados.forEach((a,ai)=>{
-      const tot=Object.values(idx[a][fi]||{}).reduce((s,e)=>s+e.length,0);
+    abogadosVisibles.forEach((a,ai)=>{
+      const tot=(idx[a][fi]||[]).length;
       const sub=tot?(tot+' diligencia'+(tot!==1?'s':'')+' hoy'):'\u2713 libre hoy';
       h+='<th style="background:'+CMP_BORD[ai%CMP_BORD.length]+';min-width:165px">'+esc(a)
         +'<div style="font-size:9px;font-weight:400;opacity:.8;margin-top:2px">'+sub+'</div></th>';
     });
     h+='</tr></thead><tbody>';
-    CMP_HORAS.forEach(hora=>{
-      h+='<tr><td class="cmp-hora'+(esHoy?' cmp-hoy-col':'')+'">'+hora+'</td>';
-      abogados.forEach((a,ai)=>{
-        const evs=(idx[a][fi]||{})[hora]||[];
+    CMP_HORAS.forEach(slot=>{
+      const es30=slot.endsWith(':30');
+      const slotLabel=es30?`<span style="font-size:9px;color:var(--light)">:30</span>`:slot;
+      h+='<tr><td class="cmp-hora'+(esHoy?' cmp-hoy-col':'')+'" style="height:36px;vertical-align:top;padding-top:4px">'+slotLabel+'</td>';
+      abogadosVisibles.forEach((a,ai)=>{
+        const evs=evsBloque(a,fi,slot);
         if(!evs.length){
-          h+='<td class="cmp-libre"><div class="cmp-libre-tag">\u2713</div></td>';
+          h+='<td class="cmp-libre" style="height:36px"></td>';
         } else {
-          h+='<td class="'+(evs.length>1?'cmp-conflicto':'cmp-ocupado')+'">';
+          h+='<td class="'+(evs.length>1?'cmp-conflicto':'cmp-ocupado')+'" style="height:36px">';
           evs.forEach(ev=>{h+=cmpEvHtml(ev,ai);});
           h+='</td>';
         }
@@ -4020,34 +4343,39 @@ function cmpRender(){
   }
   // ── VISTA SEMANA ──────────────────────────────────────────
   else{
+    // Para semana: columnas por hora (más compacto), agregando slots de :00 y :30
+    const CMP_HORAS_H=[];
+    for(let h2=8;h2<=19;h2++)CMP_HORAS_H.push(_p(h2)+':00');
+    const evsHora=(a,fi,h2)=>(idx[a][fi]||[]).filter(e=>e.hora.substring(0,2)===h2.substring(0,2));
+
     const DE=['Dom','Lun','Mar','Mi\xe9','Jue','Vie','S\xe1b'];
     const ME=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     let h='<table class="cmp-table"><thead><tr>'
         +'<th class="cmp-hora-hdr" rowspan="2" style="vertical-align:middle">Abogado</th>';
     dias.forEach(d=>{
       const fi=toISO(d);
-      h+='<th colspan="'+CMP_HORAS.length+'" style="'+(fi===hoy?'background:#B45309;':'')+'">'
+      h+='<th colspan="'+CMP_HORAS_H.length+'" style="'+(fi===hoy?'background:#B45309;':'')+'">'
         +DE[d.getDay()]+' '+d.getDate()+'/'+ME[d.getMonth()]+'</th>';
     });
     h+='</tr><tr>';
-    dias.forEach(()=>CMP_HORAS.forEach(hr=>{
-      h+='<th style="background:var(--navy2);font-size:9px;font-weight:500;min-width:46px;padding:3px 1px">'+hr.substring(0,5)+'</th>';
+    dias.forEach(()=>CMP_HORAS_H.forEach(hr=>{
+      h+='<th style="background:var(--navy2);font-size:9px;font-weight:500;min-width:44px;padding:3px 1px">'+hr+'</th>';
     }));
     h+='</tr></thead><tbody>';
-    abogados.forEach((a,ai)=>{
-      const tot=dias.reduce((s,d)=>s+Object.values(idx[a][toISO(d)]||{}).reduce((ss,e)=>ss+e.length,0),0);
+    abogadosVisibles.forEach((a,ai)=>{
+      const tot=dias.reduce((s,d)=>s+(idx[a][toISO(d)]||[]).length,0);
       h+='<tr><td class="cmp-hora" style="background:'+CMP_COLS[ai%CMP_COLS.length]+';border-left:3px solid '+CMP_BORD[ai%CMP_BORD.length]+';white-space:normal;text-align:left;padding:6px 8px">'
         +'<div style="font-weight:700;color:var(--navy);font-size:11px">'+esc(a)+'</div>'
         +'<div style="font-size:9.5px;color:var(--muted)">'+tot+' dilig.</div></td>';
       dias.forEach(d=>{
         const fi=toISO(d);const esHoy=fi===hoy;
-        CMP_HORAS.forEach(hr=>{
-          const evs=(idx[a][fi]||{})[hr]||[];
+        CMP_HORAS_H.forEach(hr=>{
+          const evs=evsHora(a,fi,hr);
           if(!evs.length){
             h+='<td class="cmp-libre'+(esHoy?' cmp-hoy-col':'')+'"></td>';
           } else {
             const tip=esc(evs.map(e=>e.hora+' '+e.tarea).join('\n'));
-            const label=(evs.length>1?'\u26a0 '+evs.length:'\u25cf')+' '+esc(evs[0].tarea.substring(0,16))+(evs[0].tarea.length>16?'\u2026':'');
+            const label=(evs.length>1?'\u26a0 '+evs.length:'\u25cf')+' '+esc(evs[0].hora)+' '+esc(evs[0].tarea.substring(0,12))+(evs[0].tarea.length>12?'\u2026':'');
             h+='<td class="'+(evs.length>1?'cmp-conflicto':'cmp-ocupado')+(esHoy?' cmp-hoy-col':'')+'" title="'+tip+'" onclick="abrirEvento(\''+evs[0].tid+'\')">'
               +'<div style="font-size:9px;font-weight:700;color:'+CMP_BORD[ai%CMP_BORD.length]+';padding:2px 3px;cursor:pointer">'+label+'</div></td>';
           }
@@ -4105,8 +4433,8 @@ function biPoblarAbogados(){
   const fuente=eq?biProps.filter(p=>p.supervisor===eq):biProps;
   const names=new Set();
   fuente.forEach(p=>{
-    (p.respActual||'').split('/').forEach(n=>{const t=n.trim();if(t)names.add(t);});
-    if(p.nuevoResp) names.add(p.nuevoResp.trim());
+    normNombres(p.respActual).forEach(n=>names.add(n));
+    normNombres(p.nuevoResp).forEach(n=>names.add(n));
   });
   const sel=document.getElementById('bi-f-abogado');
   const cur=sel?sel.value:'';
@@ -4288,6 +4616,736 @@ function biBuildChart(id,type,data,options){
 function biDestroyChart(id){
   if(biCharts[id]){biCharts[id].destroy();delete biCharts[id];}
 }
+
+// ══════════════════════════════════════════════════════
+// ① VACACIONES
+// ══════════════════════════════════════════════════════
+const VAC_KEY='vt_vacaciones_v1';
+function vacGetAll(){try{return JSON.parse(localStorage.getItem(VAC_KEY)||'[]');}catch(e){return[];}}
+function vacSave(arr){localStorage.setItem(VAC_KEY,JSON.stringify(arr));}
+
+// Devuelve true si la fecha ISO está dentro de algún período de vacaciones del responsable
+function estaDeVacaciones(nombre,fechaISO){
+  if(!nombre||!fechaISO)return false;
+  const kn=_strip(nombre);
+  return vacGetAll().some(v=>_strip(v.abogado)===kn&&fechaISO>=v.inicio&&fechaISO<=v.fin);
+}
+
+// Devuelve el objeto de vacaciones si aplica
+function getVacacion(nombre,fechaISO){
+  if(!nombre||!fechaISO)return null;
+  const kn=_strip(nombre);
+  return vacGetAll().find(v=>_strip(v.abogado)===kn&&fechaISO>=v.inicio&&fechaISO<=v.fin)||null;
+}
+
+// Nivel de impacto de vacaciones para una fila con uno o dos responsables:
+// 'none'    → nadie de vacaciones
+// 'parcial' → uno de dos responsables de vacaciones (hay cobertura parcial)
+// 'total'   → único responsable de vacaciones, o ambos de vacaciones (sin cobertura)
+function nivelVacaciones(resp1, resp2, fechaISO){
+  if(!fechaISO)return'none';
+  const v1=resp1?estaDeVacaciones(resp1,fechaISO):false;
+  const v2=resp2&&resp2!=='-'?estaDeVacaciones(resp2,fechaISO):false;
+  const tieneResp2=!!(resp2&&resp2!=='-'&&resp2.trim());
+  if(!v1&&!v2)return'none';
+  if(tieneResp2&&v1&&!v2)return'parcial'; // resp1 de vac, resp2 cubre
+  if(tieneResp2&&!v1&&v2)return'parcial'; // resp2 de vac, resp1 cubre
+  return'total'; // uno solo y de vac, o ambos de vac
+}
+
+// Colores por nivel de vacaciones
+const VAC_ROW_BG ={none:'',parcial:'#FFF8E1',total:'#FDECEA'};
+const VAC_ROW_BRD={none:'',parcial:'border-left:3px solid #F59E0B',total:'border-left:3px solid #C0392B'};
+const VAC_BADGE  ={none:'',parcial:'<span class="vac-badge" style="background:#FEF3C7;color:#92400E;border-color:#F59E0B">🟡 Vac. parcial</span>',total:'<span class="vac-badge" style="background:#FDECEA;color:#C0392B;border-color:#C0392B">🔴 Sin cobertura</span>'};
+
+function initVacaciones(){
+  // Poblar select de abogados
+  const sel=document.getElementById('vac-f-abogado');
+  const selModal=document.getElementById('vac-abogado');
+  const nombres=new Set(Object.values(DICT_INICS));
+  if(mbRows&&mbRows.length){
+    mbRows.forEach(r=>{
+      addNombres(nombres,r[C.resp]);
+      addNombres(nombres,r[C.resp2]);
+    });
+  }
+  const sorted=[...nombres].sort();
+  sel.innerHTML='<option value="">Todos</option>'+sorted.map(n=>`<option>${n}</option>`).join('');
+  selModal.innerHTML='<option value="">— seleccionar —</option>'+sorted.map(n=>`<option>${n}</option>`).join('');
+  vacRender();
+}
+
+function vacRender(){
+  const fAbo=(document.getElementById('vac-f-abogado')?.value||'').toLowerCase();
+  const fAct=document.getElementById('vac-f-activa')?.value||'';
+  const hoy=toISO(new Date());
+  let arr=vacGetAll();
+  if(fAbo) arr=arr.filter(v=>v.abogado.toLowerCase().includes(fAbo));
+  if(fAct==='1') arr=arr.filter(v=>hoy>=v.inicio&&hoy<=v.fin);
+  else if(fAct==='future') arr=arr.filter(v=>v.inicio>hoy);
+  arr.sort((a,b)=>a.inicio.localeCompare(b.inicio));
+
+  const lista=document.getElementById('vac-lista');
+  const empty=document.getElementById('vac-empty');
+  if(!arr.length){lista.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  lista.innerHTML=arr.map(v=>{
+    const activa=hoy>=v.inicio&&hoy<=v.fin;
+    const futura=v.inicio>hoy;
+    const estado=activa?'🟡 Activa ahora':futura?'🔵 Próxima':'⚫ Pasada';
+    const estadoColor=activa?'var(--amber)':futura?'var(--blue)':'var(--muted)';
+
+    // Contar diligencias afectadas
+    let diligAfect=[];
+    let propCount=0;
+    if(mbRows&&mbRows.length){
+      const kv=_strip(v.abogado);
+      diligAfect=mbRows.filter(r=>{
+        const fi=toISO(nFec(r[C.fecha]));
+        return fi&&fi>=v.inicio&&fi<=v.fin&&
+          (normNombres(r[C.resp]).some(n=>_strip(n)===kv)||normNombres(r[C.resp2]).some(n=>_strip(n)===kv))&&
+          !esDiligenciaExcluida(r);
+      });
+      const todas=rsGetAll();
+      propCount=diligAfect.filter(r=>{
+        const tid=String(r[C.tid]||'').trim();
+        return todas.some(p=>p.tid===tid&&p.estado!=='rechazada');
+      }).length;
+    }
+    const n=diligAfect.length;
+    const hayDilig=n>0;
+
+    // Tabla de diligencias afectadas (generada inline)
+    const tablaDilig=hayDilig?`
+      <div id="vac-dilig-${v.id}" style="display:none;margin-top:10px;border-top:1px solid rgba(0,0,0,.07);padding-top:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--navy)">${n} diligencia${n!==1?'s':''} asignadas en este período${propCount>0?` · <span style="color:var(--green)">${propCount} ya tiene${propCount!==1?'n':''} reasignación</span>`:''}</span>
+          <button class="btn btn-gold btn-sm" style="font-size:10.5px" onclick="vacReasignarMasivo('${v.id}')">📋 Reasignar todas en masivo</button>
+        </div>
+        <div style="overflow-x:auto;border-radius:7px;border:1px solid var(--border)">
+        <table style="min-width:700px;border-collapse:collapse;font-size:11px">
+          <thead><tr>
+            <th class="th-std" style="width:32px"><input type="checkbox" onchange="vacSelAll('${v.id}',this.checked)" style="accent-color:#fff;width:13px;height:13px" title="Seleccionar todas"></th>
+            <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
+            <th class="th-std">Cliente</th><th class="th-std">Tarea</th>
+            <th class="th-std">Resp. proceso</th><th class="th-std">Reasignación</th>
+          </tr></thead><tbody>
+          ${diligAfect.sort((a,b)=>toISO(nFec(a[C.fecha])).localeCompare(toISO(nFec(b[C.fecha])))).map(r=>{
+            const tid=String(r[C.tid]||'').trim();
+            const todas2=rsGetAll();
+            const prop=todas2.find(p=>p.tid===tid&&p.estado!=='rechazada');
+            const respV2=String(r[C.resp2]||'').trim();
+            const fISO2=toISO(nFec(r[C.fecha]));
+            const vacNivelFila=nivelVacaciones(String(r[C.resp]||'').trim(),respV2,fISO2);
+            const badgeProp=prop
+              ?`<span class="rs-badge ${prop.estado==='propuesta'?'rs-pend':prop.estado==='confirmada'?'rs-conf':'rs-ejec'}" style="font-size:10px">→ ${esc(prop.nuevoResp||'—')}</span>`
+              :`<span style="font-size:10.5px;color:var(--muted)">Sin reasignar</span>`;
+            const isSelected=bulkSeleccion.has(tid);
+            return`<tr style="border-bottom:1px solid var(--border);background:${vacNivelFila==='total'?'#FDECEA':vacNivelFila==='parcial'?'#FFF8E1':prop?'#F0FAF5':'#FFFBF4'}${vacNivelFila==='total'?';border-left:3px solid #C0392B':vacNivelFila==='parcial'?';border-left:3px solid #F59E0B':''}${isSelected?';outline:2px solid var(--navy);outline-offset:-2px':''}">
+              <td style="text-align:center;padding:5px 7px"><input type="checkbox" class="chk-row" data-tid="${tid}" ${isSelected?'checked':''} onchange="bulkToggle('${tid}',this.checked)" style="accent-color:var(--navy);width:13px;height:13px"></td>
+              <td style="padding:5px 9px"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" style="text-decoration:none;font-size:10px">#${tid}</a></td>
+              <td style="padding:5px 9px;white-space:nowrap;font-weight:600;color:${activa?'var(--amber)':'inherit'}">${nFec(r[C.fecha])}${vacNivelFila!=='none'?`<br>${VAC_BADGE[vacNivelFila]}`:''}</td>
+              <td style="padding:5px 9px">${nHor(r[C.hora])}</td>
+              <td style="padding:5px 9px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r[C.cli]||'')}</td>
+              <td style="padding:5px 9px;max-width:180px;white-space:normal;word-break:break-word;line-height:1.35">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
+              <td style="padding:5px 9px;color:var(--navy);font-size:10.5px">${esc(String(r[C.respProc]||'—'))}</td>
+              <td style="padding:5px 9px">${badgeProp}</td>
+            </tr>`;
+          }).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>`:'';
+
+    return`<div class="vac-item" id="vac-item-${v.id}" style="flex-direction:column;align-items:stretch;padding:0;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px">
+        <div style="font-size:24px">🏖</div>
+        <div class="vac-item-info" style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="vac-item-name">${esc(v.abogado)}</div>
+            ${activa?'<span style="background:#FEF3C7;color:#D97706;border-radius:9px;padding:1px 8px;font-size:10px;font-weight:700">🟡 Activa</span>':futura?'<span style="background:#DBEAFE;color:#1549A0;border-radius:9px;padding:1px 8px;font-size:10px;font-weight:700">🔵 Próxima</span>':''}
+          </div>
+          <div class="vac-item-rng">📅 ${v.inicio.split('-').reverse().join('/')} → ${v.fin.split('-').reverse().join('/')}${v.obs?` · <em>${esc(v.obs)}</em>`:''}</div>
+          ${hayDilig?`<div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:11px;background:${activa?'#FEF3C7':futura?'#DBEAFE':'#F1F5F9'};color:${activa?'#92400E':futura?'#1549A0':'#475569'};border-radius:9px;padding:2px 9px;font-weight:700">⚠ ${n} diligencia${n!==1?'s':''} afectada${n!==1?'s':''}</span>
+            ${propCount>0?`<span style="font-size:11px;background:#D1FAE5;color:#065F46;border-radius:9px;padding:2px 9px;font-weight:700">✔ ${propCount} reasignada${propCount!==1?'s':''}</span>`:''}
+          </div>`:'<div style="font-size:11px;color:var(--muted);margin-top:3px">Sin diligencias en este período</div>'}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+          ${hayDilig?`<button onclick="vacToggleDilig('${v.id}')" style="border:1px solid var(--border);background:var(--bg);border-radius:6px;padding:4px 10px;font-size:11px;font-family:inherit;cursor:pointer;color:var(--navy);display:flex;align-items:center;gap:4px" id="vac-btn-${v.id}">▼ Ver diligencias</button>`:''}
+          <div style="display:flex;gap:5px">
+            <button class="btn btn-out btn-sm" style="padding:4px 10px;font-size:11px" onclick="vacEditar('${v.id}')">✏</button>
+            <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;padding:4px 10px;font-size:11px" onclick="vacEliminar('${v.id}')">✕</button>
+          </div>
+        </div>
+      </div>
+      ${tablaDilig}
+    </div>`;
+  }).join('');
+}
+
+function vacToggleDilig(id){
+  const panel=document.getElementById('vac-dilig-'+id);
+  const btn=document.getElementById('vac-btn-'+id);
+  if(!panel||!btn)return;
+  const open=panel.style.display!=='none';
+  panel.style.display=open?'none':'block';
+  btn.innerHTML=(open?'▼ Ver diligencias':'▲ Ocultar diligencias');
+  if(!open) bulkActualizarBarra();
+}
+
+function vacSelAll(vacId,checked){
+  const panel=document.getElementById('vac-dilig-'+vacId);
+  if(!panel)return;
+  panel.querySelectorAll('.chk-row').forEach(c=>{
+    c.checked=checked;
+    const t=c.dataset.tid;
+    if(t){checked?bulkSeleccion.add(t):bulkSeleccion.delete(t);}
+  });
+  bulkActualizarBarra();
+}
+
+// Selecciona todas las diligencias de una entrada de vacaciones y abre el modal masivo
+function vacReasignarMasivo(vacId){
+  const v=vacGetAll().find(x=>x.id===vacId);
+  if(!v||!mbRows||!mbRows.length)return;
+  const kv=_strip(v.abogado);
+  const diligAfect=mbRows.filter(r=>{
+    const fi=toISO(nFec(r[C.fecha]));
+    return fi&&fi>=v.inicio&&fi<=v.fin&&
+      (normNombres(r[C.resp]).some(n=>_strip(n)===kv)||normNombres(r[C.resp2]).some(n=>_strip(n)===kv))&&
+      !esDiligenciaExcluida(r);
+  });
+  // Seleccionar todas
+  bulkSeleccion.clear();
+  diligAfect.forEach(r=>{const tid=String(r[C.tid]||'').trim();if(tid)bulkSeleccion.add(tid);});
+  bulkActualizarBarra();
+  // Pre-llenar motivo y abrir modal
+  const motPre=`Reasignación por vacaciones de ${v.abogado} (${v.inicio.split('-').reverse().join('/')} – ${v.fin.split('-').reverse().join('/')})`;
+  bulkAbrirModal();
+  setTimeout(()=>{
+    const m=document.getElementById('bulk-motivo');
+    if(m&&!m.value)m.value=motPre;
+  },80);
+}
+
+function vacLimpiarFiltros(){
+  document.getElementById('vac-f-abogado').value='';
+  document.getElementById('vac-f-activa').value='';
+  vacRender();
+}
+
+function vacAbrirModal(id){
+  document.getElementById('vac-edit-id').value=id||'';
+  document.getElementById('vac-modal-titulo').textContent=id?'✏ Editar vacaciones':'🏖 Registrar vacaciones';
+  if(id){
+    const v=vacGetAll().find(x=>x.id===id);
+    if(v){
+      document.getElementById('vac-abogado').value=v.abogado;
+      document.getElementById('vac-inicio').value=v.inicio;
+      document.getElementById('vac-fin').value=v.fin;
+      document.getElementById('vac-obs').value=v.obs||'';
+    }
+  } else {
+    document.getElementById('vac-abogado').value='';
+    document.getElementById('vac-inicio').value='';
+    document.getElementById('vac-fin').value='';
+    document.getElementById('vac-obs').value='';
+  }
+  document.getElementById('vac-modal-warn').style.display='none';
+  document.getElementById('vacModal').classList.add('open');
+}
+
+function vacCerrarModal(){document.getElementById('vacModal').classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.id==='vacModal')vacCerrarModal();});
+
+function vacGuardar(){
+  const abogado=document.getElementById('vac-abogado').value.trim();
+  const inicio=document.getElementById('vac-inicio').value;
+  const fin=document.getElementById('vac-fin').value;
+  const obs=document.getElementById('vac-obs').value.trim();
+  const editId=document.getElementById('vac-edit-id').value;
+  const warn=document.getElementById('vac-modal-warn');
+
+  if(!abogado){warn.textContent='Selecciona un abogado.';warn.style.display='block';return;}
+  if(!inicio||!fin){warn.textContent='Indica fecha de inicio y fin.';warn.style.display='block';return;}
+  if(fin<inicio){warn.textContent='La fecha fin debe ser posterior al inicio.';warn.style.display='block';return;}
+
+  let arr=vacGetAll();
+  if(editId){
+    const idx=arr.findIndex(x=>x.id===editId);
+    if(idx>=0) arr[idx]={...arr[idx],abogado,inicio,fin,obs};
+  } else {
+    arr.push({id:'vac_'+Date.now(),abogado,inicio,fin,obs,creadoEl:new Date().toLocaleString('es-PE')});
+  }
+  vacSave(arr);
+  vacCerrarModal();
+  vacRender();
+}
+
+function vacEditar(id){vacAbrirModal(id);}
+
+function vacEliminar(id){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML=`<div style="background:#fff;border-radius:12px;padding:22px 26px;max-width:320px;width:90%;font-family:DM Sans,sans-serif">
+    <div style="font-weight:700;font-size:14px;color:#1F3864;margin-bottom:8px">¿Eliminar vacaciones?</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:18px">Esta acción no se puede deshacer.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="vc" style="border:1px solid #e2e8f4;background:#fff;border-radius:7px;padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer">Cancelar</button>
+      <button id="vo" style="border:none;background:#DC2626;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;color:#fff">Eliminar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#vc').onclick=()=>document.body.removeChild(overlay);
+  overlay.querySelector('#vo').onclick=()=>{
+    document.body.removeChild(overlay);
+    vacSave(vacGetAll().filter(x=>x.id!==id));
+    vacRender();
+  };
+}
+
+function vacExportar(){
+  const arr=vacGetAll();
+  if(!arr.length){alert('No hay vacaciones registradas.');return;}
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([
+    ['REGISTRO DE VACACIONES · VINATEA & TOYAMA'],
+    ['Generado:',new Date().toLocaleDateString('es-PE')],[''],
+    ['Abogado','Fecha inicio','Fecha fin','Observación','Registrado el'],
+    ...arr.map(v=>[v.abogado,v.inicio,v.fin,v.obs||'',v.creadoEl||''])
+  ]);
+  ws['!cols']=[{wch:28},{wch:14},{wch:14},{wch:40},{wch:18}];
+  XLSX.utils.book_append_sheet(wb,ws,'Vacaciones');
+  XLSX.writeFile(wb,`Vacaciones_${new Date().toLocaleDateString('es-PE').replace(/\//g,'-')}.xlsx`);
+}
+
+// ══════════════════════════════════════════════════════
+// ② REASIGNACIÓN MASIVA
+// ══════════════════════════════════════════════════════
+let bulkSeleccion=new Set(); // tids seleccionados
+
+function bulkToggle(tid,checked){
+  if(checked) bulkSeleccion.add(tid);
+  else bulkSeleccion.delete(tid);
+  bulkActualizarBarra();
+}
+
+function bulkDeselAll(){
+  bulkSeleccion.clear();
+  document.querySelectorAll('.chk-row').forEach(c=>{c.checked=false;});
+  bulkActualizarBarra();
+}
+
+function bulkToggleAll(checked){
+  document.querySelectorAll('.chk-row').forEach(c=>{
+    c.checked=checked;
+    const t=c.dataset.tid;
+    if(t){checked?bulkSeleccion.add(t):bulkSeleccion.delete(t);}
+  });
+  bulkActualizarBarra();
+}
+
+function bulkActualizarBarra(){
+  const n=bulkSeleccion.size;
+  const bar=document.getElementById('bulk-bar');
+  const lbl=document.getElementById('bulk-count-lbl');
+  if(bar){bar.classList.toggle('hidden',n===0);}
+  if(lbl) lbl.textContent=n+' diligencia'+(n!==1?'s':'')+' seleccionada'+(n!==1?'s':'');
+  // Poblar select de la barra
+  if(mbRows&&mbRows.length){
+    const names=new Set();
+    mbRows.forEach(r=>{
+      addNombres(names,r[C.resp]);
+      addNombres(names,r[C.resp2]);
+    });
+    const sel=document.getElementById('bulk-bar-resp');
+    if(sel&&sel.options.length<2){
+      sel.innerHTML='<option value="">— nuevo responsable —</option>'+[...names].sort().map(n=>`<option>${n}</option>`).join('');
+    }
+  }
+}
+
+function bulkAbrirModal(){
+  if(!bulkSeleccion.size){return;}
+  const sub=document.getElementById('bulk-modal-sub');
+  if(sub) sub.textContent=`Se crearán propuestas de reasignación para las ${bulkSeleccion.size} diligencias seleccionadas.`;
+
+  // Poblar selects del modal
+  if(mbRows&&mbRows.length){
+    const names=new Set();
+    mbRows.forEach(r=>{
+      addNombres(names,r[C.resp]);
+      addNombres(names,r[C.resp2]);
+    });
+    const opts='<option value="">— seleccionar —</option>'+[...names].sort().map(n=>`<option>${n}</option>`).join('');
+    const opts2='<option value="">— ninguno —</option>'+[...names].sort().map(n=>`<option>${n}</option>`).join('');
+    document.getElementById('bulk-nuevo-resp').innerHTML=opts;
+    document.getElementById('bulk-nuevo-resp2').innerHTML=opts2;
+  }
+  // Pre-llenar si ya hay uno en la barra
+  const barVal=document.getElementById('bulk-bar-resp')?.value||'';
+  if(barVal) document.getElementById('bulk-nuevo-resp').value=barVal;
+  document.getElementById('bulk-motivo').value='';
+  document.getElementById('bulkModal').classList.add('open');
+}
+
+function bulkCerrar(){document.getElementById('bulkModal').classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.id==='bulkModal')bulkCerrar();});
+
+function bulkConfirmar(){
+  const nuevoResp=document.getElementById('bulk-nuevo-resp').value.trim();
+  const nuevoResp2=document.getElementById('bulk-nuevo-resp2').value.trim();
+  const motivo=document.getElementById('bulk-motivo').value.trim();
+  if(!nuevoResp){alert('Selecciona el nuevo responsable.');return;}
+
+  const sup=document.getElementById('rs-supervisor')?.value||'';
+  const tids=[...bulkSeleccion];
+
+  // Verificar cross-team para el nuevo responsable
+  let crossTeam=false;
+  if(mbRows&&mbRows.length&&sup&&nuevoResp){
+    const hayEnEquipo=mbRows.some(r=>
+      String(r[C.sup]||'').includes(sup)&&
+      (String(r[C.resp]||'').trim()===nuevoResp||String(r[C.resp2]||'').trim()===nuevoResp)
+    );
+    crossTeam=!hayEnEquipo;
+  }
+
+  if(crossTeam){
+    bulkCerrar();
+    // Abrir modal cross-team con callback para masivo
+    ctPendingFn=()=>_bulkGuardar(tids,nuevoResp,nuevoResp2,motivo,true);
+    ctNuevoResp=nuevoResp;
+    ctSup=sup;
+    const supDestino=_respSupervisor(nuevoResp)||'otro equipo';
+    document.getElementById('ct-info-text').innerHTML=
+      `<b>${esc(nuevoResp)}</b> pertenece al equipo de <b>${esc(supDestino)}</b>, no al equipo <b>${esc(sup)}</b>.<br><br>`+
+      `Esta reasignación masiva de <b>${tids.length} diligencia${tids.length!==1?'s':''}</b> requiere autorización del supervisor. Indica el motivo:`;
+    document.getElementById('ct-motivo').value=motivo;
+    document.getElementById('ctModal').classList.add('open');
+    return;
+  }
+
+  _bulkGuardar(tids,nuevoResp,nuevoResp2,motivo,false);
+}
+
+function _bulkGuardar(tids,nuevoResp,nuevoResp2,motivo,crossTeam){
+  const arr=rsGetAll();
+  let count=0;
+  tids.forEach(tid=>{
+    const r=mbRows&&mbRows.find(r=>String(r[C.tid]||'').trim()===String(tid).trim());
+    const filtrado=arr.filter(p=>String(p.tid).trim()!==String(tid).trim()||p.estado==='ejecutada');
+    filtrado.push({
+      id:'rs_'+Date.now()+'_'+tid,
+      tid,
+      cliente:r?r[C.cli]||'':'',
+      tarea:r?String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''):'',
+      fecha:r?nFec(r[C.fecha]):'',
+      hora:r?nHor(r[C.hora]):'',
+      respActual:(r?r[C.resp]||'':'')+(r&&r[C.resp2]&&r[C.resp2]!=='-'?' / '+r[C.resp2]:''),
+      nuevoResp,nuevoResp2,motivo,
+      fechaProp:new Date().toLocaleString('es-PE'),
+      estado:'propuesta',
+      crossTeam:crossTeam||false,
+      notaCID:'',revisadoPor:'',fechaRevision:'',fechaEjec:''
+    });
+    arr.splice(0,arr.length,...filtrado);
+    count++;
+  });
+  rsSave(arr);
+  bulkCerrar();
+  bulkSeleccion.clear();
+  bulkActualizarBarra();
+  rsRender();
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:9999;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML=`<div style="background:#fff;border-radius:12px;padding:22px 26px;max-width:320px;width:90%;font-family:DM Sans,sans-serif;text-align:center">
+    <div style="font-size:28px;margin-bottom:8px">✅</div>
+    <div style="font-size:14px;font-weight:700;color:#1F3864">¡${count} propuesta${count!==1?'s':''} enviada${count!==1?'s':''}!</div>
+    ${crossTeam?'<div style="font-size:11px;color:#D4730A;margin-top:6px">Marcadas como cross-team — requieren autorización</div>':''}
+  </div>`;
+  document.body.appendChild(overlay);
+  setTimeout(()=>{if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},2200);
+}
+
+// ══════════════════════════════════════════════════════
+// ③ VALIDACIÓN CROSS-TEAM
+// ══════════════════════════════════════════════════════
+let ctPendingFn=null, ctNuevoResp='', ctSup='';
+
+// Devuelve el supervisor que tiene asignado un responsable en mbRows
+function _respSupervisor(nombre){
+  if(!mbRows||!mbRows.length)return'';
+  const r=mbRows.find(r=>String(r[C.resp]||'').trim()===nombre||String(r[C.resp2]||'').trim()===nombre);
+  return r?String(r[C.sup]||'').split('/')[0].trim():'';
+}
+
+// Llama esto antes de guardar cualquier propuesta individual
+// Retorna true si cross-team y abre modal; false si ok para proceder directo
+function validarCrossTeam(nuevoResp, sup, onConfirm, motivo){
+  if(!sup||!nuevoResp||!mbRows||!mbRows.length) return false;
+  const hayEnEquipo=mbRows.some(r=>
+    String(r[C.sup]||'').includes(sup)&&
+    (String(r[C.resp]||'').trim()===nuevoResp||String(r[C.resp2]||'').trim()===nuevoResp)
+  );
+  if(hayEnEquipo) return false; // mismo equipo, ok
+  const supDestino=_respSupervisor(nuevoResp)||'otro equipo';
+  ctPendingFn=onConfirm;
+  ctNuevoResp=nuevoResp;
+  ctSup=sup;
+  document.getElementById('ct-info-text').innerHTML=
+    `<b>${esc(nuevoResp)}</b> pertenece al equipo de <b>${esc(supDestino)}</b>, no al equipo de <b>${esc(sup)}</b>.<br><br>`+
+    `Esta reasignación requiere autorización del supervisor. Indica el motivo adicional si aplica:`;
+  document.getElementById('ct-motivo').value=motivo||'';
+  document.getElementById('ctModal').classList.add('open');
+  return true; // cross-team, modal abierto
+}
+
+function ctConfirmar(){
+  const motivo=document.getElementById('ct-motivo').value.trim();
+  document.getElementById('ctModal').classList.remove('open');
+  if(ctPendingFn) ctPendingFn(motivo);
+  ctPendingFn=null;
+}
+
+function ctCerrar(){
+  document.getElementById('ctModal').classList.remove('open');
+  ctPendingFn=null;
+}
+document.addEventListener('click',e=>{if(e.target.id==='ctModal')ctCerrar();});
+
+// ══════════════════════════════════════════════════════
+// ④ VISTA SOCIO (Comparativo todos los equipos)
+// ══════════════════════════════════════════════════════
+let socioActivo=false;
+
+function socioToggle(){
+  socioActivo=!socioActivo;
+  const btn=document.getElementById('btn-socio');
+  if(btn){
+    btn.textContent=socioActivo?'✕ Cerrar Vista Socio':'👁 Vista Socio';
+    btn.classList.toggle('btn-navy',socioActivo);
+    btn.classList.toggle('btn-out',!socioActivo);
+  }
+  // Mostrar/ocultar comparativo normal
+  if(socioActivo){
+    // Ocultar vista normal de agenda
+    document.getElementById('ag-calendario-wrap').style.display='none';
+    // Si hay comparativo activo, cerrarlo
+    if(cmpActivo){cmpToggle();}
+    document.getElementById('ag-comparativo-wrap').style.display='block';
+    // Ocultar selector de equipo para socio
+    document.getElementById('ag-equipo-wrap').style.display='none';
+    document.getElementById('ag-abogado-wrap').style.display='none';
+    document.querySelectorAll('.ag-nav,.ag-view-btns').forEach(el=>el.style.display='none');
+    const supBar=document.querySelector('.ag-sup-bar');
+    if(supBar) supBar.style.display='none';
+    // Ocultar btn-cmp
+    const btnCmp=document.getElementById('btn-cmp');
+    if(btnCmp) btnCmp.style.display='none';
+    cmpFecha=new Date();
+    socioRender();
+  } else {
+    document.getElementById('ag-calendan-wrap') && (document.getElementById('ag-calendario-wrap').style.display='block');
+    document.getElementById('ag-calendario-wrap').style.display='block';
+    document.getElementById('ag-comparativo-wrap').style.display='none';
+    document.getElementById('ag-equipo-wrap').style.display='flex';
+    document.getElementById('ag-abogado-wrap').style.display='flex';
+    document.querySelectorAll('.ag-nav,.ag-view-btns').forEach(el=>el.style.display='');
+    const supBar=document.querySelector('.ag-sup-bar');
+    if(supBar) supBar.style.display='flex';
+    const btnCmp=document.getElementById('btn-cmp');
+    if(btnCmp) btnCmp.style.display='';
+  }
+}
+
+function socioRender(){
+  if(!socioActivo)return;
+  const grid=document.getElementById('cmp-grid');
+  if(!mbRows||!mbRows.length){
+    grid.innerHTML='<div class="cmp-aviso"><div class="ei">📊</div><p>Carga el reporte MyBig primero.</p></div>';
+    return;
+  }
+
+  // Actualizar titulo
+  const tit=document.getElementById('cmp-titulo');
+  const inp=document.getElementById('cmp-fecha-input');
+  if(inp) inp.value=toISO(cmpFecha);
+
+  if(cmpVis==='dia'){
+    if(tit) tit.textContent='Vista Socio · '+cmpFecha.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'});
+  } else {
+    const dias=cmpSemana(cmpFecha);
+    const l=dias[0],v=dias[dias.length-1];
+    if(tit) tit.textContent='Vista Socio · '+l.getDate()+' – '+v.getDate()+' de '+v.toLocaleDateString('es-PE',{month:'long',year:'numeric'});
+  }
+
+  // Agregar banner socio
+  const socioBarHtml=`<div class="socio-bar">
+    <span class="socio-badge">👁 VISTA SOCIO</span>
+    <span style="font-size:12px;opacity:.85">Todos los equipos · Sin restricción de supervisor</span>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <select id="socio-f-equipo" onchange="socioRender()" style="border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 9px;font-size:12px;font-family:inherit;background:rgba(255,255,255,.1);color:#fff">
+        <option value="">Todos los equipos</option>
+        ${['Elyana Arias','Solanch Estrella','Samuel Paz','Carlos Morales','Cynthia Lagos','Katia Jacinto'].map(s=>`<option style="color:#1a2540">${s}</option>`).join('')}
+      </select>
+      <select id="socio-f-abogado" onchange="socioRender()" style="border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 9px;font-size:12px;font-family:inherit;background:rgba(255,255,255,.1);color:#fff;min-width:160px">
+        <option value="">Todos los abogados</option>
+      </select>
+    </div>
+  </div>`;
+
+  const fEquipo=(document.getElementById('socio-f-equipo')?.value||'').toLowerCase();
+  const fAbogado=(document.getElementById('socio-f-abogado')?.value||'').trim();
+
+  // Recolectar todos los abogados (todos los equipos)
+  const abogadosSet=new Set();
+  mbRows.filter(r=>!esDiligenciaExcluida(r)&&!esLecturaSentencia(r)&&
+    (!fEquipo||String(r[C.sup]||'').toLowerCase().includes(fEquipo)))
+    .forEach(r=>{
+      normNombres(r[C.resp]).forEach(n=>abogadosSet.add(n));
+      normNombres(r[C.resp2]).forEach(n=>abogadosSet.add(n));
+    });
+  let abogados=[...abogadosSet].sort();
+  if(fAbogado) abogados=abogados.filter(a=>a===fAbogado);
+
+  // Poblar select de abogados (preservando selección)
+  const curAbo=document.getElementById('socio-f-abogado')?.value||'';
+  setTimeout(()=>{
+    const selAbo=document.getElementById('socio-f-abogado');
+    if(selAbo){
+      selAbo.innerHTML='<option value="">Todos los abogados</option>'+[...abogadosSet].sort().map(a=>`<option${a===curAbo?' selected':''}>${a}</option>`).join('');
+    }
+  },50);
+
+  if(!abogados.length){
+    grid.innerHTML=socioBarHtml+'<div class="cmp-aviso"><div class="ei">📭</div><p>Sin diligencias para los filtros actuales.</p></div>';
+    return;
+  }
+
+  // Indexar por abogado → fecha → lista (sin duplicar entre resp y resp2)
+  const idx={};
+  abogados.forEach(a=>{idx[a]={};});
+  mbRows.filter(r=>!esDiligenciaExcluida(r)&&!esLecturaSentencia(r)&&
+    (!fEquipo||String(r[C.sup]||'').toLowerCase().includes(fEquipo)))
+    .forEach(r=>{
+      const fi=toISO(nFec(r[C.fecha]));if(!fi)return;
+      const hora=nHor(r[C.hora]).substring(0,5);
+      const ev={tid:String(r[C.tid]||'').trim(),hora,tarea:String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim(),cli:String(r[C.cli]||'').trim(),sup:String(r[C.sup]||'').trim()};
+      const resp1Names=normNombres(r[C.resp]);
+      resp1Names.forEach(resp=>{
+        if(!resp||!idx[resp])return;
+        if(!idx[resp][fi])idx[resp][fi]=[];
+        if(!idx[resp][fi].some(e=>e.tid===ev.tid))
+          idx[resp][fi].push(ev);
+      });
+      normNombres(r[C.resp2]).forEach(resp2=>{
+        if(!resp2||!idx[resp2])return;
+        if(!idx[resp2][fi])idx[resp2][fi]=[];
+        if(!idx[resp2][fi].some(e=>e.tid===ev.tid))
+          idx[resp2][fi].push(ev);
+      });
+    });
+
+  // Filtrar: solo abogados con eventos en el rango visible
+  const diasSocio=cmpVis==='dia'?[new Date(cmpFecha)]:cmpSemana(cmpFecha);
+  const diasSocioISO=diasSocio.map(d=>toISO(d));
+  const abogadosVisibles=abogados.filter(a=>diasSocioISO.some(fi=>(idx[a][fi]||[]).length>0));
+
+  // helper: eventos de un abogado en un día para un slot de 30 min
+  function evsBloqueSocio(a,fi,slot){
+    const [sh,sm]=slot.split(':').map(Number);
+    return (idx[a][fi]||[]).filter(e=>{
+      const [eh,em]=e.hora.split(':').map(Number);
+      return eh===sh&&(sm===0?em<30:em>=30);
+    });
+  }
+
+  const hoy=toISO(new Date());
+  const dias=cmpVis==='dia'?[new Date(cmpFecha)]:cmpSemana(cmpFecha);
+
+  // Usar supClase para colorear por equipo en socio view
+  let tableHtml='';
+  if(cmpVis==='dia'){
+    const fi=toISO(cmpFecha);
+    const esHoy=fi===hoy;
+    tableHtml='<table class="cmp-table"><thead><tr><th class="cmp-hora-hdr">Abogado · Equipo</th>';
+    CMP_HORAS.forEach(h=>{tableHtml+=`<th style="background:var(--navy2);font-size:9.5px;min-width:48px;padding:4px 2px">${h}</th>`;});
+    tableHtml+='</tr></thead><tbody>';
+    abogadosVisibles.forEach(a=>{
+      const tot=(idx[a][fi]||[]).length;
+      const supA=mbRows.find(r=>normNombres(r[C.resp]).includes(a)||normNombres(r[C.resp2]).includes(a));
+      const supNombre=supA?String(supA[C.sup]||'').split('/')[0].trim():'';
+      const cls=supClase(supNombre);
+      const vacHoy=estaDeVacaciones(a,fi);
+      tableHtml+=`<tr><td class="cmp-hora" style="text-align:left;padding:6px 9px;min-width:160px;${vacHoy?'background:#FFF3E0;':''}">`+
+        `<div style="font-weight:700;color:var(--navy);font-size:11px">${esc(a)}${vacHoy?' 🏖':''}</div>`+
+        `<div style="font-size:9.5px;color:var(--muted)">${esc(supNombre)||'—'} · ${tot?tot+' dilig.':'libre'}</div></td>`;
+      CMP_HORAS.forEach(hora=>{
+        const evs=evsBloqueSocio(a,fi,hora);
+        if(!evs.length){
+          tableHtml+=`<td class="cmp-libre${esHoy?' cmp-hoy-col':''}"></td>`;
+        } else {
+          const tip=evs.map(e=>e.hora+' '+e.tarea).join('\n');
+          const label=(evs.length>1?'⚠'+evs.length:'●')+' '+evs[0].tarea.substring(0,14)+(evs[0].tarea.length>14?'…':'');
+          const supEvCls=supClase(evs[0].sup||supNombre);
+          tableHtml+=`<td class="${evs.length>1?'cmp-conflicto':'cmp-ocupado'}${esHoy?' cmp-hoy-col':''}" title="${esc(tip)}" onclick="abrirEvento('${evs[0].tid}')">`+
+            `<div class="cmp-evento ${supEvCls}" style="font-size:9px;cursor:pointer;padding:2px 4px">${esc(label)}</div></td>`;
+        }
+      });
+      tableHtml+='</tr>';
+    });
+    tableHtml+='</tbody></table>';
+  } else {
+    // Vista semana socio
+    const DE=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const ME=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    tableHtml='<table class="cmp-table"><thead><tr><th class="cmp-hora-hdr" style="min-width:150px">Abogado</th>';
+    dias.forEach(d=>{
+      const fi=toISO(d);
+      tableHtml+=`<th colspan="${CMP_HORAS.length}" style="${fi===hoy?'background:#B45309;':''}">${DE[d.getDay()]} ${d.getDate()}/${ME[d.getMonth()]}</th>`;
+    });
+    tableHtml+='</tr><tr><th></th>';
+    dias.forEach(()=>CMP_HORAS.forEach(hr=>{
+      tableHtml+=`<th style="background:var(--navy2);font-size:9px;font-weight:500;min-width:44px;padding:3px 1px">${hr.substring(0,5)}</th>`;
+    }));
+    tableHtml+='</tr></thead><tbody>';
+    abogadosVisibles.forEach((a,ai)=>{
+      const tot=dias.reduce((s,d)=>s+(idx[a][toISO(d)]||[]).length,0);
+      const supA=mbRows.find(r=>normNombres(r[C.resp]).includes(a)||normNombres(r[C.resp2]).includes(a));
+      const supNombre=supA?String(supA[C.sup]||'').split('/')[0].trim():'';
+      tableHtml+=`<tr><td class="cmp-hora" style="text-align:left;padding:6px 9px;background:${CMP_COLS[ai%CMP_COLS.length]};border-left:3px solid ${CMP_BORD[ai%CMP_BORD.length]}">
+        <div style="font-weight:700;color:var(--navy);font-size:11px">${esc(a)}</div>
+        <div style="font-size:9.5px;color:var(--muted)">${esc(supNombre)||'—'} · ${tot} dilig.</div></td>`;
+      dias.forEach(d=>{
+        const fi=toISO(d);const esHoy=fi===hoy;
+        const vacDia=estaDeVacaciones(a,fi);
+        CMP_HORAS.forEach(hr=>{
+          const evs=evsBloqueSocio(a,fi,hr);
+          if(vacDia){
+            tableHtml+=`<td style="background:#FFF3E0;font-size:8px;text-align:center;color:#D4730A" title="${esc(a)} de vacaciones">🏖</td>`;
+          } else if(!evs.length){
+            tableHtml+=`<td class="cmp-libre${esHoy?' cmp-hoy-col':''}"></td>`;
+          } else {
+            const tip=evs.map(e=>e.hora+' '+e.tarea).join('\n');
+            const label=(evs.length>1?'⚠'+evs.length:'●')+' '+evs[0].tarea.substring(0,12)+(evs[0].tarea.length>12?'…':'');
+            tableHtml+=`<td class="${evs.length>1?'cmp-conflicto':'cmp-ocupado'}${esHoy?' cmp-hoy-col':''}" title="${esc(tip)}" onclick="abrirEvento('${evs[0].tid}')">`+
+              `<div style="font-size:9px;font-weight:700;color:${CMP_BORD[ai%CMP_BORD.length]};padding:2px 3px;cursor:pointer">${esc(label)}</div></td>`;
+          }
+        });
+      });
+      tableHtml+='</tr>';
+    });
+    tableHtml+='</tbody></table>';
+  }
+
+  grid.innerHTML=socioBarHtml+tableHtml;
+}
+
+// ══════════════════════════════════════════════════════
+// HOOK showPanel para inicializar Vacaciones
 // ══════════════════════════════════════════════════════
 </script>
 </body>
