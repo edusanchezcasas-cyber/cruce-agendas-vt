@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Cruce de Agendas · Vinatea & Toyama</title>
+<title>Organizador de Audiencias · Vinatea & Toyama</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -439,7 +439,7 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
     <div class="lb">V&T</div>
     <div class="lt"><span class="lf">Vinatea &amp; Toyama</span><span class="ls">Centro de Información · CID</span></div>
   </div>
-  <div class="ht">Cruce de Agendas</div>
+  <div class="ht">Organizador de Audiencias</div>
   <div class="hp">Outlook ↔ MyBig</div>
 </header>
 
@@ -1542,18 +1542,30 @@ Object.values(DICT_INICS).forEach(nom=>{
 function normNombres(raw){
   if(!raw)return[];
   // Separar por ; / , (separadores de multi-responsable en algunos reportes)
-  const partes=String(raw).split(/[;,\/]+/).map(s=>s.trim()).filter(Boolean);
+  const partes=String(raw).split(/[;,\/]+/).map(s=>s.trim())
+    .filter(p=>{
+      if(!p)return false;
+      const stripped=p.replace(/[-—–\s.]/g,'');
+      return stripped.length>=2&&!/^\d+$/.test(stripped); // al menos 2 chars alfabéticos, no solo números
+    });
   return partes.map(p=>{
     const k=_strip(p);
+    if(!k||k.length<2)return null;
     // Buscar match exacto en diccionario
     if(_CANON[k]) return _CANON[k];
-    // Buscar si algún nombre canónico está contenido o viceversa
-    for(const [ck,cn] of Object.entries(_CANON)){
-      if(k===ck||k.startsWith(ck)||ck.startsWith(k)) return cn;
+    // Coincidencia parcial solo si k tiene suficiente longitud
+    if(k.length>=6){
+      for(const [ck,cn] of Object.entries(_CANON)){
+        if(k===ck||(k.length>=6&&(k.startsWith(ck)||ck.startsWith(k))))return cn;
+      }
     }
-    // Sin match → capitalizar correctamente y devolver tal cual
-    return p.replace(/\b\w/g,c=>c.toUpperCase());
-  }).filter((v,i,a)=>a.indexOf(v)===i); // deduplicar
+    // Sin match → capitalizar y devolver
+    const capitalizado=p.replace(/\b\w/g,c=>c.toUpperCase()).trim();
+    // Rechazar si no empieza con letra
+    if(!/^[A-Za-záéíóúÁÉÍÓÚñÑ]/.test(capitalizado))return null;
+    return capitalizado;
+  }).filter(Boolean)
+    .filter((v,i,a)=>a.indexOf(v)===i); // deduplicar
 }
 
 // Versión singular: un campo → un nombre canónico
@@ -2572,7 +2584,7 @@ function exportarReporteCruce(id,datos){
   @media print{.no-print{display:none}}
   </style></head><body>
   <header>
-    <h1>Vinatea &amp; Toyama · Reporte de Cruce de Agendas</h1>
+    <h1>Vinatea &amp; Toyama · Organizador de Audiencias</h1>
     <div class="sub">Centro de Información y Documentación (CID) · Generado: ${meta.fecha} · Período: ${meta.rango}</div>
   </header>
   <div class="stats">
@@ -3437,9 +3449,12 @@ function rsRenderParalegal(){
     else if(p.estado==='confirmada')
       accion=`<button class="btn btn-sm" style="background:var(--blue);color:#fff;border:none" onclick="rsEjecutar('${p.id}')">✔ Ejecutado en MB</button>`;
     else if(p.estado==='ejecutada')
-      accion=`<span style="font-size:11px;color:var(--muted)">✔ ${p.fechaEjec||''}</span>`;
+      accion=`<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+        <span style="font-size:11px;color:var(--muted)">✔ ${p.fechaEjec||''}</span>
+        <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px" onclick="rsEliminarPropuesta('${p.tid}')">🗑 Eliminar</button>
+      </div>`;
     else
-      accion=`<span class="na" style="font-size:11px">—</span>`;
+      accion=`<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10px" onclick="rsEliminarPropuesta('${p.tid}')">🗑 Eliminar</button>`;
 
     const hoy=toISO(new Date());
     const manana=toISO(new Date(Date.now()+86400000));
@@ -4229,8 +4244,8 @@ function cmpRender(){
   const abogadosDelEquipo=new Set();
   mbRows.filter(r=>String(r[C.sup]||'').toLowerCase().includes(supNorm)&&!esDiligenciaExcluida(r)&&!esLecturaSentencia(r))
     .forEach(r=>{
-      normNombres(r[C.resp]).forEach(n=>{if(!supNombresCanon.has(_strip(n)))abogadosDelEquipo.add(n);});
-      normNombres(r[C.resp2]).forEach(n=>{if(!supNombresCanon.has(_strip(n)))abogadosDelEquipo.add(n);});
+      normNombres(r[C.resp]).forEach(n=>{if(n&&n.trim()&&!supNombresCanon.has(_strip(n)))abogadosDelEquipo.add(n);});
+      normNombres(r[C.resp2]).forEach(n=>{if(n&&n.trim()&&!supNombresCanon.has(_strip(n)))abogadosDelEquipo.add(n);});
     });
 
   // Filtrar: solo mantener abogados cuyo supervisor en mbRows sea el equipo seleccionado
@@ -5205,8 +5220,8 @@ function socioRender(){
   mbRows.filter(r=>!esDiligenciaExcluida(r)&&!esLecturaSentencia(r)&&
     (!fEquipo||String(r[C.sup]||'').toLowerCase().includes(fEquipo)))
     .forEach(r=>{
-      normNombres(r[C.resp]).forEach(n=>abogadosSet.add(n));
-      normNombres(r[C.resp2]).forEach(n=>abogadosSet.add(n));
+      normNombres(r[C.resp]).forEach(n=>{if(n&&n.trim())abogadosSet.add(n);});
+      normNombres(r[C.resp2]).forEach(n=>{if(n&&n.trim())abogadosSet.add(n);});
     });
   let abogados=[...abogadosSet].sort();
   if(fAbogado) abogados=abogados.filter(a=>a===fAbogado);
