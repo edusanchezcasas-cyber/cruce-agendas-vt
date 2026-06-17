@@ -1226,13 +1226,21 @@ tr.pin-highlight,tr.pin-highlight td{background:#FFF9E6!important;outline:2px so
   <div class="ctrl-head">
     <h3>🏖 Registro de Vacaciones</h3>
     <div class="ctrl-toolbar">
+      <label class="btn btn-sm" style="background:#0F766E;color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px" title="Importa el cronograma de vacaciones desde el Excel de SharePoint">
+        <input type="file" accept=".xlsx,.xls" onchange="vacImportarExcel(this)" style="display:none"/>
+        📥 Importar Excel V&T
+      </label>
       <button class="btn btn-navy btn-sm" onclick="vacAbrirModal()">+ Agregar vacaciones</button>
       <button class="btn btn-out btn-sm" onclick="vacExportar()">⬇ Exportar</button>
     </div>
   </div>
 
+  <!-- Aviso de importación -->
+  <div id="vac-import-result" style="display:none;background:#F0FDF4;border:1px solid #86EFAC;border-radius:9px;padding:12px 18px;margin-bottom:14px;font-size:12px;color:#166534"></div>
+
   <div style="background:var(--info-bg);border:1px solid var(--purple);border-radius:9px;padding:12px 18px;margin-bottom:18px;font-size:12px;color:var(--purple)">
     <b>¿Para qué sirve?</b> Registra los períodos de ausencia de cada abogado. En las vistas de <strong>Agenda</strong> y <strong>Reasignaciones</strong> aparecerá una advertencia 🏖 cuando una diligencia esté asignada a alguien que estará de vacaciones ese día, y al intentar reasignarle una tarea dentro del rango se mostrará un aviso.
+    <br><span style="opacity:.8">💡 Usa <strong>Importar Excel V&T</strong> para cargar automáticamente el cronograma mensual de vacaciones desde SharePoint.</span>
   </div>
 
   <!-- Filtro por abogado -->
@@ -1683,7 +1691,6 @@ const DICT_INICS={
   SAS:'Sol Aragon',         SER:'Solanch Estrella',  GCH:'Gabriela Chanco'
 };
 
-// ── Normalización de nombres ──────────────────────────────────
 // strip: quita tildes y pasa a minúsculas para comparación
 const _strip=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
 
@@ -1691,8 +1698,11 @@ const _strip=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u
 const _CANON={};
 Object.values(DICT_INICS).forEach(nom=>{
   const k=_strip(nom);
-  if(!_CANON[k]) _CANON[k]=nom; // guardar la forma oficial
+  if(!_CANON[k]) _CANON[k]=nom;
 });
+
+// Set de nombres del equipo V&T (para filtro de importación de vacaciones)
+const ABOGADOS_VT=new Set(Object.values(DICT_INICS).map(_strip));
 
 // normNombre: dado un string del reporte (puede tener tildes, sin tildes,
 // combinaciones con ; o /) → devuelve array de nombres canónicos
@@ -6108,6 +6118,128 @@ function rsAbrirModalDesdeTid(tid){
 // Override showPanel to refresh obs badge and pin highlight
 const _origShowPanel=showPanel;
 // (ya existe showPanel, lo extendemos con obsCtrlUpdateBadge y _pinHighlight en renderControlPanel)
+
+// ══════════════════════════════════════════════════════
+// IMPORTAR EXCEL DE VACACIONES V&T
+// ══════════════════════════════════════════════════════
+function vacImportarExcel(input){
+  const file=input.files[0];
+  if(!file)return;
+  input.value='';
+  const resultEl=document.getElementById('vac-import-result');
+  if(resultEl){resultEl.style.display='block';resultEl.textContent='⏳ Procesando…';}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+      let total=0,hojas=0;const errs=[];
+      wb.SheetNames.forEach(sn=>{
+        try{
+          const ws=wb.Sheets[sn];
+          const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+          total+=_vacProcesarHoja(rows,sn);
+          hojas++;
+        }catch(err){errs.push(sn+': '+err.message);}
+      });
+      vacRender();
+      initVacaciones();
+      if(resultEl){
+        resultEl.style.display='block';
+        resultEl.innerHTML='✅ <strong>Importación completada.</strong> '+(hojas)+' hoja(s) · <strong>'+total+' período(s)</strong> registrados.'
+          +(errs.length?'<br>⚠ '+errs.join(', '):'');
+        resultEl.style.cssText+='background:'+(errs.length?'#FEF9C3':'#F0FDF4')+';border-color:'+(errs.length?'#FDE68A':'#86EFAC')+';color:'+(errs.length?'#854D0E':'#166534');
+      }
+    }catch(err){
+      if(resultEl){resultEl.style.display='block';resultEl.style.cssText+='background:#FEF2F2;border-color:#FECACA;color:#991B1B';resultEl.textContent='❌ '+err.message;}
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function _vacProcesarHoja(rows,sheetName){
+  const MESES={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};
+  let año=new Date().getFullYear(),mes=-1;
+  // Detectar mes/año del título
+  for(let i=0;i<Math.min(5,rows.length);i++){
+    const txt=rows[i].join(' ').toLowerCase();
+    for(const [m,n] of Object.entries(MESES))if(txt.includes(m)){mes=n;break;}
+    const ym=rows[i].join(' ').match(/20\d\d/);if(ym)año=parseInt(ym[0]);
+    if(mes>0)break;
+  }
+  if(mes<0){const sn=sheetName.toLowerCase();for(const [m,n] of Object.entries(MESES))if(sn.includes(m)){mes=n;break;}}
+  if(mes<0)mes=new Date().getMonth()+1;
+
+  // Encontrar fila encabezado con días
+  let hdrRow=-1;
+  for(let i=0;i<rows.length;i++){
+    const txt=rows[i].join(' ').toLowerCase();
+    if(txt.includes('lunes')||txt.includes('martes')){hdrRow=i;break;}
+  }
+  if(hdrRow<0)return 0;
+
+  // Primera col con nombre de día
+  const hdr=rows[hdrRow].map(v=>String(v||'').toLowerCase());
+  const dNames=['lun','mar','mié','mie','jue','vie','sáb','sab','dom'];
+  let firstDayCol=hdr.findIndex(h=>dNames.some(d=>h.startsWith(d)));
+  if(firstDayCol<0)firstDayCol=1;
+
+  // Construir mapa día→nombres
+  const dayMap={};
+  for(let r=hdrRow+1;r<rows.length;r++){
+    const row=rows[r];if(!row||!row.length)continue;
+    // número del lunes de esa semana
+    let lunNum=NaN;
+    for(let c=0;c<firstDayCol+1;c++){const v=parseInt(row[c]);if(!isNaN(v)&&v>=1&&v<=31){lunNum=v;break;}}
+    if(isNaN(lunNum))continue;
+    for(let d=0;d<7;d++){
+      const dayNum=lunNum+d;if(dayNum>31)break;
+      const cell=row[firstDayCol+d];if(!cell)continue;
+      const nombres=String(cell).split(/[\n\r,]+/).map(s=>s.trim()).filter(s=>s.length>2);
+      nombres.forEach(n=>{if(!dayMap[dayNum])dayMap[dayNum]=new Set();dayMap[dayNum].add(n);});
+    }
+  }
+
+  // Agrupar días consecutivos por persona
+  const personaDias={};
+  for(const [day,nms] of Object.entries(dayMap)){
+    nms.forEach(nombre=>{
+      const canon=normNombre(nombre);if(!canon||canon.length<3)return;
+      if(!personaDias[canon])personaDias[canon]=[];
+      personaDias[canon].push(parseInt(day));
+    });
+  }
+
+  let importados=0;
+  const arr=vacGetAll();
+  const pad=n=>String(n).padStart(2,'0');
+  for(const [nombre,dias] of Object.entries(personaDias)){
+    // Solo importar abogados del equipo V&T (están en DICT_INICS)
+    const nombreStrip=_strip(nombre);
+    const estaEnEquipo=ABOGADOS_VT.has(nombreStrip)
+      || [...ABOGADOS_VT].some(n=>n.startsWith(nombreStrip)||nombreStrip.startsWith(n));
+    if(!estaEnEquipo)continue;
+    dias.sort((a,b)=>a-b);
+    let ini=dias[0],fin=dias[0];
+    const flush=()=>{
+      const fIni=`${año}-${pad(mes)}-${pad(ini)}`;
+      const fFin=`${año}-${pad(mes)}-${pad(fin)}`;
+      if(!arr.some(v=>_strip(v.abogado)===_strip(nombre)&&v.inicio===fIni&&v.fin===fFin)){
+        arr.push({id:'vac_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+          abogado:nombre,inicio:fIni,fin:fFin,
+          obs:'Cronograma '+sheetName+' '+año,
+          creadoEl:new Date().toLocaleString('es-PE')});
+        importados++;
+      }
+    };
+    for(let i=1;i<dias.length;i++){
+      if(dias[i]-dias[i-1]<=3)fin=dias[i];
+      else{flush();ini=dias[i];fin=dias[i];}
+    }
+    flush();
+  }
+  _vacMemory=arr;try{localStorage.setItem(VAC_KEY,JSON.stringify(arr));}catch(ex){}
+  return importados;
+}
 
 const SUPERVISORES=new Set(['Elyana Arias','Solanch Estrella','Samuel Paz','Carlos Morales','Cynthia Lagos','Katia Jacinto']);
 const USR_KEY='vt_usuario_activo';
