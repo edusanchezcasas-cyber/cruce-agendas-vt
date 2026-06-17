@@ -230,7 +230,10 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
 .rs-stat.conf .rs-stat-n{color:var(--green)}
 .rs-stat.rech .rs-stat-n{color:var(--red)}
 .rs-stat.ejec .rs-stat-n{color:var(--blue)}
-.rs-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:600px}
+.rs-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:calc(100vh - 280px)}
+.rs-table-wrap table thead th{position:sticky;top:0;z-index:10}
+.rs-table-wrap .th-std{background:var(--navy);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:9px 10px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-table-wrap .th-filter{background:#f0f4fa;padding:4px 6px;border-bottom:2px solid var(--border)}
 .rs-prop-btn{background:var(--warn-bg);color:var(--amber);border:1px solid var(--amber);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .14s}
 .rs-prop-btn:hover{background:var(--amber);color:#fff}
 /* Indicador presencial en tabla reasignaciones */
@@ -417,8 +420,34 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
 /* ── SOCIO VIEW ── */
 .socio-bar{background:linear-gradient(135deg,var(--navy) 0%,#2a4a8a 100%);color:#fff;padding:10px 18px;border-radius:10px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .socio-badge{background:var(--gold);color:var(--navy);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:.5px}
-/* BI panel */
-.bi-tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+/* ── CLIENTE ANCLADO ── */
+tr.pin-highlight,tr.pin-highlight td{background:#FFF9E6!important;outline:2px solid var(--gold)!important;outline-offset:-1px}
+/* tooltip full text */
+.full-txt-tip{position:fixed;z-index:9999;background:var(--navy);color:#fff;padding:7px 12px;border-radius:8px;font-size:12px;max-width:340px;word-break:break-word;line-height:1.5;pointer-events:none;box-shadow:0 4px 18px rgba(0,0,0,.22)}
+/* ── OBS PANEL EN CONTROL ── */
+.obs-ctrl-item{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;transition:all .15s}
+.obs-ctrl-item.atendida{opacity:.6;border-style:dashed}
+.obs-ctrl-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+.obs-ctrl-meta{font-size:10.5px;color:var(--muted)}
+.obs-ctrl-txt{font-size:12.5px;color:var(--text);line-height:1.6;margin:6px 0 10px}
+.obs-ctrl-badge-pend{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;border-radius:9px;padding:2px 8px;font-size:10px;font-weight:700}
+.obs-ctrl-badge-ok{background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7;border-radius:9px;padding:2px 8px;font-size:10px;font-weight:700}
+
+.usuario-bar{display:flex;align-items:center;gap:10px;background:var(--navy);color:#fff;padding:7px 18px;font-size:12px}
+.usuario-sel{border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 10px;font-size:12px;font-family:inherit;background:rgba(255,255,255,.1);color:#fff;min-width:200px}
+.usuario-sel option{color:var(--text);background:#fff}
+.usuario-badge-sup{background:var(--gold);color:var(--navy);border-radius:20px;padding:2px 10px;font-size:10.5px;font-weight:700;letter-spacing:.3px}
+.usuario-badge-par{background:rgba(255,255,255,.15);color:#fff;border-radius:20px;padding:2px 10px;font-size:10.5px;font-weight:600}
+/* ── OBSERVACIONES DRAWER ── */
+.obs-drawer{border-top:1px solid var(--border);padding:0;max-height:0;overflow:hidden;transition:max-height .25s ease,padding .2s}
+.obs-drawer.open{max-height:160px;padding:10px 12px}
+.obs-btn{background:none;border:none;cursor:pointer;font-size:10.5px;color:var(--muted);padding:3px 7px;border-radius:5px;font-family:inherit;transition:all .14s}
+.obs-btn:hover{background:var(--bg);color:var(--navy)}
+.obs-textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:11.5px;font-family:inherit;resize:vertical;min-height:56px;background:var(--bg);color:var(--text);box-sizing:border-box}
+/* ── PROPONER BLOQUEADO ── */
+.rs-prop-btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.sup-lock-msg{display:inline-flex;align-items:center;gap:4px;background:#F1F5F9;color:var(--muted);border-radius:6px;padding:4px 10px;font-size:10.5px;border:1px solid var(--border)}
+
 .bi-tl-item:last-child{border-bottom:none}
 .bi-tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .bi-tl-dot.pend{background:var(--amber)}.bi-tl-dot.conf{background:var(--green)}.bi-tl-dot.ejec{background:var(--blue)}.bi-tl-dot.rech{background:var(--red)}
@@ -442,6 +471,51 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
   <div class="ht">Organizador de Audiencias</div>
   <div class="hp">Outlook ↔ MyBig</div>
 </header>
+
+<!-- Barra de usuario activo -->
+<div class="usuario-bar">
+  <span style="opacity:.7;font-size:11px">👤 Usuario:</span>
+  <select class="usuario-sel" id="usuario-activo" onchange="usuarioChange()">
+    <option value="">— seleccionar usuario —</option>
+    <optgroup label="Supervisores">
+      <option>Elyana Arias</option>
+      <option>Solanch Estrella</option>
+      <option>Samuel Paz</option>
+      <option>Carlos Morales</option>
+      <option>Cynthia Lagos</option>
+      <option>Katia Jacinto</option>
+    </optgroup>
+    <optgroup label="Equipo CID">
+      <option>Alessandra Zegarra</option>
+      <option>Alfonso Higa</option>
+      <option>Andres Herles</option>
+      <option>Arturo Trelles</option>
+      <option>Carlos Ciriaco</option>
+      <option>Daniela Torres</option>
+      <option>Eduardo Mercado</option>
+      <option>Henrry Lopez</option>
+      <option>Ivan Gonzalez</option>
+      <option>Jimena Alcorta</option>
+      <option>Jose Bacalla</option>
+      <option>Luis Vinatea</option>
+      <option>Magaly Alarcon</option>
+      <option>Maria Grazzia Espinoza</option>
+      <option>Mariel Abad</option>
+      <option>Melissa Flores</option>
+      <option>Milagritos Sueyoshi</option>
+      <option>Nuria Vega</option>
+      <option>Roberto Matallana</option>
+      <option>Rodrigo Zavala</option>
+      <option>Sandra Carrion</option>
+      <option>Sergio Tejada</option>
+      <option>Silvia Maldonado</option>
+      <option>Sofia Yomond</option>
+      <option>Sol Aragon</option>
+    </optgroup>
+  </select>
+  <span id="usuario-rol-badge"></span>
+  <span style="margin-left:auto;font-size:10.5px;opacity:.5">Organizador de Audiencias · V&T CID</span>
+</div>
 
 <div class="main-nav">
   <button class="mnav active" onclick="showPanel('cruce')">⚡ Nuevo Cruce</button>
@@ -722,6 +796,26 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
   <!-- Píldora: Lecturas de Sentencia (renderizado inline en rsRenderAbogado) -->
   <div id="rs-lectura-pill" style="display:none"></div>
 
+  <!-- ── Bandeja de Observaciones (Vista Paralegal) ── -->
+  <div id="obs-pl-section" style="display:none;margin-top:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h4 style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--navy);margin:0">💬 Observaciones de abogados</h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Comentarios enviados para revisión y acción del CID</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="obs-f-estado" onchange="obsCtrlRender()" style="border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit">
+          <option value="">Todas</option>
+          <option value="pendiente">🟡 Pendientes</option>
+          <option value="atendida">✅ Atendidas</option>
+        </select>
+        <button class="btn btn-out btn-sm" onclick="obsCtrlRender()">↺ Actualizar</button>
+        <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none" onclick="obsCtrlLimpiarAtendidas()">🗑 Limpiar atendidas</button>
+      </div>
+    </div>
+    <div id="obs-ctrl-list"></div>
+  </div>
+
 </div><!-- /panel-reasig -->
 
 <!-- Modal proponer reasignación -->
@@ -884,6 +978,12 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
       <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Expediente</div><div id="ev-exp" style="font-size:12px;font-family:monospace"></div></div>
       <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Tarea</div><div id="ev-tarea" style="font-size:12px"></div></div>
       <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Estado</div><div id="ev-estado" style="font-size:12px"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Tipo audiencia</div><div id="ev-tipoaud" style="font-size:12px"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Relevancia</div><div id="ev-relev" style="font-size:12px"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Pacto</div><div id="ev-pacto" style="font-size:12px"></div></div>
+      <div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Materia</div><div id="ev-materia" style="font-size:12px"></div></div>
+      <div style="grid-column:1/-1"><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Submateria</div><div id="ev-submat" style="font-size:12px"></div></div>
+      <div style="grid-column:1/-1"><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:3px">Tipología</div><div id="ev-tipologia" style="font-size:12px"></div></div>
     </div>
     <div class="ev-field">
       <label>Responsable actual</label>
@@ -907,8 +1007,12 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
       </div>
     </div>
     <div class="ev-field">
-      <label>Notas</label>
+      <label>Notas CID</label>
       <textarea id="ev-nota" placeholder="Agrega observaciones sobre esta diligencia…"></textarea>
+    </div>
+    <div class="ev-field">
+      <label>Observación para CID <span style="font-size:10px;color:var(--muted);font-weight:400">(aparecerá en Panel de Control)</span></label>
+      <textarea id="ev-obs-ta" placeholder="Escribe aquí tu consulta u observación para el equipo CID…" style="min-height:60px"></textarea>
     </div>
     <div class="ev-actions">
       <button class="btn btn-navy btn-sm" onclick="guardarEvento()">💾 Guardar</button>
@@ -944,6 +1048,8 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
 
   <div id="ctrlList"></div>
 </div>
+
+<!-- pin bar removed - highlight only -->
 
 <!-- ══ PANEL: BI REASIGNACIONES ══════════════════════════════ -->
 <div id="panel-bi" class="panel">
@@ -1225,7 +1331,12 @@ const C={tid:'tareasid',fecha:'FECHA',hora:'HORA',cli:'CLIENTE',tarea:'TAREA',
          org:'ORGANO JURISDICCIONAL',
          via:'VIA PROCESAL',
          contra:'CONTRAPARTE',
-         tipoAud:'TIPO DE AUDIENCIA'};
+         tipoAud:'TIPO DE AUDIENCIA',
+         materia:'MATERIA',
+         submat:'SUBMATERIA',
+         pacto:'PACTO',
+         relev:'RELEVANCIA',
+         tipologia:'TIPOLOGIA'};
 
 // Tareas que NO son diligencias judiciales — se excluyen de Agenda y Reasignaciones
 const TAREAS_EXCLUIDAS=/presentaci[oó]n\s+de\s+demanda|presenta\s+demanda|contest[ao]\s+demanda|contestaci[oó]n\s+de\s+demanda|contesta\s+la\s+demanda/i;
@@ -1280,6 +1391,11 @@ function detectCols(){
   C.via     =mejor(['VIA PROCESAL','VÍA PROCESAL','TIPO DE PROCESO','VIA']);
   C.contra  =mejor(['CONTRAPARTE','DEMANDANTE','PARTE CONTRARIA','TRABAJADOR']);
   C.tipoAud =mejor(['TIPO DE AUDIENCIA (VIRTUAL/PRESENCIAL)','TIPO DE AUDIENCIA','TIPO AUDIENCIA','MODALIDAD AUDIENCIA','MODALIDAD','VIRTUAL/PRESENCIAL']);
+  C.materia  =mejor(['MATERIA','MATERIA LEGAL','TIPO DE MATERIA']);
+  C.submat   =mejor(['SUBMATERIA','SUB MATERIA','SUBMATERIA LEGAL','SUB-MATERIA']);
+  C.pacto    =mejor(['PACTO','TIPO DE PACTO','MODALIDAD DE PAGO','PAGO']);
+  C.relev    =mejor(['RELEVANCIA','NIVEL DE RELEVANCIA','SENSIBILIDAD','SENSIBLE']);
+  C.tipologia=mejor(['TIPOLOGIA','TIPOLOGÍA','TIPO TAREA','TIPO DE TAREA','CATEGORIA','CATEGORÍA']);
   // Diagnóstico: ver qué columnas se detectaron
   console.log('[CID] detectCols → resp:', JSON.stringify(C.resp), '| resp2:', JSON.stringify(C.resp2), '| tipoAud:', JSON.stringify(C.tipoAud), '| fecha:', JSON.stringify(C.fecha), '| hora:', JSON.stringify(C.hora));
   console.log('[CID] Columnas con "responsable":', keys.filter(k=>norm(k).includes('responsable')));
@@ -1288,18 +1404,24 @@ function detectCols(){
 let olRows=null,mbRows=null,res=[],curTab='inco',curCruceId=null;
 
 // ─ Filtros de columna en tabla Abogado ─
-const COL_KEYS=['col-exp','col-cli','col-contra','col-via','col-org','col-tarea','col-proc','col-dilig'];
+const COL_KEYS=['col-exp','col-cli','col-contra','col-via','col-org','col-tarea','col-proc','col-dilig','col-tipoaud','col-materia','col-submat','col-pacto','col-relev','col-tipologia'];
 
 function poblarColFiltros(equipo){
   const defs=[
-    ['col-exp',   r=>String(r[C.exp]||'').trim()],
-    ['col-cli',   r=>String(r[C.cli]||'').trim()],
-    ['col-contra',r=>String(r[C.contra]||'').trim()],
-    ['col-via',   r=>String(r[C.via]||'').trim()],
-    ['col-org',   r=>String(r[C.org]||'').trim()],
-    ['col-tarea', r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
-    ['col-proc',  r=>String(r[C.respProc]||'').trim()],
-    ['col-dilig', r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}]
+    ['col-exp',     r=>String(r[C.exp]||'').trim()],
+    ['col-cli',     r=>String(r[C.cli]||'').trim()],
+    ['col-contra',  r=>String(r[C.contra]||'').trim()],
+    ['col-via',     r=>String(r[C.via]||'').trim()],
+    ['col-org',     r=>String(r[C.org]||'').trim()],
+    ['col-tarea',   r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
+    ['col-proc',    r=>String(r[C.respProc]||'').trim()],
+    ['col-dilig',   r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}],
+    ['col-tipoaud', r=>String(r[C.tipoAud]||'').trim()],
+    ['col-materia', r=>String(r[C.materia]||'').trim()],
+    ['col-submat',  r=>String(r[C.submat]||'').trim()],
+    ['col-pacto',   r=>String(r[C.pacto]||'').trim()],
+    ['col-relev',   r=>String(r[C.relev]||'').trim()],
+    ['col-tipologia',r=>String(r[C.tipologia]||'').trim()]
   ];
   defs.forEach(([key,fn])=>{
     const vals=new Set();
@@ -1352,6 +1474,19 @@ document.addEventListener('click',e=>{if(!e.target.closest('.ss-wrap'))document.
 // ═══════════════════════════════════════════════════
 // PANEL NAVIGATION
 // ═══════════════════════════════════════════════════
+// ── Event delegation para botones de observaciones ──
+document.addEventListener('click',function(e){
+  const tb=e.target.closest('.obs-toggle-btn');
+  if(tb&&tb.dataset.tid){obsToggle(tb.dataset.tid);return;}
+  const sb=e.target.closest('.obs-send-btn');
+  if(sb&&sb.dataset.tid){obsGuardar(sb.dataset.tid);return;}
+});
+document.addEventListener('input',function(e){
+  if(e.target.matches&&e.target.matches('.obs-textarea[data-tid]')){
+    _obsDraft[e.target.dataset.tid]=e.target.value;
+  }
+});
+
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(p=>{
     p.classList.remove('active');
@@ -1367,7 +1502,7 @@ function showPanel(id){
   document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('active'));
   const navBtn=document.querySelector(`.mnav[onclick="showPanel('${id}')"]`);
   if(navBtn) navBtn.classList.add('active');
-  if(id==='control')renderControlPanel();
+  if(id==='control'){renderControlPanel();}
   if(id==='agenda')initAgenda();
   if(id==='reasig')initReasig();
   if(id==='bi')biCargar();
@@ -2646,12 +2781,14 @@ function exportarExcel(){
 // REASIGNACIONES
 // ═══════════════════════════════════════════════════
 let rsRolActual='abogado';
+const _obsDraft={}; // guarda borradores de obs mientras se navega
 let rsPropActual=null; // propuesta abierta en modal CID
 
 const RS_KEY='vt_reasig_v1';
 
-function rsGetAll(){try{return JSON.parse(localStorage.getItem(RS_KEY)||'[]');}catch(e){return[];}}
-function rsSave(arr){localStorage.setItem(RS_KEY,JSON.stringify(arr));}
+let _rsMemory=null;
+function rsGetAll(){try{const v=localStorage.getItem(RS_KEY);const a=JSON.parse(v||'[]');_rsMemory=a;return a;}catch(e){return _rsMemory||[];}}
+function rsSave(arr){_rsMemory=arr;try{localStorage.setItem(RS_KEY,JSON.stringify(arr));}catch(e){}}
 
 function initReasig(){
   const uploadArea=document.getElementById('rs-upload-area');
@@ -2770,12 +2907,20 @@ function rsClearFiltros(){
   ['rs-desde','rs-hasta'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ssSelected['org']='';ssInit('org',ssOpts['org']||[]);
   COL_KEYS.forEach(k=>{ssSelected[k]='';});
-  ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est'].forEach(k=>{ssSelected[k]='';ssOpts[k]=undefined;});
+  ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est','sr-tipoaud','sr-materia','sr-submat','sr-pacto','sr-relev','sr-tipologia'].forEach(k=>{ssSelected[k]='';ssOpts[k]=undefined;});
   rsRender();
 }
 
 function rsToggleParalegal(){
   const entrando=rsRolActual!=='paralegal';
+  // Antes de re-renderizar, salvar valores de textareas abiertos
+  if(!entrando){
+    document.querySelectorAll('.obs-drawer.open').forEach(d=>{
+      const tid=d.id.replace('obs-d-','');
+      const ta=document.getElementById('obs-'+tid);
+      if(ta&&ta.value.trim()) _obsDraft[tid]=ta.value;
+    });
+  }
   rsRolActual=entrando?'paralegal':'abogado';
   const btn=document.getElementById('rs-btn-paralegal');
   if(btn){
@@ -2788,6 +2933,12 @@ function rsToggleParalegal(){
     (!entrando&&document.getElementById('rs-supervisor').value)?'flex':'none';
   document.getElementById('rs-filtro-wrap').style.display=entrando?'flex':'none';
   if(entrando)document.getElementById('rs-filtro-estado').value='';
+  // Mostrar bandeja de observaciones solo en Vista Paralegal
+  const obsSection=document.getElementById('obs-pl-section');
+  if(obsSection){
+    obsSection.style.display=entrando?'block':'none';
+    if(entrando){obsCtrlRender();obsCtrlUpdateBadge();}
+  }
   rsRender();
 }
 
@@ -2851,6 +3002,16 @@ function rsEliminarPropuesta(tid){
 }
 
 // ── ABOGADO: ver diligencias del equipo y proponer ───────────
+// Helper para botón de acción con control de supervisor (evita template literals anidados)
+function _accionSupervisor(tid, prop){
+  if(!esSupervisor()) return '<span class="sup-lock-msg">🔒 Solo supervisor</span>';
+  if(!prop) return '<button class="rs-prop-btn" onclick="rsAbrirModal(\''+tid+'\')">✏ Proponer</button>';
+  const elimBtn = prop.estado!=='ejecutada'
+    ? '<button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:10.5px" onclick="rsEliminarPropuesta(\''+tid+'\')">✕ Eliminar</button>'
+    : '';
+  return '<div style="display:flex;flex-direction:column;gap:3px"><button class="rs-prop-btn" onclick="rsAbrirModal(\''+tid+'\')">↩ Modificar</button>'+elimBtn+'</div>';
+}
+
 function rsRenderAbogado(){
   const sup=document.getElementById('rs-supervisor').value;
   const tabla=document.getElementById('rs-tabla');
@@ -2926,16 +3087,29 @@ function rsRenderAbogado(){
     const srProc  =(ssSelected['sr-proc']  ||'').toLowerCase();
     const srDilig =(ssSelected['sr-dilig'] ||'').toLowerCase();
     const srEst   =(ssSelected['sr-est']   ||'').toLowerCase();
+    const srTipoAud=(ssSelected['sr-tipoaud']||'').toLowerCase();
+    const srMateria=(ssSelected['sr-materia']||'').toLowerCase();
+    const srSubmat =(ssSelected['sr-submat'] ||'').toLowerCase();
+    const srPacto  =(ssSelected['sr-pacto']  ||'').toLowerCase();
+    const srRelev  =(ssSelected['sr-relev']  ||'').toLowerCase();
+
+    const srTipologia=(ssSelected['sr-tipologia']||'').toLowerCase();
 
     // Poblar opciones si aún no están
     if(!ssOpts['sr-exp']){
       const SR_DEFS=[
-        ['sr-exp',  r=>String(r[C.exp]||'').trim()],
-        ['sr-cli',  r=>String(r[C.cli]||'').trim()],
-        ['sr-tarea',r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
-        ['sr-org',  r=>String(r[C.org]||'').trim()],
-        ['sr-proc', r=>String(r[C.respProc]||'').trim()],
-        ['sr-dilig',r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}],
+        ['sr-exp',     r=>String(r[C.exp]||'').trim()],
+        ['sr-cli',     r=>String(r[C.cli]||'').trim()],
+        ['sr-tarea',   r=>String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim()],
+        ['sr-org',     r=>String(r[C.org]||'').trim()],
+        ['sr-proc',    r=>String(r[C.respProc]||'').trim()],
+        ['sr-dilig',   r=>{const a=String(r[C.resp]||'').trim(),b=String(r[C.resp2]||'').trim();return a+(b&&b!=='-'?' / '+b:'');}],
+        ['sr-tipoaud', r=>String(r[C.tipoAud]||'').trim()],
+        ['sr-materia', r=>String(r[C.materia]||'').trim()],
+        ['sr-submat',  r=>String(r[C.submat]||'').trim()],
+        ['sr-pacto',   r=>String(r[C.pacto]||'').trim()],
+        ['sr-relev',   r=>String(r[C.relev]||'').trim()],
+        ['sr-tipologia',r=>String(r[C.tipologia]||'').trim()],
       ];
       SR_DEFS.forEach(([key,fn])=>{
         const vals=new Set();dilig.forEach(r=>{const v=fn(r);if(v)vals.add(v);});
@@ -2954,6 +3128,12 @@ function rsRenderAbogado(){
     if(srOrg)    diligSR=diligSR.filter(r=>String(r[C.org]||'').toLowerCase().includes(srOrg));
     if(srProc)   diligSR=diligSR.filter(r=>String(r[C.respProc]||'').toLowerCase().includes(srProc));
     if(srDilig)  diligSR=diligSR.filter(r=>(String(r[C.resp]||'')+' '+String(r[C.resp2]||'')).toLowerCase().includes(srDilig));
+    if(srTipoAud)diligSR=diligSR.filter(r=>String(r[C.tipoAud]||'').toLowerCase().includes(srTipoAud));
+    if(srMateria)diligSR=diligSR.filter(r=>String(r[C.materia]||'').toLowerCase().includes(srMateria));
+    if(srSubmat) diligSR=diligSR.filter(r=>String(r[C.submat]||'').toLowerCase().includes(srSubmat));
+    if(srPacto)  diligSR=diligSR.filter(r=>String(r[C.pacto]||'').toLowerCase().includes(srPacto));
+    if(srRelev)  diligSR=diligSR.filter(r=>String(r[C.relev]||'').toLowerCase().includes(srRelev));
+    if(srTipologia)diligSR=diligSR.filter(r=>String(r[C.tipologia]||'').toLowerCase().includes(srTipologia));
     if(srEst){
       diligSR=diligSR.filter(r=>{
         const tid=String(r[C.tid]||'').trim();
@@ -3046,25 +3226,63 @@ function rsRenderAbogado(){
           </label>
         </div>
       </div>
-      <table style="min-width:1200px;border-collapse:collapse;font-size:12px"><thead>
+      <table style="min-width:2100px;border-collapse:collapse;font-size:12px;table-layout:fixed">
+      <colgroup>
+        <col style="width:36px"><!-- checkbox -->
+        <col style="width:80px"> <!-- ID -->
+        <col style="width:100px"><!-- Fecha -->
+        <col style="width:64px"> <!-- Hora -->
+        <col style="width:110px"><!-- Tipo audiencia -->
+        <col style="width:130px"><!-- Expediente -->
+        <col style="width:160px"><!-- Cliente -->
+        <col style="width:200px"><!-- Tarea -->
+        <col style="width:180px"><!-- Órgano -->
+        <col style="width:90px"> <!-- Pacto -->
+        <col style="width:120px"><!-- Relevancia -->
+        <col style="width:150px"><!-- Tipología -->
+        <col style="width:160px"><!-- Materia -->
+        <col style="width:160px"><!-- Submateria -->
+        <col style="width:130px"><!-- Resp. proceso -->
+        <col style="width:130px"><!-- Resp. diligencia -->
+        <col style="width:130px"><!-- Estado -->
+        <col style="width:220px"><!-- Observaciones -->
+        <col style="width:110px"><!-- Acción -->
+      </colgroup>
+      <thead>
       <tr>
         <th class="th-std" style="width:32px"><input type="checkbox" onchange="bulkToggleAll(this.checked)" style="accent-color:#fff;width:14px;height:14px"></th>
         <th class="th-std">ID</th><th class="th-std">Fecha</th><th class="th-std">Hora</th>
+        <th class="th-std">Tipo</th>
         <th class="th-std">Expediente</th><th class="th-std">Cliente</th>
         <th class="th-std">Tarea</th><th class="th-std">Órgano Jurisd.</th>
+        <th class="th-std">Pacto</th>
+        <th class="th-std">Relevancia</th>
+        <th class="th-std">Tipología</th>
+        <th class="th-std">Materia</th>
+        <th class="th-std">Submateria</th>
         <th class="th-std">Resp. proceso</th>
-        <th class="th-std">Resp. diligencia</th><th class="th-std">Estado reasig.</th><th class="th-std">Acción</th>
+        <th class="th-std">Resp. diligencia</th>
+        <th class="th-std">Estado reasig.</th>
+        <th class="th-std">Observaciones</th>
+        <th class="th-std">Acción</th>
       </tr>
       <tr>
         <th class="th-filter"></th>
         <th class="th-filter"></th><th class="th-filter"></th><th class="th-filter"></th>
+        <th class="th-filter">${srCC('sr-tipoaud','Tipo...')}</th>
         <th class="th-filter">${srCC('sr-exp','Exp...')}</th>
         <th class="th-filter">${srCC('sr-cli','Cliente...')}</th>
         <th class="th-filter">${srCC('sr-tarea','Tarea...')}</th>
         <th class="th-filter">${srCC('sr-org','Organo...')}</th>
+        <th class="th-filter">${srCC('sr-pacto','Pacto...')}</th>
+        <th class="th-filter">${srCC('sr-relev','Relevancia...')}</th>
+        <th class="th-filter">${srCC('sr-tipologia','Tipología...')}</th>
+        <th class="th-filter">${srCC('sr-materia','Materia...')}</th>
+        <th class="th-filter">${srCC('sr-submat','Submateria...')}</th>
         <th class="th-filter">${srCC('sr-proc','Resp. proceso...')}</th>
         <th class="th-filter">${srCC('sr-dilig','Resp. diligencia...')}</th>
         <th class="th-filter">${srCC('sr-est','Estado...')}</th>
+        <th class="th-filter"></th>
         <th class="th-filter"></th>
       </tr>
       </thead><tbody>`;
@@ -3089,26 +3307,77 @@ function rsRenderAbogado(){
       const vacDia=vacNivel!=='none';
       const respDisplay=respV+(resp2v&&resp2v!=='-'&&resp2v!==respV?`<br><span style="font-size:10px;color:var(--muted);font-weight:400">${esc(resp2v)}</span>`:'');
       const isSelected=bulkSeleccion.has(tid);
-      html+=`<tr style="background:${vacNivel==='total'?'#FDECEA':vacNivel==='parcial'?'#FFF8E1':'#FAFBFC'};border-bottom:1px solid var(--border)${vacNivel==='total'?';border-left:3px solid #C0392B':vacNivel==='parcial'?';border-left:3px solid #F59E0B':''}${isSelected?';outline:2px solid var(--navy);outline-offset:-2px':''}">
-        <td style="text-align:center;padding:6px 8px"><input type="checkbox" class="chk-row" data-tid="${tid}" ${isSelected?'checked':''} onchange="bulkToggle('${tid}',this.checked)" style="accent-color:var(--navy);width:14px;height:14px"></td>
-        <td style="padding:7px 10px"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/${tid}/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#${tid||'—'}</a></td>
-        <td style="padding:7px 10px;white-space:nowrap">${nFec(r[C.fecha])}${vacDia?`<br>${VAC_BADGE[vacNivel]}`:''}</td>
-        <td style="padding:7px 10px">${nHor(r[C.hora])}</td>
-        <td style="padding:7px 10px;font-family:monospace;font-size:10.5px">${esc(String(r[C.exp]||''))}</td>
-        <td style="padding:7px 10px;font-size:11.5px">${esc(r[C.cli]||'')}</td>
-        <td style="padding:7px 10px;font-size:11px;max-width:200px;white-space:normal;word-break:break-word">${esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))}</td>
-        <td style="padding:7px 10px;font-size:11px">${esc(String(r[C.org]||''))}${esPresencial(r)?'<br><span class="rs-presencial-badge">📍 Presencial</span>':''}</td>
-        <td style="padding:7px 10px;font-size:11.5px;color:var(--navy)">${esc(String(r[C.respProc]||''))}</td>
-        <td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">${respDisplay}</td>
-        <td style="padding:7px 10px">${estadoHtml}</td>
-        <td style="padding:7px 10px">${accionHtml}</td>
-      </tr>`;
+      const tipoAudV=String(r[C.tipoAud]||'').trim();
+      const esVirtual=tipoAudV.toUpperCase()==='VIRTUAL';
+      const tipoAudBadge=tipoAudV
+        ?`<span style="background:${esVirtual?'#EFF6FF':'#FFF0F0'};color:${esVirtual?'#1D4ED8':'#B91C1C'};border:1px solid ${esVirtual?'#BFDBFE':'#FECACA'};border-radius:9px;padding:2px 8px;font-size:10px;font-weight:600">${esVirtual?'💻':'📍'} ${esc(tipoAudV)}</span>`
+        :'<span class="na">—</span>';
+      const relevV=String(r[C.relev]||'').trim();
+      const esSensible=relevV.toUpperCase().includes('SENSIBLE')&&!relevV.toUpperCase().includes('NO');
+      const relevBadge=relevV
+        ?`<span style="background:${esSensible?'#FEF9C3':'#F0FFF4'};color:${esSensible?'#854D0E':'#166534'};border:1px solid ${esSensible?'#FDE68A':'#BBF7D0'};border-radius:9px;padding:2px 8px;font-size:10px;font-weight:600">${esSensible?'⚠':'✓'} ${esc(relevV)}</span>`
+        :'<span class="na">—</span>';
+      const tipologiaV=String(r[C.tipologia]||'').trim();
+      // Indicadores de actividad en la fila
+      const obsCount=obsCtrlGetAll().filter(o=>o.tid===tid&&o.estado==='pendiente').length;
+      const obsBtnLabel=obsCount>0
+        ?'💬 <span style="background:var(--amber);color:#fff;border-radius:9px;padding:1px 6px;font-size:9px;font-weight:700">'+obsCount+'</span>'
+        :'+ Nota';
+      // Badge de acciones en la fila (visible junto al ID)
+      let accionBadge='';
+      if(prop){
+        const colores={propuesta:'var(--amber)',confirmada:'var(--green)',ejecutada:'var(--blue)',rechazada:'var(--red)'};
+        const labels={propuesta:'🔄 Reasig. propuesta',confirmada:'✅ Confirmada',ejecutada:'🔵 Ejecutada',rechazada:'❌ Rechazada'};
+        accionBadge=`<div style="margin-top:3px"><span style="background:${colores[prop.estado]||'var(--muted)'};color:#fff;border-radius:6px;padding:2px 7px;font-size:9.5px;font-weight:700;white-space:nowrap">${labels[prop.estado]||prop.estado}</span></div>`;
+      }
+      if(obsCount>0){
+        accionBadge+=`<div style="margin-top:2px"><span style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;border-radius:6px;padding:2px 7px;font-size:9.5px;font-weight:700;white-space:nowrap">💬 ${obsCount} obs. pendiente${obsCount!==1?'s':''}</span></div>`;
+      }
+      const accionHtml2=_accionSupervisor(tid,prop);
+      const lastObs=obsCtrlGetAll().find(o=>o.tid===tid);
+      const lastObsHtml=lastObs
+        ?('<div style="background:var(--warn-bg);border:1px solid var(--amber);border-radius:6px;padding:6px 9px;font-size:11px;margin-bottom:6px;color:var(--navy)"><span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">📨 '+esc(lastObs.autor)+' · '+esc(lastObs.fecha)+'</span>'+esc(lastObs.texto)+'</div>')
+        :'';
+      const draftVal=_obsDraft[tid]||'';
+      const obsCellHtml='<td style="padding:0">'
+        +'<div style="padding:6px 10px;display:flex;align-items:center;gap:6px">'
+        +'<button id="obs-b-'+tid+'" class="obs-btn obs-toggle-btn" data-tid="'+tid+'">'+obsBtnLabel+'</button>'
+        +'</div>'
+        +'<div class="obs-drawer'+(draftVal?' open':'')+'" id="obs-d-'+tid+'">'
+        +lastObsHtml
+        +'<textarea class="obs-textarea" id="obs-'+tid+'" data-tid="'+tid+'" placeholder="Escribe tu observación para el CID…">'+esc(draftVal)+'</textarea>'
+        +'<div style="display:flex;justify-content:flex-end;margin-top:6px">'
+        +'<button class="btn btn-navy btn-sm obs-send-btn" id="obs-env-'+tid+'" data-tid="'+tid+'" style="font-size:11px">📨 Enviar al CID</button>'
+        +'</div></div></td>';
+      const tareaPin=String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').slice(0,80);
+      const trStyle='cursor:pointer;background:'+(vacNivel==='total'?'#FDECEA':vacNivel==='parcial'?'#FFF8E1':'#FAFBFC')+';border-bottom:1px solid var(--border)'+(vacNivel==='total'?';border-left:3px solid #C0392B':vacNivel==='parcial'?';border-left:3px solid #F59E0B':'')+(isSelected?';outline:2px solid var(--navy);outline-offset:-2px':'');
+      html+='<tr style="'+trStyle+'" onclick="pinFila(\''+tid+'\',\''+esc(r[C.cli]||'')+'\',\''+esc(String(r[C.exp]||''))+'\',\''+esc(tareaPin)+'\',event)">'
+        +'<td style="text-align:center;padding:6px 8px"><input type="checkbox" class="chk-row" data-tid="'+tid+'" '+(isSelected?'checked':'')+' onchange="bulkToggle(\''+tid+'\',this.checked)" style="accent-color:var(--navy);width:14px;height:14px"></td>'
+        +'<td style="padding:7px 10px;min-width:80px;vertical-align:top"><a class="tid" href="https://vinatea.mybig.com.ar/tareas/'+tid+'/edit/" target="_blank" title="Abrir en MyBig" style="text-decoration:none">#'+(tid||'—')+'</a>'+accionBadge+'</td>'
+        +'<td style="padding:7px 10px;white-space:nowrap">'+nFec(r[C.fecha])+(vacDia?'<br>'+VAC_BADGE[vacNivel]:'')+'</td>'
+        +'<td style="padding:7px 10px;white-space:nowrap">'+nHor(r[C.hora])+'</td>'
+        +'<td style="padding:7px 10px">'+tipoAudBadge+'</td>'
+        +'<td style="padding:7px 10px;font-family:monospace;font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(String(r[C.exp]||''))+'">'+esc(String(r[C.exp]||''))+'</td>'
+        +'<td style="padding:7px 10px;font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(r[C.cli]||'')+'">'+esc(r[C.cli]||'')+'</td>'
+        +'<td style="padding:7px 10px;font-size:11px;white-space:normal;word-break:break-word;line-height:1.4">'+esc(String(r[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,''))+'</td>'
+        +'<td style="padding:7px 10px;font-size:11px;white-space:normal;word-break:break-word;line-height:1.4">'+esc(String(r[C.org]||''))+'</td>'
+        +'<td style="padding:7px 10px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(esc(String(r[C.pacto]||''))||'<span class="na">—</span>')+'</td>'
+        +'<td style="padding:7px 10px">'+relevBadge+'</td>'
+        +'<td style="padding:7px 10px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(tipologiaV)+'">'+(tipologiaV||'<span class="na">—</span>')+'</td>'
+        +'<td style="padding:7px 10px;font-size:11px;white-space:normal;word-break:break-word;line-height:1.4">'+(esc(String(r[C.materia]||''))||'<span class="na">—</span>')+'</td>'
+        +'<td style="padding:7px 10px;font-size:11px;white-space:normal;word-break:break-word;line-height:1.4">'+(esc(String(r[C.submat]||''))||'<span class="na">—</span>')+'</td>'
+        +'<td style="padding:7px 10px;font-size:11.5px;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(String(r[C.respProc]||''))+'">'+esc(String(r[C.respProc]||''))+'</td>'
+        +'<td style="padding:7px 10px;font-weight:600;color:var(--navy);font-size:11.5px">'+respDisplay+'</td>'
+        +'<td style="padding:7px 10px">'+estadoHtml+'</td>'
+        +obsCellHtml
+        +'<td style="padding:7px 10px">'+accionHtml2+'</td>'
+        +'</tr>';
     });
     html+=`</tbody></table></div>`;
 
     tabla.innerHTML=html;
     // Inicializar mini-dropdowns de la tabla resumen
-    ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est'].forEach(k=>ssInit(k,ssOpts[k]||[]));
+    ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est','sr-tipoaud','sr-materia','sr-submat','sr-pacto','sr-relev','sr-tipologia'].forEach(k=>ssInit(k,ssOpts[k]||[]));
     return;
   }
 
@@ -4050,9 +4319,41 @@ function abrirEvento(tid){
   document.getElementById('ev-estado').innerHTML=`<span class="pill pg">${ev.estado}</span>`;
   document.getElementById('ev-resp-actual').textContent=
     ev.resp+(ev.resp2&&ev.resp2!=='-'?' / '+ev.resp2:'');
-  document.getElementById('ev-nota').value=ev.nota||'';
 
-  // Pre-cargar con propuesta previa si existe
+  // Nuevos campos desde raw
+  const raw=ev.raw||{};
+  const tipoAudV=String(raw[C.tipoAud]||'').trim();
+  const esVirt=tipoAudV.toUpperCase()==='VIRTUAL';
+  document.getElementById('ev-tipoaud').innerHTML=tipoAudV
+    ?`<span style="background:${esVirt?'#EFF6FF':'#FFF0F0'};color:${esVirt?'#1D4ED8':'#B91C1C'};border:1px solid ${esVirt?'#BFDBFE':'#FECACA'};border-radius:9px;padding:2px 8px;font-size:11px;font-weight:600">${esVirt?'💻':'📍'} ${esc(tipoAudV)}</span>`
+    :'<span style="color:var(--muted)">—</span>';
+  const relevV=String(raw[C.relev]||'').trim();
+  const esSens=relevV.toUpperCase().includes('SENSIBLE')&&!relevV.toUpperCase().includes('NO');
+  document.getElementById('ev-relev').innerHTML=relevV
+    ?`<span style="background:${esSens?'#FEF9C3':'#F0FFF4'};color:${esSens?'#854D0E':'#166534'};border:1px solid ${esSens?'#FDE68A':'#BBF7D0'};border-radius:9px;padding:2px 8px;font-size:11px;font-weight:600">${esSens?'⚠':'✓'} ${esc(relevV)}</span>`
+    :'<span style="color:var(--muted)">—</span>';
+  document.getElementById('ev-pacto').textContent=String(raw[C.pacto]||'').trim()||'—';
+  document.getElementById('ev-materia').textContent=String(raw[C.materia]||'').trim()||'—';
+  document.getElementById('ev-submat').textContent=String(raw[C.submat]||'').trim()||'—';
+  document.getElementById('ev-tipologia').textContent=String(raw[C.tipologia]||'').trim()||'—';
+  document.getElementById('ev-nota').value=ev.nota||'';
+  // Observaciones locales
+  const evObsTa=document.getElementById('ev-obs-ta');
+  if(evObsTa) evObsTa.value=localStorage.getItem('vt_obs_'+ev.tid)||'';
+
+  // Gate botón reasignar para supervisores
+  const btnReasig=document.getElementById('btn-reasig');
+  if(btnReasig){
+    if(esSupervisor()){
+      btnReasig.disabled=false;
+      btnReasig.title='';
+      btnReasig.style.opacity='1';
+    } else {
+      btnReasig.disabled=true;
+      btnReasig.title='Solo supervisores pueden proponer reasignaciones';
+      btnReasig.style.opacity='.4';
+    }
+  }
   const propPrev=rsGetAll().find(p=>String(p.tid).trim()===String(tid).trim()&&p.estado!=='ejecutada');
   document.getElementById('ev-nuevo-resp').value=propPrev?(propPrev.nuevoResp||''):'';
   document.getElementById('ev-nuevo-resp2').value=propPrev?(propPrev.nuevoResp2||''):'';
@@ -4082,6 +4383,9 @@ function guardarEvento(){
   const nuevoResp2=document.getElementById('ev-nuevo-resp2').value;
   const nota=document.getElementById('ev-nota').value;
   const reasig=document.getElementById('reasig-wrap').style.display==='block';
+  // Guardar observaciones → Panel de Control
+  const obsVal2=document.getElementById('ev-obs-ta')?.value?.trim();
+  if(obsVal2) agObsGuardar();
 
   // Guardar nota local
   if(!agEdits[tid])agEdits[tid]={};
@@ -4636,8 +4940,9 @@ function biDestroyChart(id){
 // ① VACACIONES
 // ══════════════════════════════════════════════════════
 const VAC_KEY='vt_vacaciones_v1';
-function vacGetAll(){try{return JSON.parse(localStorage.getItem(VAC_KEY)||'[]');}catch(e){return[];}}
-function vacSave(arr){localStorage.setItem(VAC_KEY,JSON.stringify(arr));}
+let _vacMemory=null;
+function vacGetAll(){try{const v=localStorage.getItem(VAC_KEY);const a=JSON.parse(v||'[]');_vacMemory=a;return a;}catch(e){return _vacMemory||[];}}
+function vacSave(arr){_vacMemory=arr;try{localStorage.setItem(VAC_KEY,JSON.stringify(arr));}catch(e){}}
 
 // Devuelve true si la fecha ISO está dentro de algún período de vacaciones del responsable
 function estaDeVacaciones(nombre,fechaISO){
@@ -5360,8 +5665,374 @@ function socioRender(){
 }
 
 // ══════════════════════════════════════════════════════
-// HOOK showPanel para inicializar Vacaciones
+// OBSERVACIONES → PANEL DE CONTROL
 // ══════════════════════════════════════════════════════
+const OBS_CTRL_KEY='vt_obs_ctrl_v1';
+// Fallback en memoria para cuando localStorage está bloqueado (file://)
+let _obsMemory=null;
+function obsCtrlGetAll(){
+  try{
+    const v=localStorage.getItem(OBS_CTRL_KEY);
+    const arr=JSON.parse(v||'[]');
+    _obsMemory=arr; // sincronizar memoria
+    return arr;
+  }catch(e){
+    return _obsMemory||[];
+  }
+}
+function obsCtrlSave(arr){
+  _obsMemory=arr;
+  try{localStorage.setItem(OBS_CTRL_KEY,JSON.stringify(arr));}catch(e){}
+}
+
+// Enviar observación a Vista Paralegal
+function obsEnviar(tid, texto, cli, exp, tarea){
+  if(!texto||!texto.trim())return;
+  const nuevo={
+    id:'obs_'+Date.now(),
+    tid, cli:cli||'', exp:exp||'', tarea:tarea||'',
+    texto:texto.trim(),
+    autor:usuarioActual()||'—',
+    fecha:new Date().toLocaleString('es-PE'),
+    estado:'pendiente'
+  };
+  const arr=obsCtrlGetAll();
+  arr.unshift(nuevo);
+  obsCtrlSave(arr);
+  console.log('[OBS] Guardado en localStorage:', nuevo);
+  console.log('[OBS] Total en storage:', obsCtrlGetAll().length);
+  obsCtrlUpdateBadge();
+  // Siempre intentar renderizar la bandeja
+  obsCtrlRender();
+}
+
+// Actualiza visualmente el botón/indicador de obs en una fila
+function _obsActualizarFila(tid){
+  const btn=document.getElementById('obs-b-'+tid);
+  if(btn){
+    btn.innerHTML='💬 <span style="background:var(--amber);color:#fff;border-radius:9px;padding:1px 5px;font-size:9px">Nueva</span>';
+    setTimeout(()=>{if(btn)btn.textContent='💬 Ver nota';},800);
+  }
+}
+
+function obsCtrlUpdateBadge(){
+  const n=obsCtrlGetAll().filter(o=>o.estado==='pendiente').length;
+  const btn=document.querySelector('.mnav[onclick="showPanel(\'reasig\')"]');
+  if(!btn)return;
+  btn.innerHTML=`🔄 Reasignaciones${n>0?` <span style="background:var(--red);color:#fff;border-radius:9px;padding:1px 7px;font-size:10px;margin-left:4px">${n}</span>`:''}`;
+}
+
+function obsCtrlRender(){
+  const list=document.getElementById('obs-ctrl-list');
+  if(!list)return;
+  const fEst=document.getElementById('obs-f-estado')?.value||'';
+  let arr=obsCtrlGetAll();
+  if(fEst) arr=arr.filter(o=>o.estado===fEst);
+  if(!arr.length){
+    list.innerHTML=`<div style="text-align:center;padding:36px;color:var(--muted)"><div style="font-size:28px;margin-bottom:8px">💬</div><p>No hay observaciones${fEst?' con este filtro':''}.</p></div>`;
+    return;
+  }
+  list.innerHTML=arr.map(o=>`
+    <div class="obs-ctrl-item${o.estado==='atendida'?' atendida':''}" id="obs-ctrl-${o.id}">
+      <div class="obs-ctrl-header">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+            <span style="font-weight:700;font-size:12.5px;color:var(--navy)">${esc(o.cli||'Sin cliente')}</span>
+            ${o.exp?`<span style="font-family:monospace;font-size:10.5px;color:var(--muted)">${esc(o.exp)}</span>`:''}
+            ${o.tid?`<a href="https://vinatea.mybig.com.ar/tareas/${o.tid}/edit/" target="_blank" class="tid" style="font-size:10.5px">#${o.tid}</a>`:''}
+            <span class="${o.estado==='atendida'?'obs-ctrl-badge-ok':'obs-ctrl-badge-pend'}">${o.estado==='atendida'?'✅ Atendida':'🟡 Pendiente'}</span>
+          </div>
+          ${o.tarea?`<div class="obs-ctrl-meta">${esc(o.tarea)}</div>`:''}
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10.5px;color:var(--muted)">${esc(o.autor)}</div>
+          <div style="font-size:10px;color:var(--light)">${esc(o.fecha)}</div>
+        </div>
+      </div>
+      <div class="obs-ctrl-txt">${esc(o.texto)}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${o.estado==='pendiente'
+          ?`<button class="btn btn-sm" style="background:var(--ok-bg);color:var(--green);border:1px solid var(--green);font-size:11px" onclick="obsCtrlAtender('${o.id}')">✅ Marcar atendida</button>
+             <button class="btn btn-out btn-sm" style="font-size:11px" onclick="obsCtrlRespuesta('${o.id}')">↩ Responder</button>`
+          :`<button class="btn btn-out btn-sm" style="font-size:11px" onclick="obsCtrlReabrir('${o.id}')">↩ Reabrir</button>`}
+        <button class="btn btn-sm" style="background:var(--err-bg);color:var(--red);border:none;font-size:11px" onclick="obsCtrlEliminar('${o.id}')">✕ Eliminar</button>
+        ${o.tid?`<button class="btn btn-out btn-sm" style="font-size:11px" onclick="rsAbrirModalDesdeTid('${o.tid}')">✏ Proponer reasignación</button>`:''}
+      </div>
+      ${o.respuesta?`<div style="margin-top:10px;background:#F0F9FF;border:1px solid #BAE6FD;border-radius:7px;padding:8px 12px;font-size:11.5px"><span style="font-weight:700;color:#0369A1">CID: </span>${esc(o.respuesta)}</div>`:''}
+      <div id="obs-resp-form-${o.id}" style="display:none;margin-top:8px">
+        <textarea id="obs-resp-ta-${o.id}" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12px;font-family:inherit;min-height:50px;box-sizing:border-box" placeholder="Escribe tu respuesta…"></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn btn-navy btn-sm" onclick="obsCtrlGuardarResp('${o.id}')">Enviar respuesta</button>
+          <button class="btn btn-out btn-sm" onclick="document.getElementById('obs-resp-form-${o.id}').style.display='none'">Cancelar</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function obsCtrlAtender(id){
+  const arr=obsCtrlGetAll();
+  const o=arr.find(x=>x.id===id);
+  if(o){o.estado='atendida';}
+  obsCtrlSave(arr);
+  obsCtrlRender();
+  obsCtrlUpdateBadge();
+  // Actualizar badge en la fila correspondiente
+  if(o&&o.tid) _obsRefrescarBadgeFila(o.tid);
+}
+
+function _obsRefrescarBadgeFila(tid){
+  const n=obsCtrlGetAll().filter(o=>o.tid===tid&&o.estado==='pendiente').length;
+  const btn=document.getElementById('obs-b-'+tid);
+  if(!btn)return;
+  if(n>0){
+    btn.innerHTML='💬 <span style="background:var(--amber);color:#fff;border-radius:9px;padding:1px 6px;font-size:9px;font-weight:700">'+n+'</span>';
+  } else {
+    btn.textContent='+ Nota';
+  }
+}
+function obsCtrlReabrir(id){
+  const arr=obsCtrlGetAll();
+  const o=arr.find(x=>x.id===id);if(o)o.estado='pendiente';
+  obsCtrlSave(arr);obsCtrlRender();obsCtrlUpdateBadge();
+}
+function obsCtrlEliminar(id){
+  obsCtrlSave(obsCtrlGetAll().filter(x=>x.id!==id));
+  obsCtrlRender();obsCtrlUpdateBadge();
+}
+function obsCtrlLimpiarAtendidas(){
+  obsCtrlSave(obsCtrlGetAll().filter(x=>x.estado!=='atendida'));
+  obsCtrlRender();obsCtrlUpdateBadge();
+}
+function obsCtrlRespuesta(id){
+  document.getElementById('obs-resp-form-'+id).style.display='block';
+  document.getElementById('obs-resp-ta-'+id)?.focus();
+}
+function obsCtrlGuardarResp(id){
+  const resp=document.getElementById('obs-resp-ta-'+id)?.value?.trim();
+  if(!resp)return;
+  const arr=obsCtrlGetAll();
+  const o=arr.find(x=>x.id===id);
+  if(o){o.respuesta=resp;o.estado='atendida';}
+  obsCtrlSave(arr);obsCtrlRender();obsCtrlUpdateBadge();
+}
+
+// Llamada desde obs drawer de tabla
+function obsToggle(tid){
+  const drawer=document.getElementById('obs-d-'+tid);
+  const btn=document.getElementById('obs-b-'+tid);
+  if(!drawer)return;
+  const open=drawer.classList.contains('open');
+  drawer.classList.toggle('open',!open);
+  if(!open){
+    const ta=document.getElementById('obs-'+tid);
+    if(ta)setTimeout(()=>ta.focus(),260);
+    if(btn)btn.textContent='✕ Cerrar';
+  } else {
+    if(btn)btn.textContent='💬 Nota CID';
+  }
+}
+
+function obsGuardar(tid){
+  // 1. Leer valor
+  const ta=document.getElementById('obs-'+tid);
+  if(!ta){console.error('[OBS] No se encontró textarea obs-'+tid);return;}
+  const val=ta.value.trim();
+  if(!val){
+    ta.style.border='1.5px solid var(--red)';
+    setTimeout(()=>ta.style.border='',1500);
+    return;
+  }
+
+  // 2. Buscar datos de la fila
+  const fila=mbRows&&mbRows.find(row=>String(row[C.tid]||'').trim()===tid);
+
+  // 3. Crear entrada directamente aquí (no pasar por obsEnviar para depurar)
+  const entrada={
+    id:'obs_'+Date.now(),
+    tid,
+    cli:fila?String(fila[C.cli]||''):'',
+    exp:fila?String(fila[C.exp]||''):'',
+    tarea:fila?String(fila[C.tarea]||'').replace(/DILIGENCIA\s*-\s*/i,'').trim():'',
+    texto:val,
+    autor:usuarioActual()||'(sin usuario)',
+    fecha:new Date().toLocaleString('es-PE'),
+    estado:'pendiente'
+  };
+  const arr=obsCtrlGetAll();
+  arr.unshift(entrada);
+  obsCtrlSave(arr);
+  console.log('[OBS] ✓ Guardado. Total ahora:', obsCtrlGetAll().length, entrada);
+
+  // 4. Limpiar UI
+  ta.value='';
+  delete _obsDraft[tid];
+
+  // 5. Botón de confirmación
+  const envBtn=document.getElementById('obs-env-'+tid);
+  if(envBtn){
+    envBtn.innerHTML='✓ Enviado';
+    envBtn.disabled=true;
+    envBtn.style.cssText+='background:var(--green);border:none;';
+  }
+
+  // 6. Cerrar drawer después de 1.2s
+  setTimeout(()=>{
+    const drawer=document.getElementById('obs-d-'+tid);
+    if(drawer)drawer.classList.remove('open');
+    const btnObs=document.getElementById('obs-b-'+tid);
+    const pend=obsCtrlGetAll().filter(o=>o.tid===tid&&o.estado==='pendiente').length;
+    if(btnObs) btnObs.innerHTML=pend>0
+      ?'💬 <span style="background:var(--amber);color:#fff;border-radius:9px;padding:1px 6px;font-size:9px;font-weight:700">'+pend+'</span>'
+      :'+ Nota';
+  },1200);
+
+  // 7. Toast
+  const toast=document.createElement('div');
+  toast.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--navy);color:#fff;padding:12px 20px;border-radius:9px;font-size:13px;font-family:DM Sans,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;transition:opacity .4s';
+  toast.innerHTML='<span>📨</span> Observación enviada';
+  document.body.appendChild(toast);
+  setTimeout(()=>{toast.style.opacity='0';setTimeout(()=>toast.remove(),400);},2500);
+
+  // 8. Actualizar badge nav y bandeja paralegal
+  obsCtrlUpdateBadge();
+  obsCtrlRender(); // siempre renderizar, aunque esté oculto (no hace daño)
+}
+
+// Obs desde modal de Agenda
+function agObsGuardar(){
+  if(!agEvActual)return;
+  const val=document.getElementById('ev-obs-ta')?.value?.trim()||'';
+  if(!val)return;
+  obsEnviar(agEvActual.tid, val,
+    agEvActual.cliente, agEvActual.exp,
+    agEvActual.tarea
+  );
+  document.getElementById('ev-obs-ta').value='';
+  // Notificar
+  const btn=document.querySelector('.ev-actions .btn-navy');
+  if(btn){const orig=btn.textContent;btn.textContent='✓ Enviado';setTimeout(()=>btn.textContent=orig,1200);}
+}
+
+// Llamar agObsGuardar al guardar el evento
+function _agObsHook(){agObsGuardar();}
+
+// ══════════════════════════════════════════════════════
+// PIN DE CLIENTE
+// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// PIN DE CLIENTE — solo resaltado visual
+// ══════════════════════════════════════════════════════
+let _pinData=null;
+
+function pinSet(tid, cliente, exp, tarea){
+  _pinData={tid,cliente,exp,tarea};
+  _pinHighlight(tid);
+}
+
+function pinClear(){
+  _pinData=null;
+  document.querySelectorAll('.pin-highlight').forEach(el=>el.classList.remove('pin-highlight'));
+}
+
+function pinProponer(){
+  if(!_pinData||!_pinData.tid)return;
+  showPanel('reasig');
+  setTimeout(()=>rsAbrirModalDesdeTid(_pinData.tid),400);
+}
+
+function _pinHighlight(tid){
+  document.querySelectorAll('.pin-highlight').forEach(el=>el.classList.remove('pin-highlight'));
+  if(!tid)return;
+  document.querySelectorAll(`a.tid[href*="/tareas/${tid}/"]`).forEach(a=>{
+    const row=a.closest('tr');
+    if(row)row.classList.add('pin-highlight');
+  });
+  document.querySelectorAll(`[data-tid="${tid}"]`).forEach(el=>{
+    const row=el.closest('tr')||el;
+    row.classList.add('pin-highlight');
+  });
+}
+
+// Click en cualquier parte de la fila para marcar/desmarcar
+function pinFila(tid, cliente, exp, tarea, event){
+  // Ignorar si el click fue en un input, button, a, select o textarea
+  const tag=(event.target.tagName||'').toUpperCase();
+  if(['INPUT','BUTTON','A','SELECT','TEXTAREA'].includes(tag))return;
+  if(_pinData&&_pinData.tid===tid){pinClear();return;}
+  pinSet(tid,cliente,exp,tarea);
+}
+
+// Click en cliente/expediente para ver texto completo (tooltip flotante)
+let _tipEl=null;
+function showFullTxt(txt, event){
+  hideFulTxt();
+  if(!txt)return;
+  _tipEl=document.createElement('div');
+  _tipEl.className='full-txt-tip';
+  _tipEl.textContent=txt;
+  document.body.appendChild(_tipEl);
+  const x=Math.min(event.clientX+12, window.innerWidth-360);
+  const y=event.clientY+16;
+  _tipEl.style.left=x+'px';
+  _tipEl.style.top=y+'px';
+  event.stopPropagation();
+  setTimeout(()=>document.addEventListener('click',hideFulTxt,{once:true}),50);
+}
+function hideFulTxt(){
+  if(_tipEl){_tipEl.remove();_tipEl=null;}
+}
+
+// Abrir modal de reasig desde un tid directo (usado desde obs panel y pin)
+function rsAbrirModalDesdeTid(tid){
+  if(!tid)return;
+  showPanel('reasig');
+  setTimeout(()=>rsAbrirModal(tid),350);
+}
+
+// Override showPanel to refresh obs badge and pin highlight
+const _origShowPanel=showPanel;
+// (ya existe showPanel, lo extendemos con obsCtrlUpdateBadge y _pinHighlight en renderControlPanel)
+
+const SUPERVISORES=new Set(['Elyana Arias','Solanch Estrella','Samuel Paz','Carlos Morales','Cynthia Lagos','Katia Jacinto']);
+const USR_KEY='vt_usuario_activo';
+
+function usuarioActual(){
+  return document.getElementById('usuario-activo')?.value||localStorage.getItem(USR_KEY)||'';
+}
+
+function esSupervisor(){
+  return SUPERVISORES.has(usuarioActual());
+}
+
+function usuarioChange(){
+  const u=usuarioActual();
+  localStorage.setItem(USR_KEY,u);
+  const badge=document.getElementById('usuario-rol-badge');
+  if(badge){
+    if(!u){badge.innerHTML='';return;}
+    badge.innerHTML=SUPERVISORES.has(u)
+      ?`<span class="usuario-badge-sup">⭐ Supervisor</span>`
+      :`<span class="usuario-badge-par">Paralegal / Abogado</span>`;
+  }
+  // Refrescar paneles activos para actualizar botones
+  rsRender&&rsRender();
+}
+
+// Restaurar usuario al cargar
+document.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem(USR_KEY);
+  if(saved){
+    const sel=document.getElementById('usuario-activo');
+    if(sel){
+      // Buscar option con ese valor
+      const opt=[...sel.options].find(o=>o.value===saved||o.text===saved);
+      if(opt){sel.value=opt.value||opt.text;usuarioChange();}
+    }
+  }
+  // Mostrar badge de observaciones pendientes
+  setTimeout(obsCtrlUpdateBadge,300);
+});
+
 </script>
 </body>
 </html>
