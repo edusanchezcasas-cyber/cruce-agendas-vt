@@ -780,7 +780,10 @@ tr.pin-highlight,tr.pin-highlight td{background:#FFF9E6!important;outline:2px so
     <div class="rs-stat rech" id="rss-card-rech" onclick="rsStatFiltrar('rechazada')"><div class="rs-stat-n" id="rss-rech">0</div><div class="rs-stat-l">Rechazadas</div></div>
   </div>
 
-  <!-- Tabla -->
+  <!-- Cabecera estática (resumen de abogados, lecturas, contador) -->
+  <div id="rs-static"></div>
+
+  <!-- Tabla (scroll horizontal/vertical) -->
   <div class="rs-table-wrap" id="rs-tabla"></div>
 
   <!-- Barra de selección masiva (sticky bottom) -->
@@ -3019,10 +3022,12 @@ function rsRenderAbogado(){
   const tabla=document.getElementById('rs-tabla');
 
   if(!mbRows||!mbRows.length){
+    const _rs=document.getElementById('rs-static');if(_rs)_rs.innerHTML='';
     tabla.innerHTML=`<div class="rs-empty"><div class="ei">📊</div><p>Primero carga el reporte MyBig en <strong>⚡ Nuevo Cruce</strong>.</p></div>`;
     return;
   }
   if(!sup){
+    const _rs=document.getElementById('rs-static');if(_rs)_rs.innerHTML='';
     tabla.innerHTML=`<div class="rs-empty"><div class="ei">👥</div><p>Selecciona tu supervisor / equipo arriba.</p></div>`;
     return;
   }
@@ -3377,7 +3382,13 @@ function rsRenderAbogado(){
     });
     html+=`</tbody></table></div>`;
 
-    tabla.innerHTML=html;
+    // Separar: parte estática (resumen, lecturas, contador) vs tabla scrollable
+    const tableStart=html.indexOf('<table style="min-width:2100px');
+    const staticHtml=html.slice(0,tableStart);
+    const tableHtml=html.slice(tableStart);
+    const staticEl=document.getElementById('rs-static');
+    if(staticEl) staticEl.innerHTML=staticHtml;
+    tabla.innerHTML=tableHtml;
     // Inicializar mini-dropdowns de la tabla resumen
     ['sr-exp','sr-cli','sr-tarea','sr-org','sr-proc','sr-dilig','sr-est','sr-tipoaud','sr-materia','sr-submat','sr-pacto','sr-relev','sr-tipologia'].forEach(k=>ssInit(k,ssOpts[k]||[]));
     return;
@@ -3403,6 +3414,7 @@ function rsRenderAbogado(){
   if(fcDilig2) dilig=dilig.filter(r=>(String(r[C.resp]||'')+' '+String(r[C.resp2]||'')).toLowerCase().includes(fcDilig2));
 
   if(!dilig.length){
+    const _rs=document.getElementById('rs-static');if(_rs)_rs.innerHTML='';
     tabla.innerHTML=`<div class="rs-empty"><div class="ei">📭</div><p>Sin diligencias con los filtros actuales.</p></div>`;
     return;
   }
@@ -3695,6 +3707,7 @@ function rsRenderParalegal(){
   });
   const tabla=document.getElementById('rs-tabla');
   if(!props.length){
+    const _rs=document.getElementById('rs-static');if(_rs)_rs.innerHTML='';
     tabla.innerHTML=`<div class="rs-empty"><div class="ei">📋</div><p>No hay reasignaciones ${filtro?'con ese estado':''} registradas.</p></div>`;
     return;
   }
