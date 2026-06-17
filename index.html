@@ -33,6 +33,8 @@ header{background:var(--navy);color:#fff;padding:0 32px;display:flex;align-items
 .mnav.active{color:#fff;border-bottom-color:var(--gold)}
 /* ─ MAIN ─ */
 main{max-width:1280px;margin:0 auto;padding:24px 20px}
+/* Panel reasignaciones: ancho completo sin límite */
+#panel-reasig{margin:-24px -20px;padding:24px 20px;max-width:none;box-sizing:border-box}
 /* ─ PANELS ─ */
 .panel{display:none}.panel.active{display:block}
 /* ─ GUIDE ─ */
@@ -230,7 +232,7 @@ a.tid:hover{background:#DBEAFE;color:var(--blue)}
 .rs-stat.conf .rs-stat-n{color:var(--green)}
 .rs-stat.rech .rs-stat-n{color:var(--red)}
 .rs-stat.ejec .rs-stat-n{color:var(--blue)}
-.rs-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:calc(100vh - 280px)}
+.rs-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:calc(100vh - 220px)}
 .rs-table-wrap table thead th{position:sticky;top:0;z-index:10}
 .rs-table-wrap .th-std{background:var(--navy);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:9px 10px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rs-table-wrap .th-filter{background:#f0f4fa;padding:4px 6px;border-bottom:2px solid var(--border)}
